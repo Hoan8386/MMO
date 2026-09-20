@@ -1,0 +1,291 @@
+{
+  "id": "T6bc2Mjn2okNsJhI",
+  "name": "My workflow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c193cd5e-c2dd-4d4b-b512-547f78adbb11",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qsYcJUhRqtOKIBpufo30zumibbdZSGhgmL8b_m9872Y",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "TinCongNghe",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "1d467b4c-e3cd-421c-85f6-3b4b138f9e43",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sEgV3KOhOU0YyAIW",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.length ? [items[items.length - 1]] : [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4daf72f3-a311-41c5-9881-9685fc3877b6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Bạn là biên tập viên sản xuất video tin tức công nghệ bằng tiếng Việt.\n\nHãy dựa hoàn toàn vào dữ liệu được cung cấp để tạo nội dung cho một video tin tức công nghệ dài khoảng 60–90 giây.\n\nYÊU CẦU:\n\n1. TÓM TẮT\n- Tóm tắt nội dung chính trong 2–3 câu.\n- Chỉ sử dụng thông tin được cung cấp.\n- Không tự bịa thông tin.\n\n2. KỊCH BẢN\n- Viết lời thoại tự nhiên, dễ nghe khi đọc bằng AI voice.\n- Thời lượng tổng cộng khoảng 60–90 giây.\n- Chia thành 6–8 cảnh.\n- Mỗi cảnh khoảng 5–15 giây.\n- Cảnh đầu tiên phải có câu mở đầu thu hút người xem.\n- Nội dung chính tập trung vào tin tiêu điểm.\n- Sử dụng tin vắn để bổ sung thông tin liên quan.\n- Sử dụng phần nghiên cứu chuyên sâu để giải thích ý nghĩa kỹ thuật.\n- Không đọc URL trong lời thoại.\n\n3. HÌNH ẢNH\nMỗi cảnh phải có một image_prompt để tạo hình ảnh minh họa.\nImage prompt phải mô tả cụ thể:\n- Chủ thể\n- Bối cảnh\n- Góc máy\n- Ánh sáng\n- Phong cách công nghệ hiện đại\n- Phù hợp với nội dung lời thoại\n\nKhông tạo chữ trong hình ảnh.\n\n4. KẾT QUẢ\nChỉ trả về JSON hợp lệ.\nKhông dùng Markdown.\nKhông thêm ```json.\n\nCấu trúc JSON:\n\n{\n  \"title\": \"...\",\n  \"summary\": \"...\",\n  \"scenes\": [\n    {\n      \"scene\": 1,\n      \"duration\": 8,\n      \"voice\": \"...\",\n      \"image_prompt\": \"...\"\n    }\n  ]\n}\n\nDỮ LIỆU TIN TỨC:\n\nNgày:\n{{ $json[\"col_1\"] }}\n\nTin tiêu điểm:\n{{ $json[\"col_3\"] }}\n\nTin vắn:\n{{ $json[\"col_4\"] }}\n\nNghiên cứu chuyên sâu:\n{{ $json[\"col_5\"] }}\n\nNguồn tham khảo:\n{{ $json[\"col_6\"] }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e4091fd7-f114-43d9-b778-86bcc2336741",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WyiGeqGVGMxZBsDB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nconst text = input.content.parts\n  .find(part => part.text)?.text;\n\nif (!text) {\n  throw new Error('Gemini không trả về nội dung text');\n}\n\nconst cleanText = text\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\n\nconst data = JSON.parse(cleanText);\n\nreturn [\n  {\n    json: data\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "a50644d8-3c95-43ce-ace0-d87ca9eab50d",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "scenes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "ac7dda01-2d97-463f-aeff-00dad7316b9f",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenes = $input.all().map(item => item.json);\n\nreturn [\n  {\n    json: {\n      content: JSON.stringify(scenes, null, 2)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "e52ea149-e32f-478f-bdbe-8e9318df3fb7",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "={{ JSON.stringify($json.scenes, null, 2) }}",
+        "options": {
+          "fileName": "news.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1712,
+        0
+      ],
+      "id": "4874ef31-ddee-41f8-96a1-fd35d553b543",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/hyperframes/data/news.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1936,
+        0
+      ],
+      "id": "58e6f82f-dd0d-4b21-bf5c-0ec4c6eb5cb4",
+      "name": "Read/Write Files from Disk"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-09-16T21:47:51.605+07:00",
+          "Readable date": "September 16th 2026, 9:47:51 pm",
+          "Readable time": "9:47:51 pm",
+          "Day of week": "Wednesday",
+          "Year": "2026",
+          "Month": "September",
+          "Day of month": "16",
+          "Hour": "21",
+          "Minute": "47",
+          "Second": "51",
+          "Timezone": "Asia/Ho_Chi_Minh (UTC+07:00)"
+        }
+      }
+    ]
+  }
+}
