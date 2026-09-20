@@ -1,0 +1,130 @@
+<template>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap");
+
+    #root {
+      position: absolute; inset: 0; overflow: hidden;
+      font-family: var(--hf-font-heading, 'Inter', sans-serif);
+      color: var(--hf-text, #f1f5f9);
+      background: var(--hf-bg, #0a0e17);
+    }
+    #root .cl-bg { position: absolute; inset: 0; background: var(--hf-gradient, linear-gradient(135deg,#0a0e17,#1a1a2e)); }
+
+    #root .cl-content {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      justify-content: center; padding: 80px 120px;
+    }
+
+    #root .cl-kicker {
+      font-size: 18px; font-weight: 700; letter-spacing: 6px; text-transform: uppercase;
+      color: var(--hf-primary, #70e1e8); margin-bottom: 24px; opacity: 0;
+    }
+
+    #root .cl-title {
+      font-size: 52px; font-weight: 900; margin: 0 0 40px 0; line-height: 1.1;
+      color: var(--hf-text, #f1f5f9); max-width: 1000px; opacity: 0;
+    }
+
+    #root .cl-rule {
+      width: 100px; height: 4px; margin-bottom: 36px;
+      background: var(--hf-gradient-accent, linear-gradient(90deg, #70e1e8, #a855f7));
+      border-radius: 2px; opacity: 0;
+    }
+
+    #root .cl-points { display: flex; flex-direction: column; gap: 20px; }
+
+    #root .cl-point {
+      display: flex; align-items: flex-start; gap: 16px; opacity: 0;
+    }
+
+    #root .cl-point-num {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: var(--hf-primary, #70e1e8); color: var(--hf-bg, #0a0e17);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+    }
+
+    #root .cl-point-text {
+      font-size: 24px; font-weight: 500; line-height: 1.4;
+      color: var(--hf-text-secondary, #94a3b8); padding-top: 4px;
+    }
+
+    #root .cl-corner {
+      position: absolute; bottom: 60px; right: 80px;
+      width: 50px; height: 50px;
+      border-right: 3px solid var(--hf-primary, #70e1e8);
+      border-bottom: 3px solid var(--hf-primary, #70e1e8);
+      opacity: 0;
+    }
+  </style>
+
+  <div id="root" data-composition-id="conclusion" data-width="1920" data-height="1080">
+    <div class="cl-bg"></div>
+    <div class="cl-content">
+      <div class="cl-kicker" id="cl-kicker">TÓM TẮT</div>
+      <h2 class="cl-title" id="cl-title">Kết luận</h2>
+      <div class="cl-rule"></div>
+      <div class="cl-points" id="cl-points"></div>
+    </div>
+    <div class="cl-corner"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var DATA = window.__hfData && window.__hfData['conclusion'] ? window.__hfData['conclusion'] : {
+        kicker: 'TÓM TẮT',
+        title: 'Kết luận',
+        points: [
+          'Điểm tóm tắt thứ nhất',
+          'Điểm tóm tắt thứ hai',
+          'Điểm tóm tắt thứ ba'
+        ]
+      };
+
+      var kickerEl = document.getElementById('cl-kicker');
+      var titleEl = document.getElementById('cl-title');
+      var pointsEl = document.getElementById('cl-points');
+
+      if (DATA.kicker && kickerEl) kickerEl.textContent = DATA.kicker;
+      if (DATA.title && titleEl) titleEl.textContent = DATA.title;
+
+      var points = DATA.points || [];
+      var pointEls = [];
+
+      points.forEach(function(pt, i) {
+        var row = document.createElement('div');
+        row.className = 'cl-point'; row.id = 'cl-pt-' + i;
+
+        var num = document.createElement('div');
+        num.className = 'cl-point-num'; num.textContent = i + 1;
+
+        var text = document.createElement('div');
+        text.className = 'cl-point-text'; text.textContent = pt;
+
+        row.appendChild(num); row.appendChild(text);
+        pointsEl.appendChild(row);
+        pointEls.push(row);
+      });
+
+      var tl = gsap.timeline({ paused: true });
+
+      tl.fromTo('#root .cl-kicker', { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.2)
+        .fromTo('#root .cl-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power4.out' }, 0.4)
+        .fromTo('#root .cl-rule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'power3.out', transformOrigin: 'left center' }, 0.9);
+
+      pointEls.forEach(function(el, i) {
+        tl.fromTo(el,
+          { opacity: 0, x: -30 },
+          { opacity: 1, x: 0, duration: 0.5, ease: 'power3.out' },
+          1.2 + i * 0.25
+        );
+      });
+
+      tl.fromTo('#root .cl-corner', { opacity: 0, x: 15, y: 15 }, { opacity: 1, x: 0, y: 0, duration: 0.5, ease: 'back.out(1.5)' }, 1.5);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['conclusion'] = tl;
+    })();
+  </script>
+</template>

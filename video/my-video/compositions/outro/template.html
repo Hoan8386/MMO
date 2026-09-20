@@ -1,0 +1,112 @@
+<template>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap");
+
+    #root {
+      position: absolute; inset: 0; overflow: hidden;
+      font-family: var(--hf-font-heading, 'Inter', sans-serif);
+      color: var(--hf-text, #f1f5f9);
+      background: var(--hf-bg, #0a0e17);
+    }
+    #root .ou-bg { position: absolute; inset: 0; background: var(--hf-gradient, linear-gradient(135deg,#0a0e17,#1a1a2e)); }
+
+    #root .ou-glow {
+      position: absolute; width: 700px; height: 700px;
+      top: 50%; left: 50%;
+      background: radial-gradient(circle, var(--hf-glow-color, rgba(112,225,232,0.1)) 0%, transparent 65%);
+      opacity: 0;
+    }
+
+    #root .ou-content {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center; padding: 80px;
+    }
+
+    #root .ou-brand {
+      font-size: 64px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
+      background: var(--hf-gradient-accent, linear-gradient(135deg, #70e1e8, #a855f7));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin: 0 0 20px 0; opacity: 0;
+    }
+
+    #root .ou-tagline {
+      font-size: 28px; font-weight: 400; color: var(--hf-text-secondary, #94a3b8);
+      margin: 0 0 40px 0; max-width: 600px; line-height: 1.4; opacity: 0;
+    }
+
+    #root .ou-rule {
+      width: 60px; height: 3px; margin-bottom: 32px;
+      background: var(--hf-border, rgba(112,225,232,0.3));
+      border-radius: 2px; opacity: 0;
+    }
+
+    #root .ou-social {
+      display: flex; gap: 24px; opacity: 0;
+    }
+    #root .ou-social-item {
+      font-size: 16px; font-weight: 600; letter-spacing: 2px;
+      color: var(--hf-text-muted, #64748b); text-transform: uppercase;
+    }
+
+    #root .ou-line-top, #root .ou-line-bot {
+      position: absolute; left: 200px; right: 200px; height: 1px;
+      background: var(--hf-border, rgba(112,225,232,0.15)); opacity: 0;
+    }
+    #root .ou-line-top { top: 200px; }
+    #root .ou-line-bot { bottom: 200px; }
+  </style>
+
+  <div id="root" data-composition-id="outro" data-width="1920" data-height="1080">
+    <div class="ou-bg"></div>
+    <div class="ou-glow" style="transform: translate(-50%, -50%);"></div>
+    <div class="ou-line-top"></div>
+    <div class="ou-line-bot"></div>
+    <div class="ou-content">
+      <div class="ou-brand" id="ou-brand">BRAND</div>
+      <p class="ou-tagline" id="ou-tagline">Tagline goes here</p>
+      <div class="ou-rule"></div>
+      <div class="ou-social" id="ou-social"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var DATA = window.__hfData && window.__hfData['outro'] ? window.__hfData['outro'] : {
+        brand: 'TECH NEWS',
+        tagline: 'Cập nhật công nghệ mỗi ngày',
+        social: ['YouTube', 'Twitter', 'Website']
+      };
+
+      var brandEl = document.getElementById('ou-brand');
+      var taglineEl = document.getElementById('ou-tagline');
+      var socialEl = document.getElementById('ou-social');
+
+      if (DATA.brand && brandEl) brandEl.textContent = DATA.brand;
+      if (DATA.tagline && taglineEl) taglineEl.textContent = DATA.tagline;
+      else if (taglineEl) taglineEl.style.display = 'none';
+
+      var socials = DATA.social || [];
+      socials.forEach(function(s) {
+        var item = document.createElement('div');
+        item.className = 'ou-social-item';
+        item.textContent = s;
+        socialEl.appendChild(item);
+      });
+      if (socials.length === 0 && socialEl) socialEl.style.display = 'none';
+
+      var tl = gsap.timeline({ paused: true });
+
+      tl.fromTo('#root .ou-glow', { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 1.5, ease: 'power2.out' }, 0)
+        .fromTo('#root .ou-line-top', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: 'power3.out', transformOrigin: 'center center' }, 0.3)
+        .fromTo('#root .ou-line-bot', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: 'power3.out', transformOrigin: 'center center' }, 0.4)
+        .fromTo('#root .ou-brand', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.5)' }, 0.5)
+        .fromTo('#root .ou-tagline', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 1.0)
+        .fromTo('#root .ou-rule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: 'power3.out' }, 1.4)
+        .fromTo('#root .ou-social', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 1.6);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['outro'] = tl;
+    })();
+  </script>
+</template>

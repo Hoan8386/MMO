@@ -55,6 +55,18 @@ services:
     networks:
       - automation
 
+  edge-tts:
+    image: travisvn/openai-edge-tts:latest
+    container_name: edge-tts
+    restart: unless-stopped
+    ports:
+      - "5051:5050"
+    environment:
+      - API_KEY=edge_tts_local
+      - PORT=5050
+    networks:
+      - automation
+
 volumes:
   n8n_data:
   postgres_data:

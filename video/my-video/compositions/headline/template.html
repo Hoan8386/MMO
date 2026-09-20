@@ -1,0 +1,100 @@
+<template>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap");
+
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      font-family: var(--hf-font-heading, 'Inter', sans-serif);
+      color: var(--hf-text, #f1f5f9);
+      background: var(--hf-bg, #0a0e17);
+    }
+
+    #root .hl-bg { position: absolute; inset: 0; background: var(--hf-gradient, linear-gradient(135deg,#0a0e17,#1a1a2e)); }
+
+    #root .hl-line-top, #root .hl-line-bot {
+      position: absolute; left: 100px; right: 100px; height: 2px;
+      background: var(--hf-border, rgba(112,225,232,0.2));
+      opacity: 0; transform-origin: left center;
+    }
+    #root .hl-line-top { top: 180px; }
+    #root .hl-line-bot { bottom: 180px; }
+
+    #root .hl-content {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 80px 120px; text-align: center;
+    }
+
+    #root .hl-kicker {
+      font-size: 20px; font-weight: 700; letter-spacing: 8px; text-transform: uppercase;
+      color: var(--hf-primary, #70e1e8); margin-bottom: 32px; opacity: 0;
+    }
+
+    #root .hl-title {
+      font-size: 96px; font-weight: 900; line-height: 1.02; letter-spacing: -1px;
+      max-width: 1500px; margin: 0 0 40px 0;
+      color: var(--hf-text, #f1f5f9); text-transform: uppercase; opacity: 0;
+    }
+
+    #root .hl-rule {
+      width: 160px; height: 6px; border-radius: 3px;
+      background: var(--hf-gradient-accent, linear-gradient(90deg,#70e1e8,#a855f7));
+      margin-bottom: 36px; opacity: 0;
+    }
+
+    #root .hl-subtitle {
+      font-size: 30px; font-weight: 400; line-height: 1.35;
+      color: var(--hf-text-secondary, #94a3b8); max-width: 900px; margin: 0; opacity: 0;
+    }
+  </style>
+
+  <div id="root" data-composition-id="headline" data-width="1920" data-height="1080">
+    <div class="hl-bg"></div>
+    <div class="hl-line-top"></div>
+    <div class="hl-line-bot"></div>
+    <div class="hl-content">
+      <div class="hl-kicker" id="hl-kicker"></div>
+      <h1 class="hl-title" id="hl-title">Tiêu đề lớn</h1>
+      <div class="hl-rule"></div>
+      <p class="hl-subtitle" id="hl-subtitle"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var DATA = window.__hfData && window.__hfData['headline'] ? window.__hfData['headline'] : {
+        title: 'Tiêu đề lớn',
+        subtitle: '',
+        kicker: ''
+      };
+
+      var titleEl = document.getElementById('hl-title');
+      var subtitleEl = document.getElementById('hl-subtitle');
+      var kickerEl = document.getElementById('hl-kicker');
+
+      if (DATA.title && titleEl) titleEl.textContent = DATA.title;
+      if (DATA.subtitle && subtitleEl) subtitleEl.textContent = DATA.subtitle;
+      else if (subtitleEl) subtitleEl.style.display = 'none';
+      if (DATA.kicker && kickerEl) kickerEl.textContent = DATA.kicker;
+      else if (kickerEl) kickerEl.style.display = 'none';
+
+      if (titleEl && DATA.title && DATA.title.length > 50) titleEl.style.fontSize = '72px';
+      else if (titleEl && DATA.title && DATA.title.length > 35) titleEl.style.fontSize = '84px';
+
+      var tl = gsap.timeline({ paused: true });
+
+      tl.fromTo('#root .hl-line-top', { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.7, ease: 'power3.out' }, 0.2)
+        .fromTo('#root .hl-line-bot', { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.7, ease: 'power3.out' }, 0.35)
+        .fromTo('#root .hl-kicker', { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.5)
+        .fromTo('#root .hl-title', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power4.out' }, 0.7)
+        .fromTo('#root .hl-rule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'power3.out', transformOrigin: 'center center' }, 1.3)
+        .fromTo('#root .hl-subtitle', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 1.6);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['headline'] = tl;
+    })();
+  </script>
+</template>

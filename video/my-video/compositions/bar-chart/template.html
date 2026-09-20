@@ -1,0 +1,186 @@
+<template>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap");
+
+    #root {
+      position: absolute; inset: 0; overflow: hidden;
+      font-family: var(--hf-font-heading, 'Inter', sans-serif);
+      color: var(--hf-text, #f1f5f9);
+      background: var(--hf-bg, #0a0e17);
+    }
+
+    #root .bc-bg { position: absolute; inset: 0; background: var(--hf-gradient, linear-gradient(135deg,#0a0e17,#1a1a2e)); }
+
+    #root .bc-header {
+      position: absolute; top: 60px; left: 100px; right: 100px; opacity: 0;
+    }
+    #root .bc-title {
+      font-size: 36px; font-weight: 800; margin: 0 0 8px 0;
+      color: var(--hf-text, #f1f5f9);
+    }
+    #root .bc-subtitle {
+      font-size: 20px; font-weight: 400; margin: 0;
+      color: var(--hf-text-secondary, #94a3b8);
+    }
+
+    #root .bc-chart {
+      position: absolute; bottom: 100px; left: 100px; right: 100px;
+      height: 600px; display: flex; align-items: flex-end; gap: 40px;
+      padding-top: 40px;
+    }
+
+    #root .bc-col {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+
+    #root .bc-bar-wrap {
+      width: 100%; flex: 1; display: flex; align-items: flex-end; justify-content: center;
+    }
+
+    #root .bc-bar {
+      width: 80%; border-radius: var(--hf-radius-sm, 8px) var(--hf-radius-sm, 8px) 0 0;
+      background: var(--hf-gradient-accent, linear-gradient(180deg, #70e1e8, #a855f7));
+      min-height: 4px; transform-origin: bottom center;
+    }
+
+    #root .bc-value {
+      font-size: 24px; font-weight: 800; color: var(--hf-primary, #70e1e8);
+      text-align: center; opacity: 0;
+    }
+
+    #root .bc-label {
+      font-size: 18px; font-weight: 600; color: var(--hf-text-secondary, #94a3b8);
+      text-align: center; max-width: 150px; line-height: 1.2;
+    }
+
+    #root .bc-grid-lines {
+      position: absolute; bottom: 100px; left: 100px; right: 100px;
+      height: 600px; pointer-events: none;
+    }
+    #root .bc-grid-line {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: var(--hf-border, rgba(112,225,232,0.1));
+    }
+  </style>
+
+  <div id="root" data-composition-id="bar-chart" data-width="1920" data-height="1080">
+    <div class="bc-bg"></div>
+    <div class="bc-grid-lines" id="bc-grid-lines"></div>
+    <div class="bc-header" id="bc-header">
+      <div class="bc-title" id="bc-title">Chart Title</div>
+      <div class="bc-subtitle" id="bc-subtitle"></div>
+    </div>
+    <div class="bc-chart" id="bc-chart"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var DATA = window.__hfData && window.__hfData['bar-chart'] ? window.__hfData['bar-chart'] : {
+        title: 'Performance Comparison',
+        subtitle: '',
+        bars: [
+          { label: 'Item A', value: 65 },
+          { label: 'Item B', value: 85 },
+          { label: 'Item C', value: 120 },
+          { label: 'Item D', value: 95 }
+        ],
+        unit: '',
+        showValues: true
+      };
+
+      var titleEl = document.getElementById('bc-title');
+      var subtitleEl = document.getElementById('bc-subtitle');
+      var chartEl = document.getElementById('bc-chart');
+      var gridEl = document.getElementById('bc-grid-lines');
+
+      if (DATA.title && titleEl) titleEl.textContent = DATA.title;
+      if (DATA.subtitle && subtitleEl) subtitleEl.textContent = DATA.subtitle;
+      else if (subtitleEl) subtitleEl.style.display = 'none';
+
+      var bars = DATA.bars || [];
+      var maxVal = 0;
+      bars.forEach(function(b) { if (Math.abs(b.value) > maxVal) maxVal = Math.abs(b.value); });
+      if (maxVal === 0) maxVal = 1;
+
+      // Create grid lines
+      for (var g = 0; g < 5; g++) {
+        var line = document.createElement('div');
+        line.className = 'bc-grid-line';
+        line.style.bottom = (g * 25) + '%';
+        gridEl.appendChild(line);
+      }
+
+      // Create bar columns
+      var barEls = [];
+      var valueEls = [];
+      bars.forEach(function(bar, i) {
+        var col = document.createElement('div');
+        col.className = 'bc-col';
+
+        var valueDiv = document.createElement('div');
+        valueDiv.className = 'bc-value';
+        valueDiv.id = 'bc-val-' + i;
+        valueDiv.textContent = '0' + (DATA.unit || '');
+
+        var barWrap = document.createElement('div');
+        barWrap.className = 'bc-bar-wrap';
+        var barDiv = document.createElement('div');
+        barDiv.className = 'bc-bar';
+        barDiv.id = 'bc-bar-' + i;
+        var pct = (Math.abs(bar.value) / maxVal) * 100;
+        barDiv.style.height = pct + '%';
+        barWrap.appendChild(barDiv);
+
+        var labelDiv = document.createElement('div');
+        labelDiv.className = 'bc-label';
+        labelDiv.textContent = bar.label || '';
+
+        col.appendChild(valueDiv);
+        col.appendChild(barWrap);
+        col.appendChild(labelDiv);
+        chartEl.appendChild(col);
+
+        barEls.push(barDiv);
+        valueEls.push({ el: valueDiv, target: bar.value });
+      });
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Header
+      tl.fromTo('#root .bc-header', { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.2);
+
+      // Grid lines fade
+      tl.fromTo('#root .bc-grid-line', { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out', stagger: 0.08 }, 0.3);
+
+      // Bars grow
+      barEls.forEach(function(barDiv, i) {
+        tl.fromTo(barDiv,
+          { scaleY: 0 },
+          { scaleY: 1, duration: 0.8, ease: 'power3.out', transformOrigin: 'bottom center' },
+          0.6 + i * 0.15
+        );
+      });
+
+      // Count-up values
+      if (DATA.showValues !== false) {
+        valueEls.forEach(function(item, i) {
+          var obj = { val: 0 };
+          tl.fromTo(item.el, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0.8 + i * 0.15);
+          tl.fromTo(obj,
+            { val: 0 },
+            {
+              val: item.target, duration: 1.2, ease: 'power2.out',
+              onUpdate: function() {
+                item.el.textContent = Math.round(obj.val).toLocaleString('en-US') + (DATA.unit || '');
+              }
+            }, 0.8 + i * 0.15
+          );
+        });
+      }
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['bar-chart'] = tl;
+    })();
+  </script>
+</template>
