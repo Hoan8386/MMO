@@ -1,0 +1,26 @@
+{
+    "name": "ai-tech-video-system",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "tsx video-api/src/server.ts",
+        "build": "tsc",
+        "start": "node dist/video-api/src/server.js",
+        "check:agents": "node scripts/check-agents.js",
+        "check:antigravity": "node scripts/check-antigravity.js",
+        "test:antigravity": "node scripts/test-antigravity.js"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.7",
+        "express": "^5.1.0",
+        "pg": "^8.16.3",
+        "zod": "^3.25.76"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.3.0",
+        "@types/pg": "^8.15.5",
+        "tsx": "^4.20.5",
+        "typescript": "^5.9.2"
+    }
+}

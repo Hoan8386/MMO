@@ -67,6 +67,30 @@ services:
     networks:
       - automation
 
+  video-api:
+    build:
+      context: ./video
+      dockerfile: Dockerfile
+    container_name: video-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://n8n:n8n_password@postgres:5432/n8n
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemini-2.5-flash}
+      - EDGE_TTS_URL=http://edge-tts:5050/v1/audio/speech
+      - EDGE_TTS_API_KEY=${EDGE_TTS_API_KEY:-edge_tts_local}
+      - VIDEO_API_PORT=3000
+      - HYPERFRAMES_PROJECT_DIR=/app/my-video
+    volumes:
+      - "E:/MMO/video/my-video:/app/my-video"
+    depends_on:
+      - postgres
+      - edge-tts
+    networks:
+      - automation
+
 volumes:
   n8n_data:
   postgres_data:
