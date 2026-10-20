@@ -1,0 +1,7 @@
+node_modules/
+web/dist/
+storage/
+server/.env
+server/.venv/
+.hyperframes/
+*.log

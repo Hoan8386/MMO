@@ -1,6 +1,0 @@
-node_modules/
-dist/
-.env
-my-video/generated/
-my-video/renders/
-my-video/data/audio/
