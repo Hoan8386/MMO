@@ -1,0 +1,47 @@
+{
+  "frame_id": "outro-subscribe",
+  "version": 1,
+  "status": "active",
+  "name": "Kết thúc",
+  "description": "Cảnh kết: lời cảm ơn, lời kêu gọi đăng ký, tên kênh. Luôn là cảnh cuối cùng.",
+  "category": "outro",
+  "scene_type": "outro",
+  "tags": [
+    "common"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 9,
+    "recommended": 5
+  },
+  "inputs": {
+    "message": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40,
+      "description": "vd. Cảm ơn bạn đã xem"
+    },
+    "cta": {
+      "type": "string",
+      "required": true,
+      "maxLength": 36,
+      "description": "vd. Đăng ký để cập nhật tin mới"
+    },
+    "channel": {
+      "type": "string",
+      "maxLength": 30
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Cảm ơn bạn đã theo dõi. Đừng quên đăng ký kênh để cập nhật tin mới nhé.",
+    "inputs": {
+      "message": "Cảm ơn bạn đã xem",
+      "cta": "Đăng ký để cập nhật tin mới",
+      "channel": "Tin Công Nghệ"
+    }
+  }
+}

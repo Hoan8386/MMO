@@ -1,7 +1,12 @@
-import { STATUS, parsePaths } from "./api.js";
+import { STATUS, PROJECT_STATUS, parsePaths } from "./api.js";
 
 export function StatusBadge({ status }) {
   const s = STATUS[status] || STATUS.draft;
+  return <span className={`pill ${s.tone}`}>{s.label}</span>;
+}
+
+export function ProjectStatusBadge({ status }) {
+  const s = PROJECT_STATUS[status] || PROJECT_STATUS.draft;
   return <span className={`pill ${s.tone}`}>{s.label}</span>;
 }
 

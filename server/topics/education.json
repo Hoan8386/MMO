@@ -1,0 +1,25 @@
+{
+  "topic_id": "education",
+  "name": "Học tập",
+  "description": "Bài giảng ngắn, giải thích khái niệm, kiến thức phổ thông, kỹ năng, ôn tập có câu hỏi.",
+  "tone": "chậm rãi, dễ hiểu như giáo viên giảng bài; giải thích thuật ngữ, có ví dụ, có câu hỏi ôn tập",
+  "kicker": "Bài học",
+  "default_tags": ["education", "explainer"],
+  "related_tags": ["statistics", "comparison", "list", "quiz"],
+  "background": "paper",
+  "theme": {
+    "bg": "#F7F4EC",
+    "bg2": "#FFFFFF",
+    "ink": "#1F2A44",
+    "muted": "#5E6B85",
+    "accent": "#2F6FEB",
+    "accent2": "#12A37F",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(31, 42, 68, 0.05)",
+    "line": "rgba(31, 42, 68, 0.14)",
+    "glow": "rgba(47, 111, 235, 0.12)",
+    "cap-bg": "rgba(31, 42, 68, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "frame_id": "headline",
+  "version": 1,
+  "status": "active",
+  "name": "Tiêu đề tin",
+  "description": "Tiêu đề lớn kèm dòng mô tả ngắn. Dùng để mở một tin mới hoặc nêu ý chính.",
+  "category": "title",
+  "scene_type": "title",
+  "tags": [
+    "common",
+    "news",
+    "explainer"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 12,
+    "recommended": 6
+  },
+  "inputs": {
+    "label": {
+      "type": "string",
+      "maxLength": 20,
+      "description": "nhãn nhỏ phía trên, vd. TIN 1 hoặc tên hãng"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 70
+    },
+    "subtitle": {
+      "type": "string",
+      "maxLength": 110,
+      "description": "một câu giải thích ngắn"
+    }
+  },
+  "keywords": "tuỳ chọn 1 từ khoá: dòng mô tả hiện ra khi từ này được đọc",
+  "sample": {
+    "voice_text": "Apple vừa chính thức ra mắt iPhone 18 với ba thay đổi lớn.",
+    "keywords": [
+      "ba thay đổi"
+    ],
+    "inputs": {
+      "label": "Apple",
+      "title": "iPhone 18 chính thức ra mắt",
+      "subtitle": "Ba thay đổi lớn về camera, pin và chip xử lý"
+    }
+  }
+}

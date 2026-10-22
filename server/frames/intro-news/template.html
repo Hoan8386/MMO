@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 120px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 36px; }
+        {{__r}} .kicker { display: flex; align-items: center; gap: 18px; font-size: 34px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+        {{__r}} .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); }
+        {{__r}} .title { font-size: 100px; line-height: 1.12; max-width: 1560px; }
+        {{__r}} .bar { width: 460px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        {{__r}} .date { font-size: 34px; color: var(--muted); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+          <div class="kicker"><span class="dot"></span><span>{{kicker}}</span></div>
+          <div class="title">{{title}}</div>
+          <div class="bar"></div>
+          {{#date}}<div class="date">{{date}}</div>{{/date}}
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const tl = gsap.timeline({ paused: true });
+          tl.fromTo($(".kicker"), { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          tl.fromTo($(".title"), { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.25);
+          tl.fromTo($(".bar"), { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.9, ease: "power2.inOut" }, 0.5);
+          if ($(".date")) tl.fromTo($(".date"), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.9);
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

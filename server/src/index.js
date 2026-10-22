@@ -6,6 +6,7 @@ import { config, STORAGE_DIR, ROOT_DIR } from "./config.js";
 import { initDb } from "./db.js";
 import typesRouter from "./routes/types.js";
 import videosRouter from "./routes/videos.js";
+import projectsRouter, { framesRouter, topicsRouter } from "./routes/projects.js";
 
 fs.mkdirSync(STORAGE_DIR, { recursive: true });
 await initDb();
@@ -18,6 +19,9 @@ app.use("/storage", express.static(STORAGE_DIR));
 app.get("/api/health", (_req, res) => res.json({ ok: true, ai: config.ai.mode, model: config.ai.model }));
 app.use("/api/types", typesRouter);
 app.use("/api/videos", videosRouter);
+app.use("/api/projects", projectsRouter);
+app.use("/api/frames", framesRouter);
+app.use("/api/topics", topicsRouter);
 
 // Serve the built React app when it exists (npm run build in web/).
 const webDist = path.join(ROOT_DIR, "web", "dist");

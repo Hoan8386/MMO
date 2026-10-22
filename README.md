@@ -1,5 +1,18 @@
 # MMO Video Studio
 
+## Luồng mới: thư viện frame (mặc định)
+
+Thiết kế đầy đủ ở [docs/THIET-KE-HE-THONG.md](docs/THIET-KE-HE-THONG.md).
+
+1. Tạo **dự án video** ở trang chủ, dán tư liệu hoặc kịch bản.
+2. **Lập kế hoạch bằng AI**: AI chia cảnh, viết lời đọc và chọn template trong `server/frames/`. Mỗi video chỉ tốn khoảng 3–5 nghìn token.
+3. **Sửa và duyệt kế hoạch** ngay trên trang, rồi bấm **Duyệt & render**. Hệ thống tạo giọng đọc bằng edge-tts, dựng dự án HyperFrames và xuất MP4.
+4. Muốn chỉnh tay thì bấm **Chỉnh sửa trong Studio** để mở HyperFrames Studio, rồi bấm **Render** để xuất kèm các chỉnh sửa.
+
+Chạy không cần giao diện: `npm --prefix server run make:video -- samples/tin-cong-nghe.txt --slug thu`.
+
+## Luồng cũ: AI vẽ tay (menu "Luồng cũ")
+
 Làm video vẽ tay bằng AI: viết kịch bản, chọn **loại video** (người que, hoạt hình, khoa học…), hệ thống tự
 
 1. tách kịch bản thành từng cảnh (mỗi câu một cảnh),

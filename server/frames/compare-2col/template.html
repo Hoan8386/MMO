@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 110px; bottom: 290px; display: flex; align-items: center; gap: 60px; }
+        {{__r}} .col { flex: 1; align-self: stretch; margin: 40px 0; display: flex; justify-content: center; flex-direction: column; gap: 26px; padding: 44px 50px; border-radius: 28px; background: var(--panel); border: 2px solid var(--line); }
+        {{__r}} .col.right { border-color: var(--accent); }
+        {{__r}} .head { font-size: 54px; line-height: 1.15; padding-bottom: 20px; border-bottom: 3px solid var(--line); }
+        {{__r}} .right .head { color: var(--accent); }
+        {{__r}} .row { display: flex; align-items: center; gap: 20px; font-size: 44px; line-height: 1.25; }
+        {{__r}} .row b { flex: none; width: 14px; height: 14px; border-radius: 50%; background: var(--muted); }
+        {{__r}} .right .row b { background: var(--accent); }
+        {{__r}} .vs { align-self: center; flex: none; width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--on-accent); font-size: 40px; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+          <div class="col left">
+            <div class="head">{{left_title}}</div>
+            {{#left_items}}<div class="row"><b></b><span>{{.}}</span></div>{{/left_items}}
+          </div>
+          <div class="vs">VS</div>
+          <div class="col right">
+            <div class="head">{{right_title}}</div>
+            {{#right_items}}<div class="row"><b></b><span>{{.}}</span></div>{{/right_items}}
+          </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const tl = gsap.timeline({ paused: true });
+          tl.fromTo($(".left"), { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+          tl.fromTo(R.querySelectorAll(".left .row"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.15, ease: "power2.out" }, 0.45);
+          tl.fromTo($(".vs"), { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 0.6);
+          const rightAt = Math.min(P.D - 1.4, Math.max(1, P.marks[0] ?? P.vo + (P.voEnd - P.vo) * 0.45));
+          tl.fromTo($(".right"), { opacity: 0, x: 70 }, { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" }, rightAt);
+          tl.fromTo(R.querySelectorAll(".right .row"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.15, ease: "power2.out" }, rightAt + 0.35);
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

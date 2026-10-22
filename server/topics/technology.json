@@ -1,0 +1,25 @@
+{
+  "topic_id": "technology",
+  "name": "Công nghệ",
+  "description": "Tin công nghệ, sản phẩm mới, AI, phần mềm, đánh giá thiết bị.",
+  "tone": "rõ ràng, nhanh, chính xác như bản tin; thuật ngữ tiếng Anh giữ nguyên khi phổ biến",
+  "kicker": "Tin công nghệ",
+  "default_tags": ["technology", "news"],
+  "related_tags": ["product_review", "statistics", "comparison", "code"],
+  "background": "grid",
+  "theme": {
+    "bg": "#0A1020",
+    "bg2": "#131D38",
+    "ink": "#F2F5FA",
+    "muted": "#97A3BA",
+    "accent": "#3DD6F5",
+    "accent2": "#7C5CFF",
+    "on-accent": "#0A1020",
+    "panel": "rgba(255, 255, 255, 0.05)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(124, 92, 255, 0.28)",
+    "cap-bg": "rgba(5, 9, 20, 0.72)",
+    "cap-ink": "#F2F5FA",
+    "cap-hi": "#3DD6F5"
+  }
+}

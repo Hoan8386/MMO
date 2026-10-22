@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 100px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 44px; }
+        {{__r}} .title { font-size: 76px; line-height: 1.15; }
+        {{__r}} .items { display: flex; flex-direction: column; gap: 26px; }
+        {{__r}} .item { display: flex; align-items: center; gap: 30px; padding: 24px 34px; border-radius: 20px; background: var(--panel); border: 2px solid var(--line); max-width: 1500px; }
+        {{__r}} .num { flex: none; width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--on-accent); font-size: 34px; }
+        {{__r}} .text { font-size: 48px; line-height: 1.25; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+          <div class="title">{{title}}</div>
+          <div class="items">
+            {{#items}}<div class="item"><div class="num">{{@n}}</div><div class="text">{{.}}</div></div>{{/items}}
+          </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const items = [...R.querySelectorAll(".item")];
+          const tl = gsap.timeline({ paused: true });
+          tl.fromTo($(".title"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+          // Each item lands on its keyword; missing keywords fall back to an even spread over the speech.
+          const span = Math.max(1, P.voEnd - P.vo);
+          let last = 0.5;
+          items.forEach((el, i) => {
+            const even = P.vo + (span * (i + 0.15)) / items.length;
+            let at = P.marks[i] ?? even;
+            at = Math.min(P.D - 1, Math.max(last + 0.25, at - 0.15));
+            last = at;
+            tl.fromTo(el, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, at);
+            tl.fromTo(el.querySelector(".num"), { scale: 0.4 }, { scale: 1, duration: 0.5, ease: "back.out(2)" }, at + 0.05);
+          });
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

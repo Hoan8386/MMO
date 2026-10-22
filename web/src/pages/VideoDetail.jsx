@@ -51,7 +51,7 @@ export default function VideoDetail() {
 
   return (
     <div className="page">
-      <Link to="/" className="back">← Danh sách video</Link>
+      <Link to="/legacy" className="back">← Danh sách video vẽ tay</Link>
       <header className="page-head">
         <div>
           <h1>{video.title}</h1>
@@ -69,7 +69,7 @@ export default function VideoDetail() {
           <button
             className="btn danger"
             disabled={busy}
-            onClick={() => confirm("Xoá video này và toàn bộ file của nó?") && act(async () => { await api.del(`/videos/${id}`); navigate("/"); })}
+            onClick={() => confirm("Xoá video này và toàn bộ file của nó?") && act(async () => { await api.del(`/videos/${id}`); navigate("/legacy"); })}
           >
             Xoá
           </button>

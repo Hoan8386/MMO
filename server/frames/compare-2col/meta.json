@@ -1,0 +1,67 @@
+{
+  "frame_id": "compare-2col",
+  "version": 1,
+  "status": "active",
+  "name": "So sánh hai bên",
+  "description": "Hai cột đối chiếu (cũ/mới, A/B, ưu/nhược), mỗi cột 1–3 ý. Dùng khi lời thoại so sánh hai thứ.",
+  "category": "content",
+  "scene_type": "compare",
+  "tags": [
+    "common",
+    "product_review",
+    "comparison"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "left_title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24
+    },
+    "left_items": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 40
+    },
+    "right_title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24
+    },
+    "right_items": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 40
+    }
+  },
+  "keywords": "1 từ khoá: cột bên phải hiện ra khi từ này được đọc",
+  "sample": {
+    "voice_text": "So với iPhone 17, máy mới nhẹ hơn và sạc nhanh hơn gấp đôi.",
+    "keywords": [
+      "máy mới"
+    ],
+    "inputs": {
+      "left_title": "iPhone 17",
+      "left_items": [
+        "199 gram",
+        "Sạc 30W"
+      ],
+      "right_title": "iPhone 18",
+      "right_items": [
+        "185 gram",
+        "Sạc 60W"
+      ]
+    }
+  }
+}

@@ -1,0 +1,423 @@
+# HỆ THỐNG QUẢN LÝ THƯ VIỆN FRAME VÀ TỰ ĐỘNG SẢN XUẤT VIDEO BẰNG AI
+
+## 1. Tổng quan dự án
+
+Xây dựng một hệ thống quản lý và tự động hóa quy trình sản xuất video dựa trên HyperFrames. Hệ thống cho phép người dùng tạo, quản lý và tái sử dụng thư viện frame, template, hiệu ứng, chuyển cảnh, phụ đề và các thành phần dùng trong video.
+
+Khi người dùng cung cấp kịch bản và lựa chọn chủ đề video, hệ thống sẽ dựa trên chủ đề đã chọn để truy vấn thư viện tag tương ứng, sau đó chỉ lấy những frame có tag phù hợp với nội dung cần sản xuất. Danh sách frame đã được lọc sẽ được gửi cho AI để phân tích kịch bản, chia cảnh và lựa chọn template phù hợp.
+
+AI tiếp tục xây dựng cấu trúc dữ liệu video, tạo lời thoại và phối hợp với dịch vụ chuyển văn bản thành giọng nói (TTS) để tạo audio. Hệ thống kiểm tra tính hợp lệ của dữ liệu, đồng bộ timeline, chuẩn bị các file đầu vào cần thiết cho HyperFrames và tự động render thành video hoàn chỉnh.
+
+Hệ thống không gửi toàn bộ thư viện frame cho AI trong mỗi lần xử lý. Việc truy vấn, lọc và giới hạn danh sách frame được thực hiện bằng code và cơ sở dữ liệu trước khi gọi AI nhằm giảm lượng token, rút ngắn thời gian xử lý và nâng cao độ chính xác khi lựa chọn template.
+
+Mục tiêu là xây dựng một nền tảng có khả năng tái sử dụng template, mở rộng thư viện theo kiến trúc, giảm thao tác thủ công và đảm bảo video được tạo ra có cấu trúc nhất quán, dễ kiểm soát và có thể tái tạo.
+
+## 2. Mục tiêu hệ thống
+
+- Xây dựng thư viện frame và template có thể tái sử dụng.
+- Quản lý tập trung kịch bản, tài nguyên, audio, timeline và video đầu ra.
+- Quản lý chủ đề và tag để phân loại, tìm kiếm và truy vấn frame.
+- Tự động lọc thư viện frame theo chủ đề và loại cảnh trước khi gửi dữ liệu cho AI.
+- Sử dụng AI để phân tích kịch bản và lập kế hoạch dựng video dựa trên danh sách frame phù hợp.
+- Tự động sinh JSON theo schema thống nhất.
+- Tự động chuẩn bị HTML, CSS, JavaScript hoặc XML trung gian khi cần thiết.
+- Tự động tạo audio, phụ đề và đồng bộ lời thoại với timeline.
+- Tích hợp HyperFrames và FFmpeg để preview, render và xuất video.
+- Tự động kiểm tra lỗi trước và sau khi render.
+- Cho phép chỉnh sửa, render lại và quản lý nhiều phiên bản của một video.
+- Tối ưu token, thời gian xử lý và chi phí sử dụng AI bằng cơ chế truy vấn thư viện có chọn lọc.
+
+## 3. Các phân hệ chính
+
+### 3.1. Quản lý thư viện frame
+
+Đây là phân hệ cốt lõi, chịu trách nhiệm quản lý các template có thể được sử dụng để dựng video.
+
+Mỗi frame cần có:
+
+- Mã định danh duy nhất (`frame_id`).
+- Tên và mô tả chức năng.
+- Danh mục và danh sách tag phục vụ tìm kiếm.
+- Template HTML/CSS/JavaScript hoặc thành phần tương ứng.
+- Danh sách biến đầu vào được hỗ trợ.
+- Quy tắc và giới hạn dữ liệu đầu vào.
+- Thời lượng tối thiểu, tối đa hoặc thời lượng khuyến nghị.
+- Tỷ lệ khung hình được hỗ trợ như 16:9, 9:16 và 1:1.
+- Các tài nguyên phụ thuộc như hình ảnh, video, font và âm thanh.
+- Phiên bản template, trạng thái hoạt động và ngày cập nhật.
+- Ảnh preview hoặc video mẫu.
+
+Phân loại thư viện:
+
+- Intro và outro.
+- Frame nội dung.
+- Frame tiêu đề và headline.
+- Frame hình ảnh hoặc video minh họa.
+- Frame phụ đề và nhấn mạnh từ khóa.
+- Frame biểu đồ, số liệu và infographic.
+- Hiệu ứng xuất hiện và biến mất.
+- Chuyển cảnh.
+- Nhạc nền và hiệu ứng âm thanh.
+- Các thành phần dùng chung.
+
+Người dùng có thể tạo mới, chỉnh sửa, sao chép, xem trước, phân loại, tìm kiếm và quản lý phiên bản của từng template.
+
+Mỗi frame phải được gắn tag mô tả chủ đề, nội dung, chức năng và loại cảnh có thể sử dụng. Một frame có thể có nhiều tag để phục vụ nhiều chủ đề khác nhau.
+
+AI chỉ được lựa chọn các template đang hoạt động, tồn tại trong thư viện và tương thích với yêu cầu video. Không được tự ý tạo mã `frame_id` không tồn tại.
+
+### 3.2. Quản lý chủ đề và tag
+
+Phân hệ này quản lý mối quan hệ giữa chủ đề video và các tag được sử dụng để truy vấn thư viện frame.
+
+Mỗi chủ đề cần có:
+
+- `topic_id`: mã định danh chủ đề.
+- `topic_name`: tên chủ đề.
+- `description`: mô tả chủ đề.
+- `default_tags`: danh sách tag mặc định.
+- `related_tags`: các tag liên quan có thể mở rộng tìm kiếm.
+- `default_categories`: các nhóm frame ưu tiên.
+- `status`: trạng thái hoạt động.
+
+Ví dụ:
+
+**Chủ đề Tin công nghệ**
+- `technology`
+- `news`
+- `gadget`
+- `software`
+- `AI`
+- `product_review`
+
+**Chủ đề Game và Esports**
+- `gaming`
+- `esports`
+- `gameplay`
+- `tournament`
+- `player`
+- `statistics`
+
+**Chủ đề Khoa học**
+- `science`
+- `experiment`
+- `space`
+- `discovery`
+- `diagram`
+
+Các tag trên là dữ liệu minh họa. Khi triển khai, hệ thống phải sử dụng những tag đã được khai báo và liên kết với các frame thực tế trong thư viện.
+
+#### Quy trình lọc thư viện theo chủ đề
+
+Khi người dùng chọn chủ đề video, hệ thống thực hiện:
+
+1. Lấy cấu hình chủ đề từ cơ sở dữ liệu.
+2. Truy xuất danh sách tag mặc định và tag liên quan.
+3. Xác định loại cảnh cần thiết từ kịch bản hoặc kế hoạch phân cảnh.
+4. Truy vấn thư viện frame theo tag, loại cảnh, trạng thái hoạt động và tỷ lệ khung hình.
+5. Loại bỏ những frame không tương thích hoặc thiếu tài nguyên bắt buộc.
+6. Xếp hạng các frame theo mức độ phù hợp với từng cảnh.
+7. Giới hạn số lượng frame cần thiết cho mỗi loại cảnh.
+8. Chỉ gửi metadata của các frame phù hợp cho AI lựa chọn.
+
+Toàn bộ bước truy vấn và lọc phải được thực hiện bằng code và cơ sở dữ liệu, không yêu cầu AI đọc toàn bộ thư viện để tự tìm kiếm.
+
+Nếu không tìm được đủ frame phù hợp, hệ thống sẽ mở rộng tìm kiếm bằng tag liên quan hoặc bổ sung các frame dùng chung như intro, outro, subtitle và transition. Chỉ khi không có kết quả phù hợp mới thông báo cho người dùng hoặc yêu cầu bổ sung template.
+
+#### Nguyên tắc tối ưu
+
+- Không gửi toàn bộ thư viện frame cho AI.
+- Không gửi mã nguồn HTML/CSS/JavaScript khi AI chỉ cần lựa chọn template.
+- Không gửi metadata không liên quan đến chủ đề đang xử lý.
+- Chỉ truy vấn các frame có tag phù hợp với chủ đề và yêu cầu của từng cảnh.
+- Giới hạn số frame được đưa vào ngữ cảnh AI.
+- Cho phép một frame có nhiều tag để tăng khả năng tái sử dụng.
+- Lưu kết quả truy vấn hoặc cache khi phù hợp để giảm thời gian truy cập cơ sở dữ liệu.
+
+### 3.3. Quản lý kịch bản
+
+Cho phép người dùng tạo dự án video bằng cách nhập hoặc tải lên kịch bản.
+
+Thông tin dự án gồm:
+
+- Tên dự án.
+- Nội dung kịch bản.
+- Chủ đề và mục đích video.
+- Ngôn ngữ.
+- Độ dài video mong muốn.
+- Tỷ lệ khung hình và độ phân giải.
+- Phong cách hình ảnh.
+- Giọng đọc mong muốn.
+- Tốc độ đọc và phong cách diễn đạt.
+- Các yêu cầu đặc biệt về nội dung và trình bày.
+
+Khi người dùng chọn chủ đề, hệ thống phải xác định bộ tag tương ứng trước khi gửi yêu cầu phân tích và lựa chọn frame cho AI.
+
+Hệ thống lưu lịch sử chỉnh sửa kịch bản và cho phép tạo nhiều phiên bản từ cùng một nội dung.
+
+### 3.4. AI phân tích và lập kế hoạch video
+
+AI tiếp nhận kịch bản, cấu hình video và danh sách frame đã được lọc theo chủ đề.
+
+AI không nhận toàn bộ thư viện. Thay vào đó, hệ thống cung cấp một tập frame rút gọn gồm các thông tin cần thiết như `frame_id`, tên, mô tả, tag, loại cảnh và biến đầu vào được hỗ trợ.
+
+AI có nhiệm vụ:
+
+- Phân tích nội dung và xác định các ý chính.
+- Chia kịch bản thành các cảnh theo trình tự hợp lý.
+- Xác định nội dung cần truyền tải trong từng cảnh.
+- Tạo hoặc điều chỉnh lời thoại.
+- Xác định loại cảnh phù hợp.
+- Lựa chọn frame từ danh sách đã được cung cấp.
+- Xác định dữ liệu đầu vào cần truyền cho frame.
+- Đề xuất hình ảnh, video hoặc tài nguyên cần sử dụng.
+- Đề xuất thời lượng và chuyển cảnh.
+- Xác định nội dung phụ đề và từ khóa cần nhấn mạnh.
+- Tạo kế hoạch video theo JSON schema đã quy định.
+
+AI phải lựa chọn template dựa trên nội dung thực tế, không lựa chọn ngẫu nhiên hoặc lặp lại một template cho tất cả cảnh nếu không phù hợp.
+
+AI chỉ được sử dụng những `frame_id` có trong danh sách đầu vào. Backend phải kiểm tra lại kết quả trước khi chuyển sang bước tiếp theo.
+
+Người dùng có thể xem, chỉnh sửa và phê duyệt kế hoạch trước khi chuyển sang giai đoạn tạo tài nguyên.
+
+### 3.5. Bộ biên dịch video
+
+Bộ biên dịch chịu trách nhiệm chuyển kế hoạch do AI tạo thành cấu trúc dữ liệu và file đầu vào tương thích với HyperFrames.
+
+Quy trình gồm:
+
+1. Kiểm tra JSON theo schema.
+2. Kiểm tra `frame_id` tồn tại và tương thích với dự án.
+3. Kiểm tra biến đầu vào, kiểu dữ liệu và tài nguyên phụ thuộc.
+4. Chuẩn hóa thứ tự cảnh, thời lượng và timeline.
+5. Sinh JSON timeline theo định dạng nội bộ đã quy định.
+6. Ánh xạ dữ liệu vào template có sẵn.
+7. Chuẩn bị HTML, CSS và JavaScript cần thiết cho HyperFrames.
+8. Sinh XML trung gian nếu có thành phần tích hợp yêu cầu định dạng này.
+9. Kiểm tra đầu ra trước khi chuyển sang render.
+
+Không để AI tự do viết lại toàn bộ template hoặc mã nguồn renderer trong mỗi lần tạo video. Các template đã được kiểm thử phải được quản lý riêng và chỉ nhận những biến đầu vào được cho phép.
+
+JSON là định dạng dữ liệu trung tâm của hệ thống. XML chỉ được sử dụng khi thực sự cần thiết; HyperFrames không mặc định yêu cầu XML làm định dạng timeline.
+
+### 3.6. Quản lý hình ảnh và tài nguyên
+
+Quản lý tập trung các tài nguyên sử dụng trong video:
+
+- Hình ảnh.
+- Video minh họa.
+- Nhạc nền.
+- Hiệu ứng âm thanh.
+- Font chữ.
+- Logo và bộ nhận diện.
+- Các file được sinh ra trong quá trình xử lý.
+
+Mỗi tài nguyên cần có mã định danh, đường dẫn lưu trữ, định dạng, trạng thái xử lý và thông tin liên kết với dự án hoặc frame sử dụng nó.
+
+Nếu cần tạo hình ảnh bằng AI, hệ thống phải có bước tạo hoặc lấy ảnh riêng. Prompt hình ảnh không được xem là một file ảnh đã tồn tại.
+
+Hệ thống cần kiểm tra tài nguyên bị thiếu, định dạng không hợp lệ hoặc đường dẫn không truy cập được trước khi render.
+
+### 3.7. Tạo audio và đồng bộ giọng đọc
+
+Tích hợp dịch vụ TTS để chuyển lời thoại thành giọng đọc.
+
+Chức năng gồm:
+
+- Lựa chọn nhà cung cấp TTS.
+- Lựa chọn ngôn ngữ và giọng đọc.
+- Điều chỉnh tốc độ, ngữ điệu và các tham số được dịch vụ hỗ trợ.
+- Sinh audio theo từng cảnh hoặc theo nhóm cảnh.
+- Lưu file audio và metadata tương ứng.
+- Kiểm tra file audio, thời lượng và trạng thái xử lý.
+- Đồng bộ lời thoại, phụ đề và thời điểm xuất hiện của cảnh.
+- Tạo lại audio cho một cảnh mà không cần tạo lại toàn bộ video.
+
+Sau khi audio được tạo, hệ thống phải sử dụng thời lượng thực tế của file để tính toán timeline. Không mặc định thời lượng audio bằng thời lượng dự kiến do AI cung cấp.
+
+Nếu lời thoại quá dài, hệ thống cần lựa chọn giữa việc kéo dài cảnh, điều chỉnh tốc độ đọc trong giới hạn phù hợp hoặc yêu cầu AI rút gọn lời thoại.
+
+Hệ thống phải hỗ trợ tạo lại audio có kiểm soát và lưu phiên bản để tránh phải tạo lại những file không thay đổi.
+
+### 3.8. Quản lý timeline
+
+Timeline xác định vị trí và thời điểm hiển thị của tất cả thành phần trong video.
+
+Mỗi cảnh cần quản lý:
+
+- Thời điểm bắt đầu.
+- Thời lượng.
+- Thứ tự hiển thị.
+- Frame được sử dụng.
+- Tài nguyên hình ảnh và video.
+- Audio và phụ đề.
+- Hiệu ứng và chuyển cảnh.
+- Quan hệ đồng bộ giữa các thành phần.
+
+Hệ thống cần kiểm tra các cảnh bị chồng lấn ngoài ý muốn, khoảng trống không mong muốn, audio vượt quá thời lượng video và những tài nguyên có thời điểm bắt đầu hoặc kết thúc không hợp lệ.
+
+Cho phép người dùng chỉnh sửa thứ tự cảnh, thời lượng và dữ liệu đầu vào rồi cập nhật timeline mà không cần tạo lại toàn bộ dự án.
+
+### 3.9. Render và xuất video
+
+Tích hợp HyperFrames CLI và các thành phần render phù hợp để thực hiện:
+
+- Kiểm tra cấu hình đầu vào.
+- Khởi chạy quá trình render.
+- Theo dõi trạng thái tác vụ.
+- Ghi nhận tiến trình, log và lỗi.
+- Xuất video theo độ phân giải, FPS và tỷ lệ khung hình đã cấu hình.
+- Kết hợp audio, nhạc nền và hiệu ứng âm thanh.
+- Lưu video đầu ra.
+- Hỗ trợ render lại khi có thay đổi.
+
+FFmpeg được sử dụng theo pipeline thực tế để mã hóa video và xử lý audio khi cần thiết.
+
+Các tác vụ render nên chạy trong worker riêng, có cơ chế hàng đợi, giới hạn tài nguyên, xử lý lỗi và thử lại có kiểm soát. Không thực hiện render video nặng trực tiếp trong request xử lý đồng bộ của giao diện.
+
+### 3.10. Kiểm tra chất lượng video
+
+Trước khi xuất bản, hệ thống thực hiện các bước kiểm tra tự động:
+
+- JSON đúng schema.
+- Template và tài nguyên tồn tại.
+- Không có lỗi HTML hoặc JavaScript nghiêm trọng.
+- Các cảnh có thời lượng hợp lệ.
+- Audio phát được và không bị thiếu.
+- Phụ đề khớp với lời thoại.
+- Video có đúng độ phân giải, FPS và thời lượng dự kiến.
+- Không xuất hiện khung hình trống ngoài ý muốn.
+- Không có cảnh bị cắt nội dung do giới hạn bố cục.
+- File MP4 có thể đọc và phát được.
+
+Các lỗi được phân loại theo mức độ nghiêm trọng. Lỗi có thể sửa tự động được chuyển sang bước sửa dữ liệu hoặc tạo lại tài nguyên; lỗi cần quyết định về nội dung được chuyển cho người dùng phê duyệt.
+
+### 3.11. Dashboard quản lý dự án
+
+Giao diện quản lý cần cung cấp:
+
+- Danh sách dự án video.
+- Trạng thái xử lý từng dự án.
+- Tiến trình tạo tài nguyên và render.
+- Preview kế hoạch cảnh và video.
+- Quản lý kịch bản, timeline và audio.
+- Quản lý thư viện frame.
+- Quản lý chủ đề và tag.
+- Hiển thị số lượng frame phù hợp sau khi lọc theo chủ đề.
+- Nhật ký lỗi và lịch sử tác vụ.
+- Quản lý phiên bản đầu vào và video đầu ra.
+- Chức năng render lại toàn bộ video hoặc chỉ những phần bị thay đổi.
+- Theo dõi thời gian xử lý và chi phí sử dụng dịch vụ AI/TTS.
+
+Trạng thái dự án có thể gồm: Draft, Planning, Awaiting Approval, Generating Assets, Validating, Rendering, Quality Check, Completed và Failed.
+
+## 4. Quy trình hoạt động tổng thể
+
+1. Người dùng tạo dự án và nhập kịch bản.
+2. Người dùng lựa chọn chủ đề và cấu hình video.
+3. Hệ thống truy vấn cấu hình chủ đề để lấy các tag tương ứng.
+4. Backend lọc thư viện frame theo tag, loại cảnh, trạng thái và tỷ lệ khung hình.
+5. Hệ thống chỉ lấy metadata của những frame phù hợp; không tải hoặc gửi toàn bộ thư viện cho AI.
+6. AI phân tích kịch bản và chia nội dung thành các cảnh.
+7. AI lựa chọn frame từ danh sách đã được lọc.
+8. Backend xác thực JSON, frame được chọn và dữ liệu đầu vào.
+9. Người dùng xem trước và phê duyệt kế hoạch khi cần.
+10. Hệ thống tạo hoặc thu thập hình ảnh, video và các tài nguyên còn thiếu.
+11. TTS tạo audio cho từng cảnh.
+12. Hệ thống sử dụng thời lượng audio thực tế để hoàn thiện phụ đề và timeline.
+13. Bộ biên dịch chuẩn bị dữ liệu tương thích với HyperFrames.
+14. Tác vụ được đưa vào hàng đợi render.
+15. HyperFrames dựng hình ảnh theo timeline.
+16. FFmpeg xử lý và xuất video.
+17. Hệ thống kiểm tra chất lượng đầu ra.
+18. Nếu hợp lệ, video được lưu và đánh dấu Completed.
+19. Nếu có lỗi, hệ thống ghi log, xác định bước thất bại và chỉ chạy lại phần cần thiết.
+
+## 5. Nguyên tắc thiết kế
+
+### 5.1. AI không thay thế logic kiểm soát của hệ thống
+
+AI chịu trách nhiệm hiểu kịch bản, lập kế hoạch và lựa chọn frame từ danh sách được cung cấp. Code chịu trách nhiệm truy vấn thư viện, xác thực, kiểm tra ràng buộc, quản lý file và thực thi pipeline.
+
+### 5.2. Lọc thư viện trước khi gọi AI
+
+Mọi yêu cầu lựa chọn frame phải đi qua bước truy vấn theo chủ đề, tag và loại cảnh. Không gửi toàn bộ thư viện vào prompt chỉ để AI tự tìm kiếm.
+
+### 5.3. Template phải tái sử dụng được
+
+Mỗi frame cần có giao diện đầu vào ổn định, tài liệu sử dụng, quy tắc tương thích và phiên bản rõ ràng. Thay đổi template không được âm thầm làm hỏng các dự án cũ.
+
+### 5.4. Mọi bước đều có thể kiểm tra và truy vết
+
+Lưu đầu vào, đầu ra, phiên bản AI, template, tài nguyên và log của từng bước để có thể tái tạo hoặc xử lý lỗi.
+
+### 5.5. Chỉ xử lý lại phần thay đổi
+
+Nếu người dùng chỉ sửa lời thoại của một cảnh, hệ thống nên tạo lại audio và cập nhật các phần phụ thuộc thay vì render lại toàn bộ các cảnh không liên quan, khi kiến trúc và renderer cho phép.
+
+### 5.6. Ưu tiên khả năng mở rộng
+
+Tách các phân hệ quản lý, AI, tạo tài nguyên, TTS và render để có thể thay đổi nhà cung cấp AI hoặc TTS mà không phải viết lại toàn bộ hệ thống.
+
+## 6. Yêu cầu kỹ thuật và bảo mật
+
+- Quản lý cấu hình và API key ở backend, không để lộ trên frontend.
+- Kiểm soát quyền truy cập vào dự án và tài nguyên.
+- Giới hạn dung lượng file, loại file và thời gian chạy tác vụ.
+- Không thực thi trực tiếp mã nguồn do AI tạo nếu chưa qua kiểm tra.
+- Không cho phép template tùy ý truy cập file hệ thống hoặc thực thi lệnh ngoài phạm vi được cấp.
+- Giới hạn số tác vụ render đồng thời.
+- Có cơ chế timeout, retry, hàng đợi và giới hạn tài nguyên.
+- Ghi log có cấu trúc để chẩn đoán lỗi.
+- Quản lý dung lượng lưu trữ và chính sách dọn dẹp file tạm.
+- Hỗ trợ sao lưu dữ liệu dự án và metadata của thư viện.
+- Ghi nhận số lượng frame truy vấn và lượng token sử dụng cho từng yêu cầu AI.
+
+## 7. Tiêu chí nghiệm thu
+
+Hệ thống được xem là đáp ứng phiên bản đầu tiên khi:
+
+1. Người dùng có thể tạo và quản lý thư viện frame.
+2. Mỗi frame có metadata, tag, biến đầu vào và template sử dụng được.
+3. Người dùng có thể quản lý chủ đề và bộ tag tương ứng.
+4. Khi chọn chủ đề, hệ thống chỉ truy vấn những frame có tag phù hợp.
+5. Danh sách frame gửi cho AI được giới hạn theo chủ đề và loại cảnh.
+6. AI có thể chuyển kịch bản thành kế hoạch video theo schema.
+7. Hệ thống từ chối các `frame_id` hoặc dữ liệu không hợp lệ.
+8. Hệ thống có thể tạo audio và xác định thời lượng thực tế.
+9. Bộ biên dịch tạo được dữ liệu timeline và cấu trúc đầu vào tương thích với HyperFrames.
+10. Hệ thống render thành video có hình ảnh, chuyển cảnh, phụ đề và audio theo cấu hình.
+11. Video đầu ra vượt qua các bước kiểm tra kỹ thuật.
+12. Người dùng có thể chỉnh sửa, tạo phiên bản mới và render lại.
+13. Các lỗi được ghi nhận và có thể xác định chính xác bước xảy ra lỗi.
+14. Hệ thống không gửi toàn bộ thư viện frame vào mỗi yêu cầu AI.
+15. Có thể theo dõi mức sử dụng token và đánh giá hiệu quả của cơ chế lọc tag.
+
+## 8. Phạm vi triển khai giai đoạn đầu
+
+Giai đoạn đầu tập trung vào một định dạng video cụ thể, chẳng hạn video tin công nghệ 16:9, độ dài 1–3 phút.
+
+Phạm vi MVP gồm:
+
+- Thư viện frame và template.
+- Quản lý chủ đề và tag.
+- Cơ chế truy vấn frame theo tag.
+- Quản lý dự án và kịch bản.
+- AI lập kế hoạch cảnh dựa trên danh sách frame đã lọc.
+- JSON schema và bộ biên dịch.
+- Tạo audio TTS.
+- Đồng bộ timeline.
+- Tích hợp HyperFrames và FFmpeg.
+- Preview, render, kiểm tra chất lượng và lưu video.
+- Theo dõi token và chi phí AI.
+
+Sau khi quy trình hoạt động ổn định, có thể mở rộng sang video 9:16, nhiều ngôn ngữ, nhiều phong cách hình ảnh, nhiều nhà cung cấp TTS và hệ thống sản xuất video hàng loạt.
+
+## 9. Kết luận
+
+Hệ thống là một nền tảng quản lý và sản xuất video tự động, trong đó AI chịu trách nhiệm phân tích nội dung và lựa chọn frame; backend chịu trách nhiệm truy vấn thư viện theo chủ đề và tag, kiểm tra dữ liệu, đồng bộ timeline và quản lý tác vụ; HyperFrames và FFmpeg chịu trách nhiệm dựng và xuất video.
+
+Nguyên tắc cốt lõi là **chọn chủ đề → lấy bộ tag tương ứng → truy vấn frame phù hợp → gửi danh sách rút gọn cho AI → tạo dữ liệu video → render**.
+
+Cơ chế này đảm bảo AI chỉ làm việc với những template có liên quan đến video đang tạo, giảm dữ liệu đầu vào không cần thiết, tiết kiệm token và thời gian xử lý, đồng thời giúp hệ thống mở rộng thư viện frame mà không làm tăng tương ứng lượng dữ liệu phải gửi cho AI.

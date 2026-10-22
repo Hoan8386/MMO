@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 100px; bottom: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; text-align: center; }
+        {{__r}} .ring { position: absolute; width: 760px; height: 760px; border-radius: 50%; border: 3px solid var(--line); }
+        {{__r}} .value { position: relative; font-size: 220px; line-height: 1; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
+        {{__r}} .unit { font-size: 110px; margin-left: 12px; }
+        {{__r}} .label { position: relative; font-size: 56px; line-height: 1.25; max-width: 1300px; }
+        {{__r}} .source { position: relative; font-size: 28px; color: var(--muted); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+          <div class="ring"></div>
+          <div class="value"><span class="prefix">{{prefix}}</span><span class="num">0</span><span class="unit">{{unit}}</span></div>
+          <div class="label">{{label}}</div>
+          {{#source}}<div class="source">Nguồn: {{source}}</div>{{/source}}
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const num = $(".num");
+          const decimals = String(P.value).includes(".") ? String(P.value).split(".")[1].length : 0;
+          const fmt = (v) => v.toLocaleString("vi-VN", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+          num.textContent = fmt(0);
+          const tl = gsap.timeline({ paused: true });
+          tl.fromTo($(".ring"), { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: "power2.out" }, 0);
+          tl.fromTo($(".value"), { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 0.15);
+          const countAt = Math.min(P.D - 1.6, Math.max(0.3, (P.marks[0] ?? P.vo) - 0.1));
+          const counter = { v: 0 };
+          tl.fromTo(counter, { v: 0 }, { v: P.value, duration: 1.2, ease: "power2.out", onUpdate: () => (num.textContent = fmt(counter.v)) }, countAt);
+          tl.fromTo($(".label"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.5);
+          if ($(".source")) tl.fromTo($(".source"), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.9);
+          tl.to($(".wrap"), { opacity: 0, scale: 0.96, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

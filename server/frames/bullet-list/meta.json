@@ -1,0 +1,53 @@
+{
+  "frame_id": "bullet-list",
+  "version": 1,
+  "status": "active",
+  "name": "Danh sách ý",
+  "description": "Tiêu đề và 2–4 ý ngắn hiện lần lượt. Dùng khi lời thoại liệt kê tính năng, lý do, bước.",
+  "category": "content",
+  "scene_type": "list",
+  "tags": [
+    "common",
+    "explainer",
+    "list"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 18,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "items": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 60
+    }
+  },
+  "keywords": "một từ khoá cho mỗi ý, theo đúng thứ tự: ý thứ i hiện ra khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Máy có camera một trăm megapixel, pin lớn hơn hai mươi phần trăm và chip A20 mới.",
+    "keywords": [
+      "camera",
+      "pin",
+      "chip"
+    ],
+    "inputs": {
+      "title": "Có gì mới?",
+      "items": [
+        "Camera 100MP",
+        "Pin lớn hơn 20%",
+        "Chip A20 tiến trình 2nm"
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "frame_id": "intro-news",
+  "version": 1,
+  "status": "active",
+  "name": "Mở đầu bản tin",
+  "description": "Cảnh mở đầu: nhãn chuyên mục, tiêu đề lớn của cả video, ngày. Luôn là cảnh đầu tiên.",
+  "category": "intro",
+  "scene_type": "intro",
+  "tags": [
+    "technology",
+    "news"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 9,
+    "recommended": 5
+  },
+  "inputs": {
+    "kicker": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24,
+      "description": "nhãn chuyên mục, vd. TIN CÔNG NGHỆ"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 70,
+      "description": "tiêu đề chính của video"
+    },
+    "date": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "ngày hoặc dòng phụ ngắn"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Chào mừng bạn đến với bản tin công nghệ hôm nay.",
+    "inputs": {
+      "kicker": "Tin công nghệ",
+      "title": "Ba tin đáng chú ý trong tuần",
+      "date": "22/10/2026"
+    }
+  }
+}

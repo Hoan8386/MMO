@@ -1,0 +1,61 @@
+{
+  "frame_id": "stat-big",
+  "version": 1,
+  "status": "active",
+  "name": "Số liệu lớn",
+  "description": "Một con số nổi bật đếm lên, kèm nhãn và nguồn. Dùng khi lời thoại nhấn mạnh một con số.",
+  "category": "data",
+  "scene_type": "stat",
+  "tags": [
+    "common",
+    "statistics",
+    "news"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 12,
+    "recommended": 6
+  },
+  "inputs": {
+    "value": {
+      "type": "number",
+      "required": true,
+      "description": "chỉ con số, vd. 1200000 hoặc 2.5"
+    },
+    "prefix": {
+      "type": "string",
+      "maxLength": 4,
+      "description": "vd. $ hoặc +"
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 12,
+      "description": "vd. %, triệu, GB"
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 70
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "nguồn số liệu nếu kịch bản có"
+    }
+  },
+  "keywords": "1 từ khoá: con số bắt đầu đếm khi từ này được đọc",
+  "sample": {
+    "voice_text": "Chỉ trong tuần đầu, hơn một triệu hai trăm nghìn máy đã được bán ra.",
+    "keywords": [
+      "một triệu"
+    ],
+    "inputs": {
+      "value": 1200000,
+      "label": "máy bán ra trong tuần đầu",
+      "source": "Counterpoint"
+    }
+  }
+}

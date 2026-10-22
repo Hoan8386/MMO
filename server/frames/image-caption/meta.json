@@ -1,0 +1,52 @@
+{
+  "frame_id": "image-caption",
+  "version": 1,
+  "status": "active",
+  "name": "Ảnh kèm chú thích",
+  "description": "Một ảnh lớn chuyển động chậm (Ken Burns) kèm tiêu đề và chú thích. Chỉ dùng được khi có ảnh trong danh sách ảnh của dự án.",
+  "category": "media",
+  "scene_type": "image",
+  "tags": [
+    "common",
+    "media"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 14,
+    "recommended": 7
+  },
+  "inputs": {
+    "image": {
+      "type": "image",
+      "required": true,
+      "description": "tên file trong danh sách ảnh của dự án"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "credit": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "nguồn ảnh"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Mặt lưng máy được làm lại hoàn toàn với cụm camera nằm ngang.",
+    "inputs": {
+      "image": "sample.jpg",
+      "title": "Thiết kế mới",
+      "caption": "Cụm camera chuyển sang nằm ngang, viền nhôm mỏng hơn",
+      "credit": "Ảnh: Apple"
+    }
+  }
+}

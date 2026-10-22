@@ -29,3 +29,16 @@ export const STATUS = {
 
 export const parsePalette = (p) => (typeof p === "string" ? JSON.parse(p) : p || []);
 export const parsePaths = (p) => (typeof p === "string" ? JSON.parse(p) : p || []);
+
+export const PROJECT_STATUS = {
+  draft: { label: "Nháp", tone: "muted" },
+  planning: { label: "AI đang lập kế hoạch", tone: "info" },
+  awaiting_approval: { label: "Chờ duyệt kế hoạch", tone: "warn" },
+  building: { label: "Đang dựng", tone: "info" },
+  built: { label: "Đã dựng", tone: "ok" },
+  rendering: { label: "Đang render", tone: "info" },
+  completed: { label: "Hoàn thành", tone: "done" },
+  failed: { label: "Lỗi", tone: "error" },
+};
+
+export const PROJECT_BUSY = ["planning", "building", "rendering"];
