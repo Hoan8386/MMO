@@ -1,0 +1,55 @@
+{
+  "frame_id": "definition",
+  "version": 1,
+  "status": "active",
+  "name": "Định nghĩa thuật ngữ",
+  "description": "Thẻ từ điển: thuật ngữ lớn, tên tiếng Anh/phiên âm, định nghĩa, ví dụ. Dùng khi giải thích một khái niệm.",
+  "category": "content",
+  "scene_type": "definition",
+  "tags": [
+    "education",
+    "explainer"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "term": {
+      "type": "string",
+      "required": true,
+      "maxLength": 30
+    },
+    "extra": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "tên tiếng Anh hoặc cách đọc"
+    },
+    "meaning": {
+      "type": "string",
+      "required": true,
+      "maxLength": 150
+    },
+    "example": {
+      "type": "string",
+      "maxLength": 110
+    }
+  },
+  "keywords": "tuỳ chọn 1 từ khoá: phần ví dụ hiện ra khi từ này được đọc (vd. 'ví dụ')",
+  "sample": {
+    "voice_text": "Quán tính là tính chất giữ nguyên vận tốc của vật. Ví dụ, khi xe phanh gấp, người ngồi trên xe bị chúi về phía trước.",
+    "keywords": [
+      "ví dụ"
+    ],
+    "inputs": {
+      "term": "Quán tính",
+      "extra": "Inertia",
+      "meaning": "Tính chất của mọi vật có xu hướng giữ nguyên vận tốc khi không có lực tác dụng.",
+      "example": "Xe phanh gấp, người ngồi trên xe chúi về phía trước."
+    }
+  }
+}

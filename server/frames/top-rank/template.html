@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 160px; right: 160px; top: 90px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+        {{__r}} .title { font-size: 70px; line-height: 1.1; }
+        {{__r}} .rows { display: flex; flex-direction: column; gap: 16px; }
+        {{__r}} .row { display: flex; align-items: center; gap: 30px; padding: 14px 34px; border-radius: 18px; background: var(--panel); border: 2px solid var(--line); max-width: 1400px; }
+        {{__r}} .rk { flex: none; width: 120px; font-size: 54px; color: var(--accent); }
+        {{__r}} .nm { font-size: 46px; line-height: 1.2; }
+        {{__r}} .row.first { background: linear-gradient(90deg, var(--accent), var(--accent2)); border-color: transparent; color: var(--on-accent); }
+        {{__r}} .row.first .rk { color: var(--on-accent); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="title">{{title}}</div>
+        <div class="rows">
+        {{#items}}<div class="row"><div class="rk">#{{@n}}</div><div class="nm">{{.}}</div></div>{{/items}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          const rows = $$(".row");
+          rows[0].classList.add("first");
+          tl.fromTo($(".title"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          // Countdown: the lowest rank appears first, #1 last.
+          let last = 0.4;
+          rows.slice().reverse().forEach((el, k) => {
+          const t = Math.max(last + 0.3, at(k, rows.length) - 0.1);
+          last = t;
+          tl.fromTo(el, { opacity: 0, x: 90 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, t);
+          });
+          tl.fromTo(rows[0], { scale: 1 }, { scale: 1.04, duration: 0.25, yoyo: true, repeat: 1, ease: "sine.inOut" }, last + 0.5);
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

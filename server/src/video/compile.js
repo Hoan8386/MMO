@@ -16,7 +16,8 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 // Writes a complete HyperFrames project into dir from a timeline (see timeline.js).
 // Each frame template is copied and filled into compositions/<scene>.html, so later
 // template changes never alter an existing video.
-export async function compileProject(dir, { title, width = 1920, height = 1080, topic }, timeline) {
+// `silent` leaves out the voice-over (used for frame previews, which have no audio).
+export async function compileProject(dir, { title, width = 1920, height = 1080, topic, silent = false }, timeline) {
   THEME = topic.theme;
   BACKGROUND = topic.background || "grid";
   await fs.mkdir(path.join(dir, "compositions"), { recursive: true });
@@ -57,7 +58,7 @@ export async function compileProject(dir, { title, width = 1920, height = 1080, 
   if (wipes.length) await fs.writeFile(path.join(dir, "compositions", "transitions.html"), transitionsHtml(size, wipes));
   else await fs.rm(path.join(dir, "compositions", "transitions.html"), { force: true });
 
-  await fs.writeFile(path.join(dir, "index.html"), hostHtml({ title, ...size }, timeline, wipes.length > 0));
+  await fs.writeFile(path.join(dir, "index.html"), hostHtml({ title, ...size }, timeline, wipes.length > 0, silent));
   return { frames: used };
 }
 
@@ -156,7 +157,7 @@ function captionsHtml(size, caps) {
   );
 }
 
-function hostHtml({ title, W, H, total }, { scenes }, hasWipes) {
+function hostHtml({ title, W, H, total }, { scenes }, hasWipes, silent) {
   const layer = (id, track, kind = "") =>
     `      <div id="h-${id}" data-composition-id="${id}" data-composition-src="compositions/${id}.html" data-start="0" data-duration="${total}" data-track-index="${track}"${kind ? ` data-track-kind="${kind}"` : ""} data-width="${W}" data-height="${H}"></div>`;
   const sceneHosts = scenes
@@ -165,7 +166,7 @@ function hostHtml({ title, W, H, total }, { scenes }, hasWipes) {
         `      <div id="h-${s.id}" data-composition-id="${s.id}" data-composition-src="compositions/${s.id}.html" data-start="${s.start}" data-duration="${s.duration}" data-track-index="1" data-width="${W}" data-height="${H}"></div>`,
     )
     .join("\n");
-  const audios = scenes
+  const audios = (silent ? [] : scenes)
     .map((s) => `      <audio id="vo-${s.id}" src="assets/vo/${s.id}.mp3" data-start="${s.audio.start}" data-duration="${s.audio.duration}" data-track-index="4" data-volume="1"></audio>`)
     .join("\n");
 

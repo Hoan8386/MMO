@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 100px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 60px; }
+        {{__r}} .title { font-size: 72px; line-height: 1.1; }
+        {{__r}} .track { position: relative; display: flex; justify-content: space-between; gap: 24px; }
+        {{__r}} .line, {{__r}} .fill { position: absolute; left: 0; right: 0; top: 86px; height: 6px; border-radius: 3px; }
+        {{__r}} .line { background: var(--line); }
+        {{__r}} .fill { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        {{__r}} .step { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        {{__r}} .lbl { height: 54px; font-size: 38px; color: var(--accent); }
+        {{__r}} .dot { width: 46px; height: 46px; margin-top: 12px; border-radius: 50%; background: var(--bg); border: 8px solid var(--accent); }
+        {{__r}} .txt { margin-top: 24px; font-size: 38px; line-height: 1.3; max-width: 330px; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="title">{{title}}</div>
+        <div class="track">
+        <div class="line"></div>
+        <div class="fill"></div>
+        {{#steps}}<div class="step"><div class="lbl"></div><div class="dot"></div><div class="txt">{{.}}</div></div>{{/steps}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          const steps = $$(".step");
+          steps.forEach((el, i) => (el.querySelector(".lbl").textContent = (P.labels && P.labels[i]) || String(i + 1).padStart(2, "0")));
+          tl.fromTo($(".title"), { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          tl.fromTo($(".line"), { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 0.3);
+          tl.set($(".fill"), { scaleX: 0, transformOrigin: "left center" }, 0);
+          let last = 0.4;
+          steps.forEach((el, i) => {
+          const t = Math.max(last + 0.3, at(i, steps.length) - 0.1);
+          last = t;
+          tl.to($(".fill"), { scaleX: steps.length > 1 ? i / (steps.length - 1) : 1, duration: 0.4, ease: "power2.out" }, t - 0.2);
+          tl.fromTo(el.querySelector(".dot"), { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(2.5)" }, t);
+          tl.fromTo([el.querySelector(".lbl"), el.querySelector(".txt")], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, t + 0.1);
+          });
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

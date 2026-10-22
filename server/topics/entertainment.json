@@ -1,11 +1,20 @@
 {
   "topic_id": "entertainment",
+  "order": 1,
   "name": "Giải trí",
   "description": "Phim, nhạc, game, người nổi tiếng, bảng xếp hạng, chuyện thú vị, mẹo vặt đời sống.",
   "tone": "vui, trẻ trung, gần gũi, có câu mở đầu gây tò mò; không phóng đại sự thật",
   "kicker": "Giải trí",
-  "default_tags": ["entertainment", "fun"],
-  "related_tags": ["ranking", "statistics", "comparison", "interview"],
+  "default_tags": [
+    "entertainment",
+    "fun"
+  ],
+  "related_tags": [
+    "ranking",
+    "statistics",
+    "comparison",
+    "interview"
+  ],
   "background": "burst",
   "theme": {
     "bg": "#1A0B2E",

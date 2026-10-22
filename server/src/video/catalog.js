@@ -26,10 +26,8 @@ export const TOPICS_DIR = path.join(SERVER_DIR, "topics");
 // Topics (server/topics/*.json): tags that pick frames, plus the theme and narration tone.
 export function loadTopics() {
   const topics = new Map();
-  for (const f of fs.readdirSync(TOPICS_DIR).filter((n) => n.endsWith(".json"))) {
-    const t = JSON.parse(fs.readFileSync(path.join(TOPICS_DIR, f), "utf8"));
-    topics.set(t.topic_id, t);
-  }
+  const list = fs.readdirSync(TOPICS_DIR).filter((n) => n.endsWith(".json")).map((f) => JSON.parse(fs.readFileSync(path.join(TOPICS_DIR, f), "utf8")));
+  for (const t of list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99))) topics.set(t.topic_id, t);
   return topics;
 }
 

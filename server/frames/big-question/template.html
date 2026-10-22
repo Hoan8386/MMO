@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .mark { position: absolute; right: 120px; top: 10px; font-size: 640px; line-height: 1; color: var(--accent); }
+        {{__r}} .wrap { position: absolute; left: 150px; right: 520px; top: 100px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 36px; }
+        {{__r}} .q { font-size: 90px; line-height: 1.15; }
+        {{__r}} .hint { align-self: flex-start; font-size: 42px; color: var(--muted); padding-bottom: 10px; border-bottom: 5px solid var(--accent2); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="mark">?</div>
+        <div class="wrap">
+        <div class="q">{{question}}</div>
+        {{#hint}}<div class="hint">{{hint}}</div>{{/hint}}
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".mark"), { opacity: 0, scale: 0.6, rotation: -18 }, { opacity: 0.16, scale: 1, rotation: 0, duration: 0.9, ease: "back.out(1.4)" }, 0);
+          tl.to($(".mark"), { rotation: 6, duration: Math.max(1, P.D - 1.5), ease: "sine.inOut" }, 0.9);
+          tl.fromTo($(".q"), { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+          if ($(".hint")) tl.fromTo($(".hint"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, Math.min(P.D - 1.2, Math.max(1, P.marks[0] ?? P.vo + 1.4)));
+          tl.to([$(".wrap"), $(".mark")], { opacity: 0, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

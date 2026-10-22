@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 120px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 36px; }
+        {{__r}} .sticker { align-self: flex-start; padding: 16px 34px; border-radius: 18px; background: var(--accent); color: var(--on-accent); font-size: 40px; letter-spacing: 0.06em; text-transform: uppercase; box-shadow: 10px 10px 0 var(--accent2); }
+        {{__r}} .title { font-size: 104px; line-height: 1.08; max-width: 1340px; }
+        {{__r}} .tagline { font-size: 44px; color: var(--muted); }
+        {{__r}} .sparks { position: absolute; inset: 0; }
+        {{__r}} .spark { position: absolute; width: 90px; height: 90px; background: var(--accent); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+        {{__r}} .spark.b { width: 60px; height: 60px; background: var(--accent2); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="sparks">
+        <div class="spark" style="right: 150px; top: 130px"></div>
+        <div class="spark b" style="right: 300px; top: 300px"></div>
+        <div class="spark b" style="right: 130px; top: 500px"></div>
+        </div>
+        <div class="wrap">
+        <div class="sticker">{{show}}</div>
+        <div class="title">{{title}}</div>
+        {{#tagline}}<div class="tagline">{{tagline}}</div>{{/tagline}}
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".sticker"), { opacity: 0, scale: 0, rotation: -16 }, { opacity: 1, scale: 1, rotation: -3, duration: 0.6, ease: "back.out(2.2)" }, 0.1);
+          tl.fromTo($(".title"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.35);
+          if ($(".tagline")) tl.fromTo($(".tagline"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.8);
+          const pulses = Math.max(0, Math.floor((P.D - 2.4) / 0.7));
+          $$(".spark").forEach((el, i) => {
+          tl.fromTo(el, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2)" }, 0.5 + i * 0.15);
+          if (pulses) tl.to(el, { scale: 1.25, duration: 0.35, yoyo: true, repeat: pulses * 2 - 1, ease: "sine.inOut" }, 1.1 + i * 0.15);
+          });
+          tl.to([$(".wrap"), $(".sparks")], { opacity: 0, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

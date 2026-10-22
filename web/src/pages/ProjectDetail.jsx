@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, PROJECT_BUSY } from "../api.js";
 import { ProjectStatusBadge, Progress, ErrorNote } from "../components.jsx";
 import PlanEditor from "../PlanEditor.jsx";
+import { TopicChip } from "./ProjectsPage.jsx";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -258,9 +259,12 @@ export default function ProjectDetail() {
 function ProjectInfo({ p, disabled, onSaved, onError }) {
   const [form, setForm] = useState(null);
   const [voices, setVoices] = useState([]);
+  const [topics, setTopics] = useState([]);
   useEffect(() => {
     api.get("/projects/voices").then(setVoices).catch(() => {});
+    api.get("/topics").then(setTopics).catch(() => {});
   }, []);
+  const topic = topics.find((t) => t.topic_id === p.topic);
   const editing = !!form;
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -280,7 +284,7 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
       <div className="card-head">
         <h2>Tư liệu & cài đặt</h2>
         {!editing ? (
-          <button className="btn small" disabled={disabled} onClick={() => setForm({ title: p.title, material: p.material, channel: p.channel || "", voice: p.voice, voice_rate: p.voice_rate, target_seconds: p.target_seconds })}>
+          <button className="btn small" disabled={disabled} onClick={() => setForm({ title: p.title, material: p.material, topic: p.topic, channel: p.channel || "", voice: p.voice, voice_rate: p.voice_rate, target_seconds: p.target_seconds })}>
             Sửa
           </button>
         ) : (
@@ -295,6 +299,12 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
           <label>Tên dự án<input value={f.title} onChange={set("title")} /></label>
           <label>Tư liệu / kịch bản<textarea rows={8} value={f.material} onChange={set("material")} /></label>
           <div className="grid-2">
+            <label>
+              Chủ đề
+              <select value={f.topic} onChange={set("topic")}>
+                {topics.map((t) => <option key={t.topic_id} value={t.topic_id}>{t.name}</option>)}
+              </select>
+            </label>
             <label>Tên kênh<input value={f.channel} onChange={set("channel")} /></label>
             <label>Độ dài mong muốn (giây)<input type="number" value={f.target_seconds} onChange={set("target_seconds")} /></label>
             <label>
@@ -305,12 +315,12 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
             </label>
             <label>Tốc độ đọc<input value={f.voice_rate} onChange={set("voice_rate")} /></label>
           </div>
-          <small className="muted">Tư liệu mới chỉ có hiệu lực khi lập lại kế hoạch. Đổi giọng hoặc tốc độ sẽ tạo lại toàn bộ audio ở lần dựng sau.</small>
+          <small className="muted">Đổi chủ đề sẽ đổi bộ màu ở lần dựng sau và đổi bộ frame AI được chọn ở lần lập kế hoạch sau. Tư liệu mới chỉ có hiệu lực khi lập lại kế hoạch. Đổi giọng hoặc tốc độ sẽ tạo lại toàn bộ audio ở lần dựng sau.</small>
         </>
       ) : (
         <>
-          <p className="muted small">
-            Kênh: {p.channel || "—"} · Giọng: {p.voice} ({p.voice_rate}) · Mong muốn {p.target_seconds} giây
+          <p className="muted small info-line">
+            <TopicChip topic={topic} fallback={p.topic} /> · Kênh: {p.channel || "—"} · Giọng: {p.voice} ({p.voice_rate}) · Mong muốn {p.target_seconds} giây
           </p>
           <p className="script clamp">{p.material}</p>
         </>

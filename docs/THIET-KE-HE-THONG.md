@@ -201,16 +201,21 @@ flowchart TD
 - **Nguồn template**:
   1. Ưu tiên tận dụng **registry của HyperFrames** (khoảng 400 block/component: biểu đồ, terminal, hiệu ứng chữ, chuyển cảnh…), bọc thêm `meta.json`.
   2. Chỉ viết mới khi registry không có. Phần này làm bằng Claude Code **một lần**.
-- **Bộ frame khởi đầu cho tin công nghệ 16:9** (10–15 frame):
+- **Thư viện hiện có (23 frame, 16:9)**, chia theo chủ đề qua tag:
 
-| Nhóm | Frame gợi ý |
+| Nhóm | Frame |
 |---|---|
-| Mở/đóng | `intro-news`, `outro-subscribe` |
-| Tiêu đề | `headline`, `section-title` |
-| Nội dung | `image-caption`, `bullet-list`, `quote`, `compare-2col` |
-| Số liệu | `stat-big`, `bar-chart`, `timeline-steps` |
-| Dùng chung | `subtitle-karaoke` (phụ đề), `lower-third` |
-| Chuyển cảnh | `tr-fade`, `tr-slide`, `tr-wipe` |
+| Mở đầu (mỗi chủ đề một kiểu) | `intro-news` (Công nghệ), `intro-show` (Giải trí), `intro-lesson` (Học tập) |
+| Kết thúc (dùng chung) | `outro-subscribe` |
+| Dùng chung | `headline`, `bullet-list`, `stat-big`, `quote`, `compare-2col`, `image-caption`, `big-question`, `timeline-steps`, `summary-recap` |
+| Số liệu | `bar-chart` (theo tag `statistics`, kiểu biến `numbers`) |
+| Giải trí | `top-rank` (bảng xếp hạng đếm ngược), `fun-fact` (Bạn có biết?), `profile-card` (giới thiệu nhân vật), `quiz` (dùng chung với Học tập) |
+| Học tập | `definition` (thuật ngữ), `quiz` (trắc nghiệm, đáp án hiện theo từ khoá), `process-flow` (sơ đồ A → B → C), `fun-fact` |
+| Công nghệ | `spec-sheet` (thông số), `code-snippet` (khung code gõ từng dòng), `pros-cons` (ưu/nhược), `process-flow` |
+| Lớp chung (không phải frame) | nền theo chủ đề, phụ đề karaoke, chuyển cảnh `fade` / `wipe` |
+
+- Ảnh xem trước của từng frame theo từng chủ đề: `npm --prefix server run preview:frames` → `storage/frame-previews/<chủ đề>/<frame_id>.png`. Script dựng frame bằng dữ liệu `sample` trong `meta.json`, không gọi AI hay TTS.
+- Quy ước thêm frame mới: xem `server/frames/README.md`.
 
 ### 5.2. Chủ đề và tag
 
@@ -224,7 +229,9 @@ flowchart TD
   5. Giới hạn N frame cho mỗi loại cảnh (mặc định N = 5).
   6. Nếu không đủ: mở rộng sang `related_tags`, rồi đến frame dùng chung (intro/outro/subtitle/transition).
   7. Vẫn không đủ: báo cho người dùng biết thiếu loại frame nào.
-- **Giai đoạn 1** chỉ lọc theo `scene_type` và `aspect_ratio`, vì với dưới 50 frame thì gửi hết metadata vẫn rẻ (khoảng 3–5 nghìn token). Hệ thống tag đầy đủ được bật khi thư viện lớn dần (giai đoạn 3).
+- **Đã triển khai (dạng file, chưa dùng bảng MySQL):** mỗi chủ đề là một file `server/topics/<topic_id>.json` gồm `name`, `description`, `tone` (giọng văn đưa vào prompt), `kicker`, `default_tags`, `related_tags`, `background` (`grid` / `burst` / `paper`) và `theme` (bảng màu CSS dùng cho mọi frame và phụ đề). Hiện có 3 chủ đề: **Giải trí** (tím – vàng – hồng, nền tia sáng), **Học tập** (nền giấy kẻ dòng sáng màu, xanh dương – xanh lá), **Công nghệ** (xanh đậm, nền lưới). Dự án lưu chủ đề ở cột `projects.topic`.
+- **Thuật toán lọc thực tế** (`selectFrames` trong `catalog.js`): mỗi tag của frame được cộng điểm (tag mặc định của chủ đề 3 điểm, tag liên quan và `common` mỗi tag 1 điểm). Frame 0 điểm bị loại. Mỗi `scene_type` giữ tối đa 4 frame có điểm cao nhất. Nếu chủ đề không có frame intro/outro riêng thì lấy intro/outro bất kỳ. Mỗi chủ đề hiện gửi cho AI 16–17 frame.
+- Thêm một chủ đề mới chỉ cần thêm một file JSON (và các frame gắn tag của chủ đề đó, nếu muốn có frame riêng).
 
 ### 5.3. Dự án và kịch bản
 
@@ -683,14 +690,27 @@ Biến môi trường mới trong `server/.env`: `PLAN_MODEL` (model cho bước
 - [x] **Studio Manager + nút "Chỉnh sửa trong Studio"**, phát hiện chỉnh sửa tay, chặn ghi đè và sao lưu (mục 11).
 - [x] Phiên bản video (v1, v2…), trình phát, tải MP4, kết quả QC; nhật ký 5 job gần nhất.
 - [x] Thống kê token theo dự án (bảng `ai_calls`).
-- [x] Trang thư viện frame (`/frames`): chỉ xem metadata. Chưa có video xem trước.
-- [x] Ảnh của dự án: tải lên, xoá; dùng cho frame `image-caption`.
-- [ ] Mở rộng thư viện lên 10–15 frame (hiện có 8).
-- [ ] Video xem trước cho từng frame; sửa metadata frame trên giao diện.
+- [x] Trang thư viện frame (`/frames`): tab theo chủ đề, ảnh xem trước, metadata.
+- [x] Ảnh của dự án: tải lên, xoá; dùng cho frame `image-caption` và `profile-card`.
+- [x] Mở rộng thư viện lên 23 frame.
+- [ ] Sửa metadata frame trên giao diện.
 
 ### Giai đoạn 3: Mở rộng
 
-- [ ] Chủ đề và tag đầy đủ, lọc frame theo tag và xếp hạng.
+- [x] Chủ đề (Giải trí, Học tập, Công nghệ) với bộ màu, nền, giọng văn riêng; lọc frame theo tag và chấm điểm. Chọn chủ đề khi tạo dự án.
+- [ ] Bảng `topics`/`tags` trong MySQL và trang quản lý chủ đề (hiện chủ đề là file JSON).
+- [x] Giảm chi phí lập kế hoạch: đặt `PLAN_MODEL=claude-sonnet-5-5` (effort `low`). So sánh trên 2 video mẫu (đo qua cổng Caheo; giá theo bảng giá Anthropic, giá thực của cổng có thể khác):
+
+  | Video | Model | Lần gọi | Token vào / ra | Chi phí ước tính |
+  |---|---|---|---|---|
+  | Giải trí | `claude-fable-5` | 1 | 3.170 / 7.675 | ≈ $0,42 |
+  | Giải trí | `claude-sonnet-5-5` | 1 | 15.548 / 660 | ≈ $0,04 |
+  | Học tập | `claude-fable-5` | 3 (2 lần sửa lỗi) | 12.032 / 6.204 | ≈ $0,43 |
+  | Học tập | `claude-sonnet-5-5` | 1 | 16.000 + 4.062 cache / 716 | ≈ $0,04 |
+
+  - Với Fable 5, chi phí chủ yếu nằm ở token ra, gồm cả phần suy nghĩ luôn bật. Sonnet 5.5 ra rất ít token, nên rẻ hơn khoảng 10 lần dù tính nhiều token vào hơn.
+  - Token vào của Sonnet cao hơn mức `count_tokens` đếm được (khoảng 2.300 cho cả hai model), vì cổng API tự chèn thêm prompt riêng: một câu "ok" bị tính 2.283 token ghi cache trên Sonnet và 706 token vào trên Fable.
+  - Chất lượng: cả hai đều chọn đúng frame theo chủ đề. Sonnet đa dạng frame hơn, không có cảnh nào vượt thời lượng tối đa, và không phải sửa lỗi. Nhưng video hơi dài hơn mục tiêu (67–74 giây cho mục tiêu 60 giây). Hai lần chạy Fable dùng phiên bản prompt cũ, trước khi thêm luật "mỗi frame tối đa 2 lần" và "lời đọc vừa thời lượng".
 - [ ] Asset resolver: kho ảnh và tạo ảnh bằng AI.
 - [ ] 9:16 và 1:1; nhiều ngôn ngữ; nhiều nhà cung cấp TTS.
 - [ ] Biên dịch lại từng phần, giữ cảnh đã sửa tay.

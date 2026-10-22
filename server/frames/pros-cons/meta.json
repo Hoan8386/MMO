@@ -1,0 +1,60 @@
+{
+  "frame_id": "pros-cons",
+  "version": 1,
+  "status": "active",
+  "name": "Ưu điểm / nhược điểm",
+  "description": "Hai cột Ưu điểm (dấu tích) và Nhược điểm (dấu chéo), mỗi cột 1–3 ý. Dùng khi đánh giá sản phẩm, lựa chọn.",
+  "category": "content",
+  "scene_type": "proscons",
+  "tags": [
+    "product_review",
+    "comparison",
+    "technology"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "pros": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 44
+    },
+    "cons": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 44
+    }
+  },
+  "keywords": "1 từ khoá: cột nhược điểm hiện ra khi từ này được đọc (vd. 'tuy nhiên')",
+  "sample": {
+    "voice_text": "Máy có pin trâu và camera đẹp. Tuy nhiên giá khá cao và máy hơi nặng.",
+    "keywords": [
+      "tuy nhiên"
+    ],
+    "inputs": {
+      "title": "Đánh giá nhanh Nova X",
+      "pros": [
+        "Pin dùng 2 ngày",
+        "Camera chụp đêm tốt"
+      ],
+      "cons": [
+        "Giá cao",
+        "Nặng 220 gram"
+      ]
+    }
+  }
+}

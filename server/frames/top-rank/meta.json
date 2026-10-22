@@ -1,0 +1,53 @@
+{
+  "frame_id": "top-rank",
+  "version": 1,
+  "status": "active",
+  "name": "Bảng xếp hạng",
+  "description": "Danh sách top 3–5 có số hạng, hạng 1 được làm nổi bật. Các hạng hiện từ thấp lên cao như đếm ngược.",
+  "category": "content",
+  "scene_type": "ranking",
+  "tags": [
+    "entertainment",
+    "ranking"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 20,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "items": {
+      "type": "list",
+      "required": true,
+      "minItems": 3,
+      "maxItems": 5,
+      "itemMaxLength": 40,
+      "description": "xếp từ hạng 1 xuống"
+    }
+  },
+  "keywords": "mỗi hạng một từ khoá, theo thứ tự đọc từ hạng thấp nhất lên hạng 1; hạng hiện ra khi từ khoá được đọc",
+  "sample": {
+    "voice_text": "Hạng ba là Mưa Đỏ, hạng hai là Lật Mặt tám, và đứng đầu là Địa Đạo.",
+    "keywords": [
+      "hạng ba",
+      "hạng hai",
+      "đứng đầu"
+    ],
+    "inputs": {
+      "title": "Top phim Việt ăn khách",
+      "items": [
+        "Địa Đạo",
+        "Lật Mặt 8",
+        "Mưa Đỏ"
+      ]
+    }
+  }
+}

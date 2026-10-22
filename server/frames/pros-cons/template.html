@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 90px; bottom: 280px; display: flex; flex-direction: column; justify-content: center; gap: 36px; }
+        {{__r}} .title { font-size: 66px; line-height: 1.1; }
+        {{__r}} .cols { display: flex; gap: 46px; }
+        {{__r}} .col { flex: 1; padding: 36px 44px; border-radius: 26px; background: var(--panel); border: 3px solid var(--accent2); display: flex; flex-direction: column; gap: 22px; }
+        {{__r}} .col.cons { border-color: #E5484D; }
+        {{__r}} .head { font-size: 46px; color: var(--accent2); }
+        {{__r}} .cons .head { color: #E5484D; }
+        {{__r}} .it { display: flex; align-items: center; gap: 22px; font-size: 42px; line-height: 1.25; }
+        {{__r}} .ic { position: relative; flex: none; width: 48px; height: 48px; border-radius: 50%; background: var(--accent2); }
+        {{__r}} .pros .ic::after { content: ""; position: absolute; left: 17px; top: 9px; width: 11px; height: 22px; border: solid #FFFFFF; border-width: 0 6px 6px 0; transform: rotate(45deg); }
+        {{__r}} .cons .ic { background: #E5484D; }
+        {{__r}} .cons .ic::before, {{__r}} .cons .ic::after { content: ""; position: absolute; left: 11px; top: 21px; width: 26px; height: 6px; border-radius: 3px; background: #FFFFFF; transform: rotate(45deg); }
+        {{__r}} .cons .ic::after { transform: rotate(-45deg); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        {{#title}}<div class="title">{{title}}</div>{{/title}}
+        <div class="cols">
+        <div class="col pros"><div class="head">Ưu điểm</div>{{#pros}}<div class="it"><span class="ic"></span><span>{{.}}</span></div>{{/pros}}</div>
+        <div class="col cons"><div class="head">Nhược điểm</div>{{#cons}}<div class="it"><span class="ic"></span><span>{{.}}</span></div>{{/cons}}</div>
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.1);
+          tl.fromTo($(".pros"), { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+          tl.fromTo($$(".pros .it"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.18 }, 0.7);
+          const consAt = Math.min(P.D - 1.4, Math.max(1.2, P.marks[0] ?? P.vo + (P.voEnd - P.vo) * 0.5));
+          tl.fromTo($(".cons"), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, consAt);
+          tl.fromTo($$(".cons .it"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.18 }, consAt + 0.35);
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "frame_id": "summary-recap",
+  "version": 1,
+  "status": "active",
+  "name": "Ghi nhớ / tóm tắt",
+  "description": "Khung tóm tắt 2–4 ý chính, mỗi ý có dấu tích. Dùng gần cuối video để chốt kiến thức.",
+  "category": "content",
+  "scene_type": "recap",
+  "tags": [
+    "common",
+    "education",
+    "list"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 16,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40,
+      "description": "vd. Ghi nhớ, Tóm lại"
+    },
+    "points": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 70
+    }
+  },
+  "keywords": "mỗi ý một từ khoá theo thứ tự: ý thứ i hiện ra khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Tóm lại, vật luôn có quán tính, khối lượng càng lớn quán tính càng lớn.",
+    "keywords": [
+      "quán tính",
+      "khối lượng"
+    ],
+    "inputs": {
+      "title": "Ghi nhớ",
+      "points": [
+        "Mọi vật đều có quán tính",
+        "Khối lượng càng lớn, quán tính càng lớn"
+      ]
+    }
+  }
+}

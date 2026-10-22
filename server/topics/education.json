@@ -1,11 +1,20 @@
 {
   "topic_id": "education",
+  "order": 2,
   "name": "Học tập",
   "description": "Bài giảng ngắn, giải thích khái niệm, kiến thức phổ thông, kỹ năng, ôn tập có câu hỏi.",
   "tone": "chậm rãi, dễ hiểu như giáo viên giảng bài; giải thích thuật ngữ, có ví dụ, có câu hỏi ôn tập",
   "kicker": "Bài học",
-  "default_tags": ["education", "explainer"],
-  "related_tags": ["statistics", "comparison", "list", "quiz"],
+  "default_tags": [
+    "education",
+    "explainer"
+  ],
+  "related_tags": [
+    "statistics",
+    "comparison",
+    "list",
+    "quiz"
+  ],
   "background": "paper",
   "theme": {
     "bg": "#F7F4EC",

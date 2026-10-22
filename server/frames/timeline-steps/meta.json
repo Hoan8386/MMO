@@ -1,0 +1,74 @@
+{
+  "frame_id": "timeline-steps",
+  "version": 1,
+  "status": "active",
+  "name": "Dòng thời gian / các bước",
+  "description": "3–5 mốc trên một đường ngang, mỗi mốc có nhãn (năm, bước) và mô tả ngắn. Dùng cho lịch sử, tiến trình, các bước làm.",
+  "category": "content",
+  "scene_type": "timeline",
+  "tags": [
+    "common",
+    "history",
+    "list"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 20,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "steps": {
+      "type": "list",
+      "required": true,
+      "minItems": 3,
+      "maxItems": 5,
+      "itemMaxLength": 34
+    },
+    "labels": {
+      "type": "list",
+      "minItems": 3,
+      "maxItems": 5,
+      "itemMaxLength": 10,
+      "description": "nhãn mỗi mốc, vd. năm; bỏ trống sẽ đánh số 01, 02…"
+    }
+  },
+  "same_length": [
+    [
+      "steps",
+      "labels"
+    ]
+  ],
+  "keywords": "mỗi mốc một từ khoá theo thứ tự: mốc thứ i hiện ra khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Năm 2007 iPhone ra đời, 2010 có iPad, 2015 là Apple Watch và 2024 là Vision Pro.",
+    "keywords": [
+      "2007",
+      "2010",
+      "2015",
+      "2024"
+    ],
+    "inputs": {
+      "title": "Các cột mốc của Apple",
+      "steps": [
+        "iPhone ra đời",
+        "iPad đầu tiên",
+        "Apple Watch",
+        "Vision Pro"
+      ],
+      "labels": [
+        "2007",
+        "2010",
+        "2015",
+        "2024"
+      ]
+    }
+  }
+}

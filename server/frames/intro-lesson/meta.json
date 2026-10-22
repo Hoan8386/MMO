@@ -1,0 +1,53 @@
+{
+  "frame_id": "intro-lesson",
+  "version": 1,
+  "status": "active",
+  "name": "Mở đầu bài học",
+  "description": "Cảnh mở đầu bài giảng: nhãn BÀI HỌC, môn/chủ đề, tên bài, 0–3 mục tiêu bài học. Luôn là cảnh đầu tiên.",
+  "category": "intro",
+  "scene_type": "intro",
+  "tags": [
+    "education"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 12,
+    "recommended": 7
+  },
+  "inputs": {
+    "subject": {
+      "type": "string",
+      "required": true,
+      "maxLength": 28,
+      "description": "môn hoặc chủ đề, vd. Vật lý 10"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60,
+      "description": "tên bài học"
+    },
+    "goals": {
+      "type": "list",
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 50,
+      "description": "sau bài này bạn sẽ…"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Chào các bạn, hôm nay chúng ta học về định luật Newton thứ nhất.",
+    "inputs": {
+      "subject": "Vật lý 10",
+      "title": "Định luật I Newton — quán tính",
+      "goals": [
+        "Hiểu khái niệm quán tính",
+        "Giải thích hiện tượng thường gặp"
+      ]
+    }
+  }
+}

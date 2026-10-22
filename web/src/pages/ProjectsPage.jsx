@@ -5,6 +5,7 @@ import { ProjectStatusBadge, Progress, ErrorNote } from "../components.jsx";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
+  const [topics, setTopics] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,6 +20,10 @@ export default function ProjectsPage() {
   useEffect(() => {
     load();
   }, [load]);
+  useEffect(() => {
+    api.get("/topics").then(setTopics).catch(() => {});
+  }, []);
+  const topicName = (id) => topics.find((t) => t.topic_id === id)?.name || id;
 
   const busy = projects.some((p) => p.busy || PROJECT_BUSY.includes(p.status));
   useEffect(() => {
@@ -44,6 +49,7 @@ export default function ProjectsPage() {
           <thead>
             <tr>
               <th>Dự án</th>
+              <th>Chủ đề</th>
               <th>Trạng thái</th>
               <th>Cảnh</th>
               <th>Thời lượng</th>
@@ -58,6 +64,7 @@ export default function ProjectsPage() {
                   <Link className="title-link" to={`/projects/${p.id}`}>{p.title}</Link>
                   {p.current_version ? <div className="muted small">v{p.current_version}{p.manual_edit ? " · có sửa tay" : ""}</div> : null}
                 </td>
+                <td><TopicChip topic={topics.find((t) => t.topic_id === p.topic)} fallback={topicName(p.topic)} /></td>
                 <td>
                   <div className="status-cell">
                     <ProjectStatusBadge status={p.status} />
@@ -72,22 +79,32 @@ export default function ProjectsPage() {
             ))}
             {!projects.length && (
               <tr>
-                <td colSpan={6} className="empty">Chưa có dự án nào. Bấm “+ Dự án mới” để bắt đầu.</td>
+                <td colSpan={7} className="empty">Chưa có dự án nào. Bấm “+ Dự án mới” để bắt đầu.</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {showForm && <NewProjectModal onClose={() => setShowForm(false)} />}
+      {showForm && <NewProjectModal topics={topics} onClose={() => setShowForm(false)} />}
     </div>
   );
 }
 
-function NewProjectModal({ onClose }) {
+export function TopicChip({ topic, fallback }) {
+  if (!topic) return <span className="muted">{fallback || "—"}</span>;
+  return (
+    <span className="topic-chip" style={{ background: topic.theme.bg, color: topic.theme.ink, borderColor: topic.theme.accent }}>
+      <i style={{ background: topic.theme.accent }} />
+      {topic.name}
+    </span>
+  );
+}
+
+function NewProjectModal({ topics, onClose }) {
   const navigate = useNavigate();
   const [voices, setVoices] = useState([]);
-  const [form, setForm] = useState({ title: "", material: "", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90 });
+  const [form, setForm] = useState({ title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90 });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -118,6 +135,27 @@ function NewProjectModal({ onClose }) {
           Tên dự án
           <input value={form.title} onChange={set("title")} placeholder="vd. Bản tin công nghệ 22/10" autoFocus required />
         </label>
+        <div className="field">
+          <span className="field-label">Chủ đề</span>
+          <div className="topic-pick">
+            {topics.map((t) => (
+              <button
+                type="button"
+                key={t.topic_id}
+                className={`topic-card ${form.topic === t.topic_id ? "active" : ""}`}
+                style={{ background: t.theme.bg, color: t.theme.ink }}
+                onClick={() => setForm((f) => ({ ...f, topic: t.topic_id }))}
+              >
+                <span className="swatch">
+                  <i style={{ background: t.theme.accent }} />
+                  <i style={{ background: t.theme.accent2 }} />
+                </span>
+                <strong>{t.name}</strong>
+                <small style={{ color: t.theme.muted }}>{t.description}</small>
+              </button>
+            ))}
+          </div>
+        </div>
         <label>
           Tư liệu / kịch bản
           <textarea rows={9} value={form.material} onChange={set("material")} placeholder="Dán ghi chú, bài báo hoặc kịch bản. AI chỉ dùng thông tin có ở đây." required />

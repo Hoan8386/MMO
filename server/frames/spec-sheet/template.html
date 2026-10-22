@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 140px; right: 140px; top: 90px; bottom: 280px; display: flex; align-items: center; gap: 80px; }
+        {{__r}} .side { flex: none; width: 520px; display: flex; flex-direction: column; gap: 26px; }
+        {{__r}} .badge { align-self: flex-start; padding: 8px 20px; border-radius: 999px; border: 3px solid var(--accent); color: var(--accent); font-size: 28px; letter-spacing: 0.08em; text-transform: uppercase; }
+        {{__r}} .title { font-size: 96px; line-height: 1.05; }
+        {{__r}} .price { font-size: 58px; color: var(--accent); }
+        {{__r}} .table { flex: 1; display: flex; flex-direction: column; border-radius: 26px; background: var(--panel); border: 2px solid var(--line); overflow: hidden; }
+        {{__r}} .row { display: flex; justify-content: space-between; align-items: baseline; gap: 30px; padding: 24px 36px; border-bottom: 2px solid var(--line); }
+        {{__r}} .row:last-child { border-bottom: 0; }
+        {{__r}} .k { font-size: 32px; color: var(--muted); }
+        {{__r}} .v { font-size: 38px; text-align: right; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="side">
+        {{#badge}}<div class="badge">{{badge}}</div>{{/badge}}
+        <div class="title">{{title}}</div>
+        {{#price}}<div class="price">{{price}}</div>{{/price}}
+        </div>
+        <div class="table">
+        {{#specs}}<div class="row"><span class="k">{{.}}</span><span class="v"></span></div>{{/specs}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          const rows = $$(".row");
+          rows.forEach((row) => {
+          const k = row.querySelector(".k");
+          const text = k.textContent;
+          const cut = text.indexOf(":");
+          if (cut > 0) {
+          k.textContent = text.slice(0, cut).trim();
+          row.querySelector(".v").textContent = text.slice(cut + 1).trim();
+          }
+          });
+          if ($(".badge")) tl.fromTo($(".badge"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 0.1);
+          tl.fromTo($(".title"), { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+          if ($(".price")) tl.fromTo($(".price"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5 }, 0.5);
+          tl.fromTo($(".table"), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.35);
+          rows.forEach((row, i) => tl.fromTo(row, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, Math.max(0.7 + i * 0.15, at(i, rows.length))));
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

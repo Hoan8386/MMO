@@ -1,0 +1,62 @@
+{
+  "frame_id": "spec-sheet",
+  "version": 1,
+  "status": "active",
+  "name": "Bảng thông số",
+  "description": "Thông số kỹ thuật của một sản phẩm: tên, nhãn nổi bật, giá, và 3–6 dòng 'Nhãn: giá trị'. Dùng khi giới thiệu thiết bị/phần mềm.",
+  "category": "data",
+  "scene_type": "specs",
+  "tags": [
+    "technology",
+    "product_review"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 30,
+      "description": "tên sản phẩm"
+    },
+    "badge": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "vd. Mới, Flagship"
+    },
+    "price": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "vd. 15,9 triệu"
+    },
+    "specs": {
+      "type": "list",
+      "required": true,
+      "minItems": 3,
+      "maxItems": 6,
+      "itemMaxLength": 44,
+      "description": "mỗi dòng dạng 'Nhãn: giá trị', vd. 'Pin: 6000mAh'"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Nova X có màn hình sáu inch tám, chip Nova một, pin sáu nghìn mAh và giá mười lăm triệu chín.",
+    "inputs": {
+      "title": "Nova X",
+      "badge": "Mới",
+      "price": "15,9 triệu",
+      "specs": [
+        "Màn hình: 6,8 inch OLED 120Hz",
+        "Chip: Nova N1 3nm",
+        "Camera: 200MP",
+        "Pin: 6000mAh, sạc 90W"
+      ]
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "frame_id": "code-snippet",
+  "version": 1,
+  "status": "active",
+  "name": "Khung code / terminal",
+  "description": "Cửa sổ code tối màu, các dòng lần lượt được gõ ra, kèm chú thích. Dùng khi nói về lập trình, lệnh, cấu hình.",
+  "category": "media",
+  "scene_type": "code",
+  "tags": [
+    "technology",
+    "code"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40,
+      "description": "tên file hoặc tiêu đề"
+    },
+    "lang": {
+      "type": "string",
+      "maxLength": 12,
+      "description": "vd. Python, Bash"
+    },
+    "lines": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 8,
+      "itemMaxLength": 56,
+      "description": "mỗi phần tử một dòng code, giữ thụt lề bằng dấu cách; dòng chú thích bắt đầu bằng # hoặc //"
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Chỉ với vài dòng Python, bạn đã có thể gọi một mô hình AI.",
+    "inputs": {
+      "title": "hello_ai.py",
+      "lang": "Python",
+      "lines": [
+        "# Gọi mô hình AI",
+        "from anthropic import Anthropic",
+        "client = Anthropic()",
+        "reply = client.messages.create(",
+        "    model=\"claude\", max_tokens=200,",
+        ")",
+        "print(reply.content)"
+      ],
+      "caption": "Chưa tới 10 dòng code"
+    }
+  }
+}

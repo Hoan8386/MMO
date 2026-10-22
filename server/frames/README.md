@@ -35,7 +35,7 @@ Biến do bộ biên dịch cung cấp:
 | `{{__w}}`, `{{__h}}` | kích thước khung hình |
 | `{{{__fontface}}}` | `@font-face` dùng chung |
 | `{{{__props}}}` | JSON: `D` (thời lượng cảnh), `vo` (giây bắt đầu đọc), `voEnd`, `marks` (thời điểm từng từ khoá, `null` nếu không tìm thấy) cùng toàn bộ input |
-| `{{tên_input}}` | giá trị input đã escape HTML; `{{#list}}…{{.}}…{{/list}}` để lặp |
+| `{{tên_input}}` | giá trị input đã escape HTML; `{{#list}}…{{.}}…{{/list}}` để lặp (`{{@n}}` = số thứ tự); `{{^x}}…{{/x}}` khi rỗng; `{{?list}}…{{/?list}}` bọc một lần khi có dữ liệu |
 
 Quy ước chuyển động: pha **vào** trong khoảng 1 giây đầu, pha **giữ** co giãn theo `P.D`,
 pha **ra** bắt đầu ở `P.D - 0.45`. Chừa 260px dưới cùng cho phụ đề.

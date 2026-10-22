@@ -1,0 +1,46 @@
+{
+  "frame_id": "fun-fact",
+  "version": 1,
+  "status": "active",
+  "name": "Bạn có biết?",
+  "description": "Một sự thật thú vị trên tấm thẻ nghiêng kèm biểu tượng dấu chấm than. Dùng cho chi tiết bất ngờ, gây tò mò.",
+  "category": "content",
+  "scene_type": "fact",
+  "tags": [
+    "entertainment",
+    "fun",
+    "education"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 7
+  },
+  "inputs": {
+    "label": {
+      "type": "string",
+      "maxLength": 20,
+      "description": "mặc định: Bạn có biết?"
+    },
+    "fact": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 50
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Bạn có biết, bạch tuộc có ba quả tim và máu màu xanh lam?",
+    "inputs": {
+      "fact": "Bạch tuộc có 3 quả tim và máu màu xanh lam",
+      "source": "National Geographic"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "frame_id": "big-question",
+  "version": 1,
+  "status": "active",
+  "name": "Câu hỏi mở đầu",
+  "description": "Một câu hỏi lớn với dấu hỏi khổng lồ phía sau, kèm gợi ý. Dùng để mở chủ đề, gây tò mò trước khi giải thích.",
+  "category": "title",
+  "scene_type": "question",
+  "tags": [
+    "common",
+    "hook"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 10,
+    "recommended": 6
+  },
+  "inputs": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 60
+    }
+  },
+  "keywords": "tuỳ chọn 1 từ khoá: dòng gợi ý hiện ra khi từ này được đọc",
+  "sample": {
+    "voice_text": "Tại sao bầu trời lại có màu xanh? Câu trả lời nằm ở ánh sáng Mặt Trời.",
+    "keywords": [
+      "câu trả lời"
+    ],
+    "inputs": {
+      "question": "Tại sao bầu trời có màu xanh?",
+      "hint": "Câu trả lời nằm ở ánh sáng Mặt Trời"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "frame_id": "bar-chart",
+  "version": 1,
+  "status": "active",
+  "name": "Biểu đồ cột",
+  "description": "Biểu đồ cột 2–6 cột có nhãn và giá trị, cột lớn nhất được tô nổi. Dùng khi so sánh nhiều con số.",
+  "category": "data",
+  "scene_type": "chart",
+  "tags": [
+    "statistics",
+    "comparison"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4.5,
+    "max": 15,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "labels": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 6,
+      "itemMaxLength": 16
+    },
+    "values": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 6
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 8,
+      "description": "vd. %, triệu, GB"
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 50
+    }
+  },
+  "same_length": [
+    [
+      "labels",
+      "values"
+    ]
+  ],
+  "keywords": "tuỳ chọn 1 từ khoá: các cột bắt đầu mọc lên khi từ này được đọc",
+  "sample": {
+    "voice_text": "Thị phần smartphone quý này: Samsung hai mươi tư phần trăm, Apple hai mươi mốt, Xiaomi mười bốn.",
+    "keywords": [
+      "thị phần"
+    ],
+    "inputs": {
+      "title": "Thị phần smartphone quý 3",
+      "labels": [
+        "Samsung",
+        "Apple",
+        "Xiaomi",
+        "Oppo"
+      ],
+      "values": [
+        24,
+        21,
+        14,
+        9
+      ],
+      "unit": "%",
+      "source": "Canalys"
+    }
+  }
+}

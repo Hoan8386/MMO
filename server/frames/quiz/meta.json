@@ -1,0 +1,66 @@
+{
+  "frame_id": "quiz",
+  "version": 1,
+  "status": "active",
+  "name": "Câu hỏi trắc nghiệm",
+  "description": "Câu hỏi với 2–4 đáp án A/B/C/D; đáp án đúng được tô màu và các đáp án khác mờ đi, kèm giải thích ngắn. Dùng để ôn tập hoặc tạo tương tác.",
+  "category": "content",
+  "scene_type": "quiz",
+  "tags": [
+    "education",
+    "quiz",
+    "fun"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 6,
+    "max": 20,
+    "recommended": 11
+  },
+  "inputs": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90
+    },
+    "options": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 40
+    },
+    "answer": {
+      "type": "number",
+      "required": true,
+      "description": "số thứ tự đáp án đúng, bắt đầu từ 1"
+    },
+    "explanation": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "index_of": {
+    "answer": "options"
+  },
+  "keywords": "1 từ khoá: đáp án đúng được công bố khi từ này được đọc (vd. 'đáp án đúng'); lời đọc nên hỏi trước rồi mới công bố",
+  "sample": {
+    "voice_text": "Vì sao người ngồi trên xe bị chúi về phía trước khi xe phanh gấp? Đáp án đúng là do quán tính.",
+    "keywords": [
+      "đáp án đúng"
+    ],
+    "inputs": {
+      "question": "Vì sao người trên xe chúi về trước khi xe phanh gấp?",
+      "options": [
+        "Do trọng lực",
+        "Do quán tính",
+        "Do lực ma sát",
+        "Do gió"
+      ],
+      "answer": 2,
+      "explanation": "Cơ thể có xu hướng giữ nguyên vận tốc cũ."
+    }
+  }
+}

@@ -54,6 +54,11 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
         if (!images.includes(v)) errors.push(`${p}: ảnh "${v}" không có trong danh sách ảnh của dự án`);
       }
     }
+    for (const [k, list] of Object.entries(frame.index_of || {})) {
+      const n = Array.isArray(inputs[list]) ? inputs[list].length : 0;
+      if (inputs[k] != null && (!Number.isInteger(inputs[k]) || inputs[k] < 1 || inputs[k] > n))
+        errors.push(`${at}.inputs.${k}: phải là số thứ tự từ 1 đến ${n} trong ${list}`);
+    }
     for (const [a, b] of frame.same_length || []) {
       if (Array.isArray(inputs[a]) && Array.isArray(inputs[b]) && inputs[a].length !== inputs[b].length)
         errors.push(`${at}.inputs: ${a} (${inputs[a].length}) và ${b} (${inputs[b].length}) phải có cùng số phần tử`);

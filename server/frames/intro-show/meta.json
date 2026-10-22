@@ -1,0 +1,48 @@
+{
+  "frame_id": "intro-show",
+  "version": 1,
+  "status": "active",
+  "name": "Mở đầu show giải trí",
+  "description": "Cảnh mở đầu vui nhộn: nhãn tên chương trình dạng sticker, tiêu đề lớn, câu dẫn ngắn. Luôn là cảnh đầu tiên.",
+  "category": "intro",
+  "scene_type": "intro",
+  "tags": [
+    "entertainment",
+    "fun"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 9,
+    "recommended": 5
+  },
+  "inputs": {
+    "show": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24,
+      "description": "tên chương trình/chuyên mục, vd. TOP 5 GIẢI TRÍ"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "tagline": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "câu dẫn gây tò mò"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Xin chào, hôm nay chúng ta cùng điểm qua năm bộ phim được mong chờ nhất năm.",
+    "inputs": {
+      "show": "Top 5 giải trí",
+      "title": "5 bộ phim được mong chờ nhất năm",
+      "tagline": "Số 1 sẽ khiến bạn bất ngờ!"
+    }
+  }
+}

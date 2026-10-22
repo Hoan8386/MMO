@@ -10,11 +10,12 @@ For each scene you write the narration (voice_text) and choose one frame from th
 Rules:
 - Narration language: Vietnamese unless told otherwise. Natural spoken style for text-to-speech: 1–2 short sentences per scene. Write numbers in voice_text the way they should be read aloud.
 - The first scene uses the intro frame, the last scene uses the outro frame.
-- Choose the frame that fits what the scene says (a number → stat frame, an enumeration → list frame, a comparison → compare frame, a person's words → quote frame). Vary frames; avoid the same frame twice in a row.
+- Choose the frame that fits what the scene says (a number → stat frame, an enumeration → list frame, a comparison → compare frame, a person's words → quote frame). Vary frames: never the same frame twice in a row, and at most twice per video.
+- Each scene's narration must fit its frame's duration range (about 2.6 Vietnamese words per second); split long content across scenes.
 - On-screen text (inputs) is short and punchy, NOT a copy of the narration. Respect every character limit. Write numbers in inputs with digits.
 - keywords: exact phrases copied verbatim from the same scene's voice_text, in spoken order, used to time the animation as described for each frame. Use [] when the frame needs none.
 - transition_out: "wipe" when the next scene starts a new topic, otherwise "fade".
-- Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state.`;
+- Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state. The only exception: wrong answer options in a quiz, which must be plausible but clearly wrong.`;
 
 let client;
 
@@ -31,6 +32,29 @@ export async function planVideo({ material, title, channel, topic, frames, allow
 
   // Extra retries ride out brief network/DNS drops on the way to the API or gateway.
   client ??= new Anthropic({ maxRetries: 4 });
+  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, targetSeconds });
+  const calls = [];
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    onLog(`AI lập kế hoạch (lần ${attempt})`);
+    const { json, text, usage } = await callModel(messages, schema).catch((err) => {
+      if (err instanceof Anthropic.APIConnectionError) {
+        const host = process.env.ANTHROPIC_BASE_URL ? new URL(process.env.ANTHROPIC_BASE_URL).host : "api.anthropic.com";
+        throw new Error(`Không kết nối được tới máy chủ AI (${host}): ${err.cause?.code || err.message}. Kiểm tra mạng rồi bấm lập kế hoạch lại.`);
+      }
+      throw err;
+    });
+    calls.push({ step: "plan", attempt, ...usage });
+    const errors = json ? validatePlan(json, frames, { allowedFrameIds: allowedIds, images }) : ["không đọc được JSON"];
+    if (!errors.length) return { plan: json, calls };
+    onLog(`Plan có ${errors.length} lỗi, yêu cầu AI sửa: ${errors.join("; ").slice(0, 300)}`);
+    if (attempt === 3) throw new Error(`AI trả về plan không hợp lệ:\n- ${errors.join("\n- ")}`);
+    messages.push({ role: "assistant", content: text });
+    messages.push({ role: "user", content: `The plan has these errors. Return the complete corrected plan.\n- ${errors.join("\n- ")}` });
+  }
+}
+
+// The planning request (system prompt, first user message, output schema), without calling the API.
+export function planRequest({ material, title, channel, topic, allowed, images = [], targetSeconds = 90 }) {
   const schema = planSchema(allowed, images);
   const words = Math.round(targetSeconds * 2.6);
   const prompt = `Available frames (* = required input):
@@ -46,27 +70,9 @@ User material:
 """
 ${material.trim()}
 """`;
-
-  const messages = [{ role: "user", content: prompt }];
-  const calls = [];
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    onLog(`AI lập kế hoạch (lần ${attempt})`);
-    const { json, text, usage } = await callModel(messages, schema).catch((err) => {
-      if (err instanceof Anthropic.APIConnectionError) {
-        const host = process.env.ANTHROPIC_BASE_URL ? new URL(process.env.ANTHROPIC_BASE_URL).host : "api.anthropic.com";
-        throw new Error(`Không kết nối được tới máy chủ AI (${host}): ${err.cause?.code || err.message}. Kiểm tra mạng rồi bấm lập kế hoạch lại.`);
-      }
-      throw err;
-    });
-    calls.push({ step: "plan", attempt, model: config.ai.model, ...usage });
-    const errors = json ? validatePlan(json, frames, { allowedFrameIds: allowedIds, images }) : ["không đọc được JSON"];
-    if (!errors.length) return { plan: json, calls };
-    onLog(`Plan có ${errors.length} lỗi, yêu cầu AI sửa`);
-    if (attempt === 3) throw new Error(`AI trả về plan không hợp lệ:\n- ${errors.join("\n- ")}`);
-    messages.push({ role: "assistant", content: text });
-    messages.push({ role: "user", content: `The plan has these errors. Return the complete corrected plan.\n- ${errors.join("\n- ")}` });
-  }
+  return { system: SYSTEM, messages: [{ role: "user", content: prompt }], schema };
 }
+
 
 async function callModel(messages, schema) {
   const body = {
@@ -92,10 +98,13 @@ async function callModel(messages, schema) {
     const m = text.match(/\{[\s\S]*\}/);
     if (m) try { json = JSON.parse(m[0]); } catch { /* reported as a validation error */ }
   }
+  // `model` is what actually answered (a fallback or gateway may differ from the request).
   const usage = {
+    model: response.model || config.ai.planModel,
     input_tokens: response.usage?.input_tokens ?? 0,
     output_tokens: response.usage?.output_tokens ?? 0,
     cache_read_input_tokens: response.usage?.cache_read_input_tokens ?? 0,
+    cache_creation_input_tokens: response.usage?.cache_creation_input_tokens ?? 0,
   };
   return { json, text, usage };
 }
