@@ -28,11 +28,9 @@ export const config = {
   },
   ai: {
     mode: env.AI_MODE || (env.ANTHROPIC_API_KEY || env.ANTHROPIC_AUTH_TOKEN ? "claude" : "mock"),
-    model: env.AI_MODEL || "claude-opus-5-5",
-    // Model for the video planner; planning is a small JSON task, so it can be cheaper than AI_MODEL.
-    planModel: env.PLAN_MODEL || env.AI_MODEL || "claude-sonnet-5-5",
+    // Model for the video planner; planning is a small JSON task.
+    planModel: env.PLAN_MODEL || "claude-sonnet-5-5",
     planEffort: env.PLAN_EFFORT || "low",
-    effort: env.AI_EFFORT || "medium",
     // Server-side refusal fallback is an Anthropic API beta; third-party gateways may reject it.
     fallbacks: (env.AI_FALLBACKS || "on") !== "off",
   },

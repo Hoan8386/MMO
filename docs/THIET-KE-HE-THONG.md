@@ -346,11 +346,10 @@ E:\MMO\
 │   │   │   ├─ render.js        ← lint, render, kiểm tra chất lượng
 │   │   │   ├─ pipeline.js      ← các bước trên gộp lại, dùng chung cho dòng lệnh và API
 │   │   │   ├─ jobs.js          ← hàng đợi (làn AI và làn render), ghi bảng jobs
-│   │   │   └─ studio.js        ← bật/tắt HyperFrames Studio cho từng dự án
-│   │   ├─ pipeline\            ← luồng cũ (AI vẽ SVG), giữ tới khi chuyển xong
+│   │   │   ├─ studio.js        ← bật/tắt HyperFrames Studio cho từng dự án
+│   │   │   └─ proc.js          ← chạy tiến trình con (python, ffprobe, npx)
 │   │   └─ routes\
-│   │       ├─ projects.js      ← API dự án, kế hoạch, dựng, render, Studio, ảnh + /api/frames
-│   │       └─ videos.js, types.js ← luồng cũ
+│   │       └─ projects.js      ← API dự án, kế hoạch, dựng, render, Studio, ảnh + /api/frames
 │   └─ sql\schema.sql
 └─ storage\
     ├─ shared-assets\           ← font, nhạc nền, SFX, logo
@@ -410,7 +409,7 @@ erDiagram
 | `jobs` | `id`, `project_id`, `type` (`plan`/`tts`/`compile`/`render`/`qc`), `status`, `progress`, `attempt`, `log`, `error`, `started_at`, `finished_at` |
 | `ai_calls` | `id`, `job_id`, `provider`, `model`, `input_tokens`, `output_tokens`, `frames_sent`, `latency_ms`, `cost_estimate`, `created_at` |
 
-Các bảng hiện có (`video_types`, `videos`, `scenes`) sẽ được thay thế dần. Có thể giữ song song trong lúc chuyển đổi.
+Các bảng của luồng vẽ tay cũ (`video_types`, `videos`, `scenes`) đã bỏ khỏi `schema.sql`; database cũ vẫn còn các bảng này cho tới khi xoá tay.
 
 ---
 
@@ -678,7 +677,7 @@ node scripts/make-video.js samples/tin-cong-nghe.txt --slug tin-nova --seconds 6
 
 Tuỳ chọn: `--title`, `--images <thư mục ảnh>` (để dùng frame `image-caption`), `--voice`, `--rate`, `--mock` (không gọi AI), `--replan` (bỏ plan cũ, gọi AI lại), `--no-render` (dừng sau lint). Chạy lại lệnh sẽ dùng lại `plan.json` và các file audio không đổi, nên có thể sửa tay `plan.json` rồi chạy lại.
 
-Biến môi trường mới trong `server/.env`: `PLAN_MODEL` (model cho bước lập kế hoạch, mặc định bằng `AI_MODEL`), `PLAN_EFFORT` (mặc định `low`).
+Biến môi trường mới trong `server/.env`: `PLAN_MODEL` (model cho bước lập kế hoạch, mặc định `claude-sonnet-5-5`), `PLAN_EFFORT` (mặc định `low`).
 
 ### Giai đoạn 2: Web và quản lý
 
@@ -746,4 +745,4 @@ Biến môi trường mới trong `server/.env`: `PLAN_MODEL` (model cho bước
 | 3 | Model AI cho từng bước | Opus / Sonnet / Haiku | Thử Sonnet cho lập kế hoạch, đo chất lượng rồi quyết định |
 | 4 | Nơi chạy hệ thống | Máy cá nhân / server | Máy cá nhân cho tới hết giai đoạn 2 |
 | 5 | Mở Studio | Tab mới / iframe | Tab mới (đã chắc chắn chạy được) |
-| 6 | Dữ liệu cũ (`video_types`, `videos`, `scenes`) | Giữ song song / chuyển đổi / bỏ | Giữ song song tới khi pipeline mới ổn định |
+| 6 | Dữ liệu cũ (`video_types`, `videos`, `scenes`) | Giữ song song / chuyển đổi / bỏ | Đã bỏ luồng cũ |

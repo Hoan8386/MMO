@@ -1,24 +1,19 @@
-// Draws one test scene to check the AI connection: npm run test:ai
+// Sends one tiny request to check the AI connection: npm run test:ai
+import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../src/config.js";
-import { drawScene } from "../src/pipeline/ai.js";
 
-const type = {
-  width: 1920,
-  height: 1080,
-  palette: ["#ffe0b8", "#e84a5f", "#f7c548"],
-  stroke_color: "#141414",
-  background_color: "#ffffff",
-  style_prompt: "Whiteboard stick-figure style.",
-};
-
-console.log(`AI mode: ${config.ai.mode} · model: ${config.ai.model} · base URL: ${process.env.ANTHROPIC_BASE_URL || "api.anthropic.com"}`);
+console.log(`AI mode: ${config.ai.mode} · model: ${config.ai.planModel} · base URL: ${process.env.ANTHROPIC_BASE_URL || "api.anthropic.com"}`);
 if (config.ai.mode !== "claude") {
   console.log("Chưa có ANTHROPIC_API_KEY hoặc ANTHROPIC_AUTH_TOKEN trong server/.env — đang ở chế độ mock.");
   process.exit(1);
 }
 try {
-  const paths = await drawScene({ type, text: "Một người que vẫy tay chào." });
-  console.log(`OK — Claude trả về ${paths.length} nét vẽ.`);
+  const res = await new Anthropic().messages.create({
+    model: config.ai.planModel,
+    max_tokens: 16,
+    messages: [{ role: "user", content: "Trả lời đúng một từ: OK" }],
+  });
+  console.log(`OK — ${res.model} trả lời: ${res.content.find((b) => b.type === "text")?.text ?? ""}`);
 } catch (err) {
   console.error(`Lỗi: ${err.status ? `HTTP ${err.status} — ` : ""}${err.message}`);
   process.exit(1);

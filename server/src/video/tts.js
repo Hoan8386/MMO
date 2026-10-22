@@ -2,9 +2,16 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import { config, SERVER_DIR } from "../config.js";
-import { run, probeDuration } from "../pipeline/proc.js";
+import { run, probeDuration } from "./proc.js";
 
 const SCRIPT = path.join(SERVER_DIR, "scripts", "tts_words.py");
+
+export const VOICES = [
+  { id: "vi-VN-HoaiMyNeural", label: "Tiếng Việt — Nữ (Hoài My)" },
+  { id: "vi-VN-NamMinhNeural", label: "Tiếng Việt — Nam (Nam Minh)" },
+  { id: "en-US-JennyNeural", label: "English — Female (Jenny)" },
+  { id: "en-US-GuyNeural", label: "English — Male (Guy)" },
+];
 
 // Identifies a voiced line; audio is reused whenever text, voice and rate are unchanged.
 export const voiceHash = (text, voice, rate) => crypto.createHash("sha1").update(`${text}\n${voice}\n${rate}`).digest("hex").slice(0, 16);

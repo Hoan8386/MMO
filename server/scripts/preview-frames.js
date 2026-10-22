@@ -13,7 +13,7 @@ import { finalizePlan } from "../src/video/pipeline.js";
 import { buildTimeline, LEAD, TAIL } from "../src/video/timeline.js";
 import { compileProject } from "../src/video/compile.js";
 import { checkProject } from "../src/video/render.js";
-import { run } from "../src/pipeline/proc.js";
+import { run } from "../src/video/proc.js";
 import { config } from "../src/config.js";
 
 const args = process.argv.slice(2);

@@ -102,39 +102,12 @@ textarea { resize: vertical; line-height: 1.5; }
 fieldset { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px 4px; margin: 0 0 16px; }
 legend { font-weight: 600; padding: 0 6px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.color-field span { display: flex; align-items: center; gap: 8px; }
-.palette-edit { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; font-size: 14px; }
-.palette-item { position: relative; }
-.palette-item button { position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%; border: 0; background: #374151; color: #fff; font-size: 12px; line-height: 1; cursor: pointer; }
 
 .modal-backdrop { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.45); display: grid; place-items: center; padding: 16px; z-index: 10; }
 .modal { background: var(--surface); border-radius: 14px; padding: 24px; width: min(640px, 100%); max-height: 92vh; overflow-y: auto; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 
-.scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.scene-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-.scene-card.error { border-color: #fca5a5; }
-.scene-card.pending { border-style: dashed; }
 .scene-index { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-.scene-preview { width: 100%; border-radius: 6px; border: 1px solid var(--border); display: block; max-height: 340px; }
-.scene-card audio { width: 100%; height: 34px; }
-.scene-foot { display: flex; justify-content: space-between; align-items: center; }
-
-.type-layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
-.type-list { display: flex; flex-direction: column; gap: 10px; }
-.type-card { text-align: left; font: inherit; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
-.type-card.active { border-color: var(--primary); box-shadow: 0 0 0 3px #dbeafe; }
-.swatches { display: flex; gap: 4px; margin-bottom: 4px; }
-.swatches span { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.08); }
-.editor { margin: 0; }
-
-.hand-picker { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; }
-.hand-stage { position: relative; cursor: crosshair; background: repeating-conic-gradient(#eef0f3 0% 25%, #fff 0% 50%) 0 0 / 16px 16px; border: 1px solid var(--border); border-radius: 8px; }
-.hand-stage img { display: block; }
-.tip-dot { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: #ef4444; border: 2px solid #fff; box-shadow: 0 0 0 1px #ef4444; pointer-events: none; }
-.hand-controls { flex: 1; min-width: 220px; }
-.file-btn { flex-direction: row; margin: 0; }
 
 @media (max-width: 860px) {
   .layout { flex-direction: column; }
@@ -142,12 +115,10 @@ legend { font-weight: 600; padding: 0 6px; }
   .sidebar nav { flex-direction: row; }
   .sidebar-foot { margin-top: 0; }
   .page { padding: 20px 16px 48px; }
-  .type-layout { grid-template-columns: 1fr; }
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
 }
 
 /* Template pipeline: projects, plan editor, frame library */
-.nav-group { margin-top: 14px; padding: 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; }
 .status-msg { white-space: pre-line; flex: 1; min-width: 200px; }
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .step { display: flex; flex-direction: column; gap: 8px; padding: 14px; border: 1px solid var(--border); border-radius: 8px; align-items: flex-start; }

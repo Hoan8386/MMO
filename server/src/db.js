@@ -26,9 +26,6 @@ export async function initDb() {
   pool = mysql.createPool({ ...config.db, charset: "utf8mb4", connectionLimit: 10 });
   // Jobs live in memory, so anything left mid-flight by a previous run is dead.
   await pool.query(
-    "UPDATE videos SET status='error', message='Server khởi động lại khi đang xử lý' WHERE status IN ('generating','rendering')",
-  );
-  await pool.query(
     "UPDATE projects SET status='failed', message='Server khởi động lại khi đang xử lý' WHERE status IN ('planning','building','rendering')",
   );
   await pool.query("UPDATE jobs SET status='failed', error='Server khởi động lại', finished_at=NOW() WHERE status IN ('queued','running')");

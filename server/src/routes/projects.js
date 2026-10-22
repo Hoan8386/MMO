@@ -4,12 +4,11 @@ import { Router } from "express";
 import multer from "multer";
 import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
-import { VOICES } from "../pipeline/tts.js";
 import { loadFrames, loadTopics, selectFrames } from "../video/catalog.js";
 import { projectDir, slugify, listImages, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
 import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
-import { voiceHash } from "../video/tts.js";
+import { VOICES, voiceHash } from "../video/tts.js";
 
 const router = Router();
 const upload = multer({ dest: path.join(STORAGE_DIR, "tmp"), limits: { fileSize: 15 * 1024 * 1024, files: 20 } });

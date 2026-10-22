@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { config } from "../config.js";
-import { run } from "../pipeline/proc.js";
+import { run } from "./proc.js";
 
 const hf = () => `hyperframes@${config.hyperframesVersion}`;
 

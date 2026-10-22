@@ -1,7 +1,7 @@
 // Opens a project in HyperFrames Studio (`hyperframes preview --background`), one port per project.
 // Studio writes edits straight into the project's HTML; pipeline.hasManualEdits() detects them.
 import { config } from "../config.js";
-import { run } from "../pipeline/proc.js";
+import { run } from "./proc.js";
 
 const BASE_PORT = 3100;
 const IDLE_MS = 30 * 60 * 1000;
