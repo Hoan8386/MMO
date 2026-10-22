@@ -8,7 +8,8 @@ const TRANSITIONS = [
 ];
 
 // library: assets of the project's topic, { illustration: [], logo: [], photo: [] }.
-export default function PlanEditor({ plan, frames, images, library = {}, errors, audio, disabled, onChange }) {
+// enumLabels: display names for fixed choices (characters, settings, actions…), keyed by value.
+export default function PlanEditor({ plan, frames, images, library = {}, enumLabels = {}, errors, audio, disabled, onChange }) {
   const byId = Object.fromEntries(frames.map((f) => [f.frame_id, f]));
   const scenes = plan.scenes;
   const update = (i, patch) => onChange({ ...plan, scenes: scenes.map((s, j) => (j === i ? { ...s, ...patch } : s)) });
@@ -41,6 +42,7 @@ export default function PlanEditor({ plan, frames, images, library = {}, errors,
           frames={frames}
           images={images}
           library={library}
+          enumLabels={enumLabels}
           errors={errors.filter((e) => e.startsWith(`scenes[${i}]`)).map((e) => e.replace(/^scenes\[\d+\]\.?/, ""))}
           audio={audio[s.id]}
           disabled={disabled}
@@ -64,7 +66,7 @@ export default function PlanEditor({ plan, frames, images, library = {}, errors,
   );
 }
 
-function SceneEditor({ index, scene, frame, frames, images, library, errors, audio, disabled, first, last, onChange, onMove, onRemove }) {
+function SceneEditor({ index, scene, frame, frames, images, library, enumLabels, errors, audio, disabled, first, last, onChange, onMove, onRemove }) {
   const setInput = (k, v) => onChange({ inputs: { ...scene.inputs, [k]: v } });
   // Switching frame keeps only the inputs the new frame understands.
   const switchFrame = (id) => {
@@ -123,7 +125,7 @@ function SceneEditor({ index, scene, frame, frames, images, library, errors, aud
         <div className="plan-inputs">
           {frame ? (
             Object.entries(frame.inputs).map(([k, spec]) => (
-              <InputField key={k} name={k} spec={spec} value={scene.inputs?.[k]} images={images} library={library} disabled={disabled} onChange={(v) => setInput(k, v)} />
+              <InputField key={k} name={k} spec={spec} value={scene.inputs?.[k]} images={images} library={library} enumLabels={enumLabels} disabled={disabled} onChange={(v) => setInput(k, v)} />
             ))
           ) : (
             <p className="note error">Frame “{scene.frame_id}” không có trong thư viện.</p>
@@ -135,13 +137,44 @@ function SceneEditor({ index, scene, frame, frames, images, library, errors, aud
   );
 }
 
-function InputField({ name, spec, value, images, library, disabled, onChange }) {
+function InputField({ name, spec, value, images, library, enumLabels = {}, disabled, onChange }) {
   const label = (
     <span className="input-label">
       {name}{spec.required ? " *" : ""}
       {spec.description && <small className="muted"> — {spec.description}</small>}
     </span>
   );
+  const nameOf = (v) => enumLabels[v] || v;
+  if (spec.enum && spec.type === "string") {
+    return (
+      <label>
+        {label}
+        <select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value || undefined)}>
+          {!spec.required && <option value="">— mặc định —</option>}
+          {spec.required && !value && <option value="">Chọn…</option>}
+          {spec.enum.map((v) => <option key={v} value={v}>{nameOf(v)}</option>)}
+        </select>
+      </label>
+    );
+  }
+  if (spec.enum && spec.type === "list") {
+    // Toggle chips; the order of the list is the order they were picked (left to right on screen).
+    const chosen = Array.isArray(value) ? value : [];
+    const toggle = (v) => onChange(chosen.includes(v) ? chosen.filter((x) => x !== v) : chosen.length < (spec.maxItems ?? 9) ? [...chosen, v] : chosen);
+    return (
+      <div className="field">
+        {label}
+        <div className="chips enum-chips">
+          {spec.enum.map((v) => (
+            <button type="button" key={v} disabled={disabled} className={`chip ${chosen.includes(v) ? "active" : ""}`} onClick={() => toggle(v)}>
+              {chosen.includes(v) && <b>{chosen.indexOf(v) + 1}</b>} {nameOf(v)}
+            </button>
+          ))}
+        </div>
+        <small className="count">{chosen.length}/{spec.maxItems ?? "∞"} — thứ tự chọn là thứ tự từ trái sang phải</small>
+      </div>
+    );
+  }
   if (spec.type === "number") {
     return (
       <label>
@@ -202,8 +235,8 @@ function InputField({ name, spec, value, images, library, disabled, onChange }) 
       </label>
     );
   }
-  if (spec.type === "icon" || spec.type === "logo" || spec.type === "cutout") {
-    const kind = { icon: "illustration", logo: "logo", cutout: "cutout" }[spec.type];
+  if (["icon", "logo", "cutout", "character"].includes(spec.type)) {
+    const kind = { icon: "illustration", logo: "logo", cutout: "cutout", character: "character" }[spec.type];
     return (
       <label>
         {label}
@@ -211,19 +244,21 @@ function InputField({ name, spec, value, images, library, disabled, onChange }) 
       </label>
     );
   }
-  if (spec.type === "icons") {
+  if (spec.type === "icons" || spec.type === "characters") {
+    const kind = spec.type === "icons" ? "illustration" : "character";
+    const noun = spec.type === "icons" ? "icon" : "nhân vật";
     const names = Array.isArray(value) ? value : [];
     const setAt = (i, v) => onChange(v ? names.map((n, j) => (j === i ? v : n)) : names.filter((_, j) => j !== i));
     return (
       <div className="field">
         {label}
         <div className="asset-list">
-          {names.map((n, i) => <AssetSelect key={i} kind="illustration" list={library.illustration || []} value={n} disabled={disabled} onChange={(v) => setAt(i, v)} />)}
+          {names.map((n, i) => <AssetSelect key={i} kind={kind} list={library[kind] || []} value={n} disabled={disabled} onChange={(v) => setAt(i, v)} />)}
           {names.length < (spec.maxItems ?? 4) && (
-            <AssetSelect kind="illustration" list={library.illustration || []} value="" placeholder="+ Thêm icon…" disabled={disabled} onChange={(v) => v && onChange([...names, v])} />
+            <AssetSelect kind={kind} list={library[kind] || []} value="" placeholder={`+ Thêm ${noun}…`} disabled={disabled} onChange={(v) => v && onChange([...names, v])} />
           )}
         </div>
-        <small className="count">{names.length}/{spec.maxItems ?? 4} icon, theo thứ tự các ý</small>
+        <small className="count">{names.length}/{spec.maxItems ?? 4} {noun}, theo thứ tự</small>
       </div>
     );
   }
@@ -238,6 +273,8 @@ function InputField({ name, spec, value, images, library, disabled, onChange }) 
   );
 }
 
+const CHARACTER_GROUP = { people: "Người", animals: "Động vật", faces: "Gương mặt cảm xúc" };
+
 // Dropdown of library icons or logos with a preview of the chosen one.
 function AssetSelect({ kind, list, value, placeholder, disabled, onChange }) {
   const known = !value || list.some((a) => a.name === value);
@@ -247,7 +284,14 @@ function AssetSelect({ kind, list, value, placeholder, disabled, onChange }) {
       <select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value || undefined)}>
         <option value="">{placeholder || (list.length ? "Chọn…" : "Thư viện trống — chạy npm run assets:download")}</option>
         {!known && <option value={value}>{value}</option>}
-        {list.map((a) => <option key={a.name} value={a.name}>{a.label || a.name}</option>)}
+        {kind === "character"
+          ? // Characters are labelled "group: name"; show them under one heading per group.
+            Object.entries(Object.groupBy(list, (a) => a.label.split(":")[0])).map(([g, items]) => (
+              <optgroup key={g} label={CHARACTER_GROUP[g] || g}>
+                {items.map((a) => <option key={a.name} value={a.name}>{a.label.split(": ")[1] || a.name}</option>)}
+              </optgroup>
+            ))
+          : list.map((a) => <option key={a.name} value={a.name}>{a.label || a.name}</option>)}
       </select>
     </span>
   );

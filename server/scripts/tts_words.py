@@ -1,7 +1,7 @@
 """Text-to-speech with word timings via edge-tts.
 
 Usage: python tts_words.py jobs.json
-jobs.json: [{"text": ..., "voice": ..., "rate": "+0%", "mp3": "out.mp3", "words": "out.words.json"}]
+jobs.json: [{"text": ..., "voice": ..., "rate": "+0%", "pitch": "+0Hz" (optional), "mp3": "out.mp3", "words": "out.words.json"}]
 Writes each mp3 plus a JSON list of {"t": start_s, "d": dur_s, "w": word}.
 """
 import asyncio
@@ -15,7 +15,7 @@ async def one(job):
     last = None
     for attempt in range(6):
         try:
-            comm = edge_tts.Communicate(job["text"], job["voice"], rate=job.get("rate", "+0%"), boundary="WordBoundary")
+            comm = edge_tts.Communicate(job["text"], job["voice"], rate=job.get("rate", "+0%"), pitch=job.get("pitch", "+0Hz"), boundary="WordBoundary")
             words, size = [], 0
             with open(job["mp3"], "wb") as f:
                 async for chunk in comm.stream():

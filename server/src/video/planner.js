@@ -56,7 +56,7 @@ export async function planVideo({ material, title, channel, topic, frames, allow
   }
 }
 
-const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [] };
+const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [], characters: [] };
 
 // The planning request (system prompt, first user message, output schema), without calling the API.
 // Library lists only reach the prompt when an allowed frame can use them.
@@ -67,14 +67,19 @@ export function planRequest({ material, title, channel, topic, allowed, images =
     logos: uses("logo") ? library.logos : [],
     photos: uses("image") ? library.photos : [],
     cutouts: uses("cutout") ? library.cutouts || [] : [],
+    characters: uses("character", "characters") ? library.characters || [] : [],
   };
+  const groups = {};
+  for (const c of lib.characters) (groups[c.group] ||= []).push(c.name);
   const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], lib);
   const words = Math.round(targetSeconds * 2.6);
   const prompt = `Available frames (* = required input):
 ${describeFrames(allowed)}
 
 Project images: ${images.length ? images.join(", ") : lib.photos.length ? "(none)" : "(none — do not use image frames)"}
-${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}${lib.cutouts.length ? `Cutouts (photo of one object, background removed): ${lib.cutouts.join(", ")}\n` : ""}Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
+${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}${lib.cutouts.length ? `Cutouts (photo of one object, background removed): ${lib.cutouts.join(", ")}\n` : ""}${Object.entries(groups)
+    .map(([g, names]) => `Characters — ${g}: ${names.join(", ")}\n`)
+    .join("")}Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
 Narration tone: ${topic?.tone || "clear and natural"}
 Target length: about ${targetSeconds}s of narration (~${words} Vietnamese words in total).
 ${title ? `Video title: ${title}\n` : ""}Channel name: ${channel || "(none — leave every channel input empty)"}
@@ -87,11 +92,12 @@ ${material.trim()}
 }
 
 
-async function callModel(messages, schema) {
+export async function callModel(messages, schema, system = SYSTEM) {
+  client ??= new Anthropic({ maxRetries: 4 });
   const body = {
     model: config.ai.planModel,
     max_tokens: 16000,
-    system: SYSTEM,
+    system,
     messages,
     output_config: { effort: config.ai.planEffort, format: { type: "json_schema", schema } },
   };
@@ -124,12 +130,13 @@ async function callModel(messages, schema) {
 
 // One schema branch per allowed frame, so the model can only emit inputs that frame accepts.
 // Length limits live in the prompt and the validator: structured outputs ignore maxLength.
-function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
+export function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
   // Shared enums live in $defs so a long icon list is sent once, not once per frame.
   const $defs = {};
   if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
   if (lib.logos.length) $defs.logo = { type: "string", enum: lib.logos };
   if (lib.cutouts?.length) $defs.cutout = { type: "string", enum: lib.cutouts };
+  if (lib.characters?.length) $defs.character = { type: "string", enum: lib.characters.map((c) => c.name) };
   const ref = (name) => ($defs[name] ? { $ref: `#/$defs/${name}` } : { type: "string" });
   const branch = (f) => {
     const props = {};
@@ -137,10 +144,13 @@ function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
     for (const [k, i] of Object.entries(f.inputs)) {
       if (i.type === "number") props[k] = { type: "number" };
       else if (i.type === "numbers") props[k] = { type: "array", items: { type: "number" }, description: `${i.minItems ?? 1}-${i.maxItems ?? 6} numbers` };
+      else if (i.type === "list" && i.enum) props[k] = { type: "array", items: { type: "string", enum: i.enum }, description: `${i.minItems ?? 1}-${i.maxItems ?? 5} items` };
       else if (i.type === "list")
         props[k] = { type: "array", items: { type: "string", description: `at most ${i.itemMaxLength ?? 60} characters` }, description: `${i.minItems ?? 1}-${i.maxItems ?? 5} items` };
+      else if (i.type === "string" && i.enum) props[k] = { type: "string", enum: i.enum };
       else if (i.type === "image") props[k] = images.length ? { type: "string", enum: images } : { type: "string" };
-      else if (i.type === "icon" || i.type === "logo" || i.type === "cutout") props[k] = ref(i.type);
+      else if (["icon", "logo", "cutout", "character"].includes(i.type)) props[k] = ref(i.type);
+      else if (i.type === "characters") props[k] = { type: "array", items: ref("character"), description: `${i.minItems ?? 1}-${i.maxItems ?? 5} character names` };
       else if (i.type === "icons") props[k] = { type: "array", items: ref("icon"), description: `${i.minItems ?? 1}-${i.maxItems ?? 4} icon names` };
       else props[k] = { type: "string", description: `at most ${i.maxLength ?? 80} characters` };
       if (i.required) required.push(k);
@@ -183,6 +193,9 @@ function fillText(frame, text, cut, library = EMPTY_LIBRARY) {
     else if (i.type === "icon" && library.icons.length) inputs[k] = library.icons[0];
     else if (i.type === "logo" && library.logos.length) inputs[k] = library.logos[0];
     else if (i.type === "cutout" && library.cutouts?.length) inputs[k] = library.cutouts[0];
+    else if (i.type === "character" && library.characters?.length) inputs[k] = library.characters[0].name;
+    else if (i.type === "characters" && library.characters?.length)
+      inputs[k] = library.characters.slice(0, i.minItems ?? 2).map((c) => c.name);
   }
   return inputs;
 }
@@ -235,7 +248,7 @@ function mockPlan({ material, title, allowed, images, library, topic }) {
         transition_out: "fade",
         inputs: { image: images[img++], title: cut(s.split(" ").slice(0, 5).join(" "), 40), caption: cut(s, 120) },
       });
-    } else {
+    } else if (has("headline")) {
       scenes.push({
         frame_id: "headline",
         voice_text: s,
@@ -243,6 +256,11 @@ function mockPlan({ material, title, allowed, images, library, topic }) {
         transition_out: i % 3 === 2 ? "wipe" : "fade",
         inputs: { title: cut(s.split(" ").slice(0, 9).join(" "), 70), subtitle: cut(s, 110) },
       });
+    } else {
+      // Topics without headline (e.g. storytelling): any allowed content frame, filled generically.
+      const content = allowed.filter((f) => !["intro", "outro"].includes(f.scene_type) && !Object.values(f.inputs).some((x) => x.required && x.type === "image"));
+      const f = content[i % content.length];
+      scenes.push({ frame_id: f.frame_id, voice_text: s, keywords: [], transition_out: "fade", inputs: fillText(f, s, cut, library) });
     }
   });
   scenes.push({

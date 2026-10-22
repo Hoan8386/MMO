@@ -1,6 +1,6 @@
 // Command-line pipeline: script → plan (AI) → validate → TTS → timeline → compile → render → QC.
 //
-//   node scripts/make-video.js <script.txt> [--slug ten-video] [--title "..."] [--channel "..."] [--topic technology|entertainment|education] [--images thu-muc-anh]
+//   node scripts/make-video.js <script.txt> [--mode explainer|animation] [--slug ten-video] [--title "..."] [--channel "..."] [--topic technology|entertainment|education] [--images thu-muc-anh]
 //                              [--seconds 90] [--voice vi-VN-HoaiMyNeural] [--rate +6%]
 //                              [--mock] [--replan] [--no-render]
 //
@@ -31,7 +31,8 @@ const project = {
   slug,
   title: opt("title", ""),
   channel: opt("channel", ""),
-  topic: opt("topic", "technology"),
+  mode: opt("mode", "explainer"),
+  topic: opt("topic", opt("mode") === "animation" ? "storytelling" : "technology"),
   width: 1920,
   height: 1080,
   aspectRatio: "16:9",

@@ -17,7 +17,7 @@ Mỗi thư mục là một frame (template) dùng lại được cho mọi video
 | `status` | `active` mới được đưa cho AI chọn |
 | `scene_type`, `category`, `tags` | phục vụ lọc |
 | `duration` | `min` / `max` / `recommended` (giây) |
-| `inputs` | biến đầu vào: `type` là `string`, `number`, `list` (mảng chuỗi), `image` (tên file ảnh có sẵn), `icon` / `icons` / `logo` (tên trong kho icon, logo) hoặc `cutout` (tên ảnh tách nền, template dùng `assets/cutouts/{{tên}}.png`); `required`, `maxLength`, `minItems`, `maxItems`, `itemMaxLength` |
+| `inputs` | biến đầu vào: `type` là `string`, `number`, `list` (mảng chuỗi), `image` (tên file ảnh có sẵn), `icon` / `icons` / `logo` (tên trong kho icon, logo), `cutout` (tên ảnh tách nền, template dùng `assets/cutouts/{{tên}}.png`) hoặc `character` / `characters` (nhân vật kể chuyện, template dùng `assets/characters/{{tên}}.svg`); `required`, `maxLength`, `minItems`, `maxItems`, `itemMaxLength` |
 | `keywords` | hướng dẫn cho AI: từ khoá trong lời thoại dùng để canh chuyển động |
 | `sample` | dữ liệu mẫu để render thử |
 
@@ -67,6 +67,39 @@ robots.txt cấm), bỏ qua file thực ra là JPEG, và tải tối đa 40 ản
 Ảnh không ưng thì thêm link trang của nó vào `exclude_cutouts` rồi chạy lại; xoá một mục khỏi danh sách thì
 lần chạy sau ảnh đó cũng bị xoá khỏi kho.
 Frame dùng: `cutout-hero`, `cutout-pair`.
+
+## Nhân vật kể chuyện (`character`)
+
+241 nhân vật Fluent Emoji (MIT) chia ba nhóm trong mục `characters` của `server/assets/library.json`:
+`people` (người, nghề nghiệp, nhân vật cổ tích), `animals` (con vật nguyên thân) và `faces` (gương mặt cảm xúc).
+Mọi chủ đề đều dùng được; AI thấy danh sách theo nhóm. Tải bằng `node scripts/download-assets.js --only characters`.
+Nhân vật Fluent Emoji thường quay mặt sang trái: frame cho nhân vật đi sang phải thì lật ảnh bằng thuộc tính CSS
+`scale: -1 1` (không dùng `transform`, vì GSAP ghi đè `transform` khi animate).
+
+Frame kể chuyện (tag `story`, `fable`; ưu tiên ở chủ đề "Kể chuyện & truyện ngụ ngôn"):
+`intro-storybook`, `story-scene`, `story-speech`, `story-thought`, `story-dialogue`, `story-cast`,
+`story-emotion`, `story-journey`, `story-chase`. Đạo cụ phông nền (nhà, cây, lâu đài, cầu, cờ đích…) là nhóm
+icon `storytelling`.
+
+## Phim hoạt hình (`engine: "animation"`)
+
+Dự án loại **Phim hoạt hình** (`projects.mode = animation`) không dùng thư viện frame thường mà 3 frame
+`anim-title`, `anim-shot`, `anim-end`. Người dùng gửi mô tả câu chuyện; AI (`server/src/animation/planner.js`)
+viết kịch bản: dàn nhân vật (tên + kiểu giọng) và các **shot**, mỗi shot đúng một câu nói (lời thoại của một
+nhân vật hoặc lời dẫn truyện) kèm bối cảnh, giờ trong ngày, nhân vật có mặt, hành động, cảm xúc, góc máy.
+Mỗi shot là một cảnh của pipeline nên giọng đọc, timeline, phụ đề, Studio và render dùng chung.
+
+| File | Vai trò |
+|---|---|
+| `server/src/animation/rigs.js` | 28 nhân vật SVG (14 người, 14 con vật) cùng một bộ xương: tay, chân, đầu, mắt chớp, miệng nói, 7 cảm xúc, hiệu ứng nước mắt / Zzz / bong bóng nghĩ; danh sách hành động và kiểu giọng (edge-tts + rate + pitch) |
+| `server/src/animation/settings.js` | 10 bối cảnh SVG 1920×1080, mỗi bối cảnh có ban ngày / hoàng hôn / ban đêm |
+| `server/src/animation/runtime.js` | engine chạy trong trang: vào cảnh, thở, chớp mắt, miệng mấp máy theo thời điểm từng từ, hành động, camera (toàn cảnh, cận mặt, lia), nối cảnh liền mạch khi cùng bối cảnh |
+| `server/src/animation/stage.js` | lúc biên dịch: đặt nhân vật theo khung hình, tính tính liên tục giữa các shot, chèn SVG và engine vào template |
+
+Trong meta.json, `"enum": "@rigs"` (`@speakers`, `@settings`, `@times`, `@actions`, `@emotions`) được thay bằng danh
+sách trong code khi nạp frame, nên thêm nhân vật hay bối cảnh mới không cần sửa meta.json. `member_of` bắt
+`speaker`/`actor` phải nằm trong `cast` của shot. Thêm nhân vật: thêm một mục vào `RIGS` (và `FACE` nếu là con vật mới).
+Thử nhanh không tốn token: `npm --prefix server run make:video -- samples/tho-va-rua.txt --mode animation --mock --no-render`.
 
 ## Khung hình (16:9, 9:16, 1:1, 4:5)
 

@@ -3,6 +3,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { config, SERVER_DIR } from "../config.js";
 import { run, probeDuration } from "./proc.js";
+import { VOICE_STYLES, rigById } from "../animation/rigs.js";
 
 const SCRIPT = path.join(SERVER_DIR, "scripts", "tts_words.py");
 
@@ -13,16 +14,34 @@ export const VOICES = [
   { id: "en-US-GuyNeural", label: "English — Male (Guy)" },
 ];
 
-// Identifies a voiced line; audio is reused whenever text, voice and rate are unchanged.
-export const voiceHash = (text, voice, rate) => crypto.createHash("sha1").update(`${text}\n${voice}\n${rate}`).digest("hex").slice(0, 16);
+// Identifies a voiced line; audio is reused whenever text, voice, rate and pitch are unchanged.
+// (Without a pitch the hash is the same as before pitch existed, so old audio stays valid.)
+export const voiceHash = (text, voice, rate, pitch) =>
+  crypto.createHash("sha1").update(`${text}\n${voice}\n${rate}${pitch && pitch !== "+0Hz" ? `\n${pitch}` : ""}`).digest("hex").slice(0, 16);
+
+// The voice of one scene: in an animation, a character's line uses that character's voice style
+// (plan.cast); narration and every other video use the project voice.
+export function voiceFor(scene, project, plan) {
+  const speaker = scene.inputs?.speaker;
+  if (plan?.mode === "animation" && speaker && speaker !== "narrator") {
+    const member = (plan.cast || []).find((c) => c.rig === speaker);
+    const style = VOICE_STYLES[member?.voice] || VOICE_STYLES[rigById(speaker)?.voice];
+    if (style) return { voice: style.voice, rate: style.rate, pitch: style.pitch };
+  }
+  return { voice: project.voice, rate: project.rate, pitch: undefined };
+}
 
 // Voices every scene into assets/vo/<id>.mp3 with word timings, skipping scenes whose
 // text/voice/rate did not change since the last run. Returns { [sceneId]: {duration, words, cached} }.
-export async function voiceScenes(dir, scenes, { voice, rate }) {
+// `voiceOf(scene)` gives each scene its { voice, rate, pitch }; by default the project voice.
+export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => ({ voice, rate })) {
   const voDir = path.join(dir, "assets", "vo");
   await fs.mkdir(voDir, { recursive: true });
 
-  const hashOf = (sc) => voiceHash(sc.voice_text, voice, rate);
+  const hashOf = (sc) => {
+    const v = voiceOf(sc);
+    return voiceHash(sc.voice_text, v.voice, v.rate, v.pitch);
+  };
 
   // Index existing audio by hash first, so reordered or renumbered scenes reuse their voice.
   const pool = new Map();
@@ -51,7 +70,8 @@ export async function voiceScenes(dir, scenes, { voice, rate }) {
       result[sc.id] = { ...hit.meta, words: hit.words, cached: true };
       continue;
     }
-    jobs.push({ id: sc.id, text: sc.voice_text, voice, rate, mp3, words, metaFile, hash });
+    const v = voiceOf(sc);
+    jobs.push({ id: sc.id, text: sc.voice_text, voice: v.voice, rate: v.rate, ...(v.pitch ? { pitch: v.pitch } : {}), mp3, words, metaFile, hash });
   }
   // Drop audio of scenes that no longer exist (e.g. s09 after deleting a scene).
   const ids = new Set(scenes.map((s) => s.id));

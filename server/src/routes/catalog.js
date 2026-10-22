@@ -3,6 +3,8 @@ import { query, one } from "../db.js";
 import { loadFrames, loadTopics, selectFrames, refreshCatalog } from "../video/catalog.js";
 import { loadAssets } from "../video/library.js";
 import { BACKGROUND_STYLES } from "../video/compile.js";
+import { RIGS, rigPreviewSvg, ACTIONS, EMOTIONS, VOICE_STYLES } from "../animation/rigs.js";
+import { SETTING_IDS, settingName, settingPreviewSvg, TIMES } from "../animation/settings.js";
 
 // Frame library (read-only): metadata the planner and the plan editor use.
 export const framesRouter = Router();
@@ -93,4 +95,17 @@ libraryRouter.get("/", (req, res) => {
   const { kind, topic } = req.query;
   const list = loadAssets().filter((a) => (!kind || a.kind === kind) && (!topic || a.common || a.topics.includes(topic)));
   res.json(list.map((a) => ({ ...a, url: `/storage/library/${a.file}` })));
+});
+
+// Animation mode catalogue: characters and settings (as SVG for previews), actions, emotions, voices.
+export const animationRouter = Router();
+animationRouter.get("/", (_req, res) => {
+  res.json({
+    rigs: RIGS.map((r) => ({ id: r.id, name: r.name, kind: r.kind, voice: r.voice, svg: rigPreviewSvg(r.id, 200) })),
+    settings: SETTING_IDS.map((id) => ({ id, name: settingName(id), svg: settingPreviewSvg(id, "day", 360) })),
+    times: TIMES,
+    actions: ACTIONS,
+    emotions: EMOTIONS,
+    voices: Object.fromEntries(Object.entries(VOICE_STYLES).map(([k, v]) => [k, v.label])),
+  });
 });

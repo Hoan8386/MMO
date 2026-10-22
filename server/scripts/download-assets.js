@@ -1,10 +1,11 @@
 // Downloads the shared asset library listed in assets/library.json and records it in MySQL.
 //
-//   node scripts/download-assets.js [--only illustrations|logos|photos|cutouts] [--photos-per-query 2]
+//   node scripts/download-assets.js [--only illustrations|characters|logos|photos|cutouts] [--photos-per-query 2]
 //                                   [--max-per-day 40] [--dry-run]   (the last two apply to cutouts)
 //
 // Sources (all free for commercial use):
 //   illustrations  Microsoft Fluent Emoji, colour version (MIT) via the @iconify-json/fluent-emoji npm package
+//   characters     story characters (people, animals, faces) from the same Fluent Emoji set
 //   logos          @iconify-json/logos (CC0) and simple-icons (CC0; brand marks remain trademarks of their owners)
 //   photos         Wikimedia Commons, only public-domain / CC0 / CC BY / CC BY-SA files; the credit line is kept
 //   cutouts        transparent PNGs from PNGImages.com (free for commercial use, no attribution), found
@@ -88,6 +89,33 @@ async function illustrations() {
     put({ kind: "illustration", name, file, label: name.replace(/-/g, " "), topics: topics.filter((t) => t !== "common"), common: topics.includes("common"), source: "Microsoft Fluent Emoji", license: "MIT", credit: null, source_url: "https://github.com/microsoft/fluentui-emoji" });
   }
   console.log(`Minh hoạ: ${topicsOf.size} (mới ${added})`);
+}
+
+// Story characters (people, animals, faces) from the same Fluent Emoji set; every topic may use them.
+// The label starts with the group ("animals: lion") so the planner can list them by group.
+async function characters() {
+  const pkg = await npmPackage("@iconify-json/fluent-emoji");
+  const set = JSON.parse(await fs.readFile(path.join(pkg.dir, "icons.json"), "utf8"));
+  await fs.mkdir(path.join(LIBRARY_DIR, "characters"), { recursive: true });
+  let added = 0;
+  let total = 0;
+  for (const [group, names] of Object.entries(list.characters || {})) {
+    for (const name of names) {
+      const file = `characters/${name}.svg`;
+      if (!(await exists(path.join(LIBRARY_DIR, file)))) {
+        const svg = iconifySvg(set, name);
+        if (!svg) {
+          console.warn(`  bỏ qua nhân vật không có trong Fluent Emoji: ${name}`);
+          continue;
+        }
+        await fs.writeFile(path.join(LIBRARY_DIR, file), svg);
+        added++;
+      }
+      total++;
+      put({ kind: "character", name, file, label: `${group}: ${name.replace(/-/g, " ")}`, topics: [], common: true, source: "Microsoft Fluent Emoji", license: "MIT", credit: null, source_url: "https://github.com/microsoft/fluentui-emoji" });
+    }
+  }
+  console.log(`Nhân vật: ${total} (mới ${added})`);
 }
 
 async function logos() {
@@ -340,6 +368,7 @@ async function cutouts() {
 
 await fs.mkdir(LIBRARY_DIR, { recursive: true });
 if (!only || only === "illustrations") await illustrations();
+if (!only || only === "characters") await characters();
 if (!only || only === "logos") await logos();
 if (!only || only === "photos") await photos();
 if (!only || only === "cutouts") await cutouts();

@@ -5,9 +5,11 @@ import crypto from "node:crypto";
 import { STORAGE_DIR } from "../config.js";
 import { loadFrames, selectFrames, getTopic } from "./catalog.js";
 import { planVideo } from "./planner.js";
+import { planAnimation } from "../animation/planner.js";
+import { rigById } from "../animation/rigs.js";
 import { topicAssets, findAsset } from "./library.js";
 import { validatePlan } from "./validate.js";
-import { voiceScenes } from "./tts.js";
+import { voiceScenes, voiceFor } from "./tts.js";
 import { buildTimeline } from "./timeline.js";
 import { compileProject } from "./compile.js";
 import { checkProject, renderProject, qualityCheck } from "./render.js";
@@ -35,6 +37,7 @@ export async function listImages(dir) {
 // project: { title, channel, topic, voice, rate, targetSeconds, aspectRatio, width, height }
 export async function makePlan(dir, project, material, { mock = false, onLog = () => {} } = {}) {
   const frames = loadFrames();
+  if (project.mode === "animation") return makeAnimationPlan(dir, project, material, frames, { mock, onLog });
   const images = await listImages(dir);
   const topic = getTopic(project.topic);
   const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images });
@@ -63,18 +66,41 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   return { plan, calls: stamped };
 }
 
-// Names of the library icons, logos, photos and cutouts that suit a topic (what the planner may pick from).
+// Names of the library icons, logos, photos, cutouts and characters that suit a topic (what the planner may pick from).
 export function topicLibrary(topicId) {
   return {
     icons: topicAssets(topicId, "illustration").map((a) => a.name),
     logos: topicAssets(topicId, "logo").map((a) => a.name),
     photos: topicAssets(topicId, "photo").map(({ name, label, credit }) => ({ name, label, credit })),
     cutouts: topicAssets(topicId, "cutout").map((a) => a.name),
+    // Characters are grouped (people, animals, faces) so the prompt can list them by group.
+    characters: topicAssets(topicId, "character").map(({ name, label }) => ({ name, group: label.split(":")[0] })),
   };
+}
+
+// Animation mode: the AI writes a screenplay (cast + one shot per spoken line).
+async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }) {
+  onLog("Phim hoạt hình: AI viết kịch bản, chọn nhân vật, bối cảnh và hành động");
+  const { plan, calls } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog });
+  const stamped = calls.map((c) => ({ ...c, at: new Date().toISOString(), frames_sent: 3 }));
+  if (stamped.length) {
+    const logFile = path.join(dir, "ai_calls.json");
+    const prev = await readJson(logFile, []);
+    await fs.writeFile(logFile, JSON.stringify([...prev, ...stamped], null, 2));
+  }
+  finalizePlan(plan, project, frames);
+  return { plan, calls: stamped };
 }
 
 // Numbers scenes s01… in order and applies project-level values the AI must not decide.
 export function finalizePlan(plan, project, frames = loadFrames()) {
+  if (plan.mode === "animation") {
+    plan.cast ||= [];
+    for (const id of new Set(plan.scenes.flatMap((s) => s.inputs?.cast || []))) {
+      const rig = rigById(id);
+      if (rig && !plan.cast.some((c) => c.rig === id)) plan.cast.push({ rig: id, name: rig.name, voice: rig.voice });
+    }
+  }
   plan.scenes.forEach((s, i) => {
     s.id = `s${String(i + 1).padStart(2, "0")}`;
     s.inputs ||= {};
@@ -112,7 +138,7 @@ export async function buildProject(dir, project, plan, { onLog = () => {} } = {}
   await fs.writeFile(path.join(dir, "project.json"), JSON.stringify(project, null, 2));
 
   onLog("Tạo giọng đọc");
-  const vo = await voiceScenes(dir, plan.scenes, project);
+  const vo = await voiceScenes(dir, plan.scenes, project, (sc) => voiceFor(sc, project, plan));
   const cached = Object.values(vo).filter((v) => v.cached).length;
   if (cached) onLog(`Dùng lại ${cached}/${plan.scenes.length} file audio không đổi`);
 

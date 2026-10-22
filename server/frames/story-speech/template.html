@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 120px; right: 120px; top: 80px; bottom: 270px; display: flex; align-items: center; gap: 70px; }
+        {{__r}} .who { flex: none; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        {{__r}} .who img { width: 440px; height: 440px; filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.22)); }
+        {{__r}} .name { padding: 10px 30px; border-radius: 14px; background: var(--accent); color: var(--on-accent); font-size: 40px; }
+        {{__r}} .txt { display: block; }
+        {{__r}} .bubble { position: relative; flex: 1; padding: 54px 60px; border-radius: 48px; background: var(--bg2); border: 5px solid var(--ink); font-size: 62px; line-height: 1.25; box-shadow: 12px 12px 0 var(--accent2); }
+        {{__r}} .bubble::before { content: ""; position: absolute; left: -46px; top: 50%; margin-top: -26px; border: 26px solid transparent; border-right: 46px solid var(--ink); border-left: 0; }
+        {{__r}} .bubble::after { content: ""; position: absolute; left: -36px; top: 50%; margin-top: -19px; border: 19px solid transparent; border-right: 37px solid var(--bg2); border-left: 0; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column-reverse; justify-content: center; gap: 60px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .bubble { flex: none; width: 100%; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .bubble::before { left: 50%; top: auto; bottom: -46px; margin: 0 0 0 -26px; border: 26px solid transparent; border-top: 46px solid var(--ink); border-bottom: 0; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .bubble::after { left: 50%; top: auto; bottom: -36px; margin: 0 0 0 -19px; border: 19px solid transparent; border-top: 37px solid var(--bg2); border-bottom: 0; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="who"><img class="ci" src="assets/characters/{{character}}.svg" alt="" />{{#name}}<div class="name">{{name}}</div>{{/name}}</div>
+        <div class="bubble"><span class="txt">{{line}}</span></div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".who img"), { y: 260, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "back.out(1.6)" }, 0.05);
+          if ($(".name")) tl.fromTo($(".name"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 0.5);
+          tl.fromTo($(".bubble"), { opacity: 0, scale: 0.4, transformOrigin: "0% 50%" }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, 0.45);
+          // The line reveals left to right over about half of the narration.
+          const typeEnd = Math.min(P.D - 0.8, Math.max(1.6, P.vo + (P.voEnd - P.vo) * 0.6));
+          tl.fromTo($(".txt"), { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: typeEnd - 0.75, ease: "none" }, 0.75);
+          // The speaker nods while talking.
+          const nods = Math.max(1, Math.floor((typeEnd - 0.8) / 0.5));
+          tl.to($(".who img"), { rotation: -4, duration: 0.25, yoyo: true, repeat: nods * 2 - 1, ease: "sine.inOut", transformOrigin: "50% 100%" }, 0.8);
+          tl.to($(".wrap"), { opacity: 0, y: -24, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

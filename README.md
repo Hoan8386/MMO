@@ -9,6 +9,10 @@ Thiết kế đầy đủ ở [docs/THIET-KE-HE-THONG.md](docs/THIET-KE-HE-THONG
 3. **Sửa và duyệt kế hoạch** ngay trên trang, rồi bấm **Duyệt & render**. Hệ thống tạo giọng đọc bằng edge-tts, dựng dự án HyperFrames và xuất MP4.
 4. Muốn chỉnh tay thì bấm **Chỉnh sửa trong Studio** để mở HyperFrames Studio, rồi bấm **Render** để xuất kèm các chỉnh sửa.
 
+**Phim hoạt hình**: khi tạo dự án chọn loại "Phim hoạt hình", dán mô tả câu chuyện. AI viết kịch bản (nhân vật người
+và con vật, lời thoại nhiều giọng, hành động, cảm xúc), hệ thống lồng tiếng và dựng phim 2D. Chi tiết ở
+[server/frames/README.md](server/frames/README.md#phim-hoạt-hình-engine-animation).
+
 Chạy không cần giao diện: `npm --prefix server run make:video -- samples/tin-cong-nghe.txt --slug thu`.
 
 Mọi thông tin (dự án, phiên bản render, lượt gọi AI, job) lưu trong **MySQL**; giao diện quản lý viết bằng **React**.

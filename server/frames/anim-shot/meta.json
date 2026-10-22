@@ -1,0 +1,95 @@
+{
+  "frame_id": "anim-shot",
+  "version": 1,
+  "status": "active",
+  "engine": "animation",
+  "name": "Cảnh hoạt hình",
+  "description": "Một câu thoại hoặc một câu dẫn truyện trong phim hoạt hình: bối cảnh, 1–3 nhân vật, ai nói, hành động và cảm xúc, góc máy.",
+  "category": "animation",
+  "scene_type": "shot",
+  "tags": [
+    "animation"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 1.4,
+    "max": 20,
+    "recommended": 4
+  },
+  "inputs": {
+    "setting": {
+      "type": "string",
+      "enum": "@settings",
+      "required": true,
+      "description": "bối cảnh"
+    },
+    "time": {
+      "type": "string",
+      "enum": "@times",
+      "description": "day, sunset hoặc night (mặc định day)"
+    },
+    "cast": {
+      "type": "list",
+      "enum": "@rigs",
+      "minItems": 1,
+      "maxItems": 3,
+      "required": true,
+      "description": "nhân vật có mặt, theo thứ tự trái → phải"
+    },
+    "speaker": {
+      "type": "string",
+      "enum": "@speakers",
+      "required": true,
+      "description": "nhân vật nói câu này, hoặc narrator nếu là lời kể"
+    },
+    "actor": {
+      "type": "string",
+      "enum": "@rigs",
+      "description": "nhân vật làm hành động (mặc định: người nói)"
+    },
+    "action": {
+      "type": "string",
+      "enum": "@actions",
+      "description": "hành động"
+    },
+    "emotion": {
+      "type": "string",
+      "enum": "@emotions",
+      "description": "cảm xúc của người nói"
+    },
+    "camera": {
+      "type": "string",
+      "enum": [
+        "wide",
+        "close",
+        "pan"
+      ],
+      "description": "wide toàn cảnh, close cận mặt người nói, pan lia ngang"
+    }
+  },
+  "member_of": {
+    "speaker": "cast",
+    "actor": "cast"
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Rùa ơi, cậu chậm như thế thì bao giờ mới tới nơi?",
+    "inputs": {
+      "setting": "forest",
+      "time": "day",
+      "cast": [
+        "rabbit",
+        "turtle"
+      ],
+      "speaker": "rabbit",
+      "action": "laugh",
+      "emotion": "happy",
+      "camera": "wide"
+    }
+  }
+}

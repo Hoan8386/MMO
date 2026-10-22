@@ -1,0 +1,62 @@
+{
+  "frame_id": "story-scene",
+  "version": 1,
+  "status": "active",
+  "name": "Cảnh truyện",
+  "description": "Một cảnh trong truyện: nhân vật đi vào sân khấu có mặt đất, 0–3 đạo cụ (nhà, cây, núi…) mọc lên phía sau, nhãn thời gian/địa điểm và một câu dẫn truyện. Dùng cho câu kể diễn biến: ai, ở đâu, làm gì.",
+  "category": "content",
+  "scene_type": "storyscene",
+  "tags": [
+    "story",
+    "fable"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 7
+  },
+  "inputs": {
+    "character": {
+      "type": "character",
+      "required": true,
+      "description": "nhân vật đang được kể"
+    },
+    "when": {
+      "type": "string",
+      "maxLength": 30,
+      "description": "thời gian hoặc địa điểm, vd. Một buổi sáng"
+    },
+    "caption": {
+      "type": "string",
+      "required": true,
+      "maxLength": 110,
+      "description": "câu dẫn truyện ngắn"
+    },
+    "props": {
+      "type": "icons",
+      "minItems": 0,
+      "maxItems": 3,
+      "description": "đạo cụ phía sau: nhà, cây, núi, mặt trời…"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Một buổi sáng, chú thỏ chạy ra khỏi hang và thách đố cả khu rừng.",
+    "inputs": {
+      "character": "rabbit",
+      "when": "Một buổi sáng",
+      "caption": "Thỏ chạy ra khỏi hang và thách đố cả khu rừng",
+      "props": [
+        "deciduous-tree",
+        "house",
+        "sun"
+      ]
+    }
+  }
+}

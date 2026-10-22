@@ -1,0 +1,68 @@
+{
+  "frame_id": "story-emotion",
+  "version": 1,
+  "status": "active",
+  "name": "Cảm xúc thay đổi",
+  "description": "Nhân vật ở giữa, bên cạnh là gương mặt cảm xúc lúc đầu, mũi tên và gương mặt cảm xúc lúc sau (hiện khi từ khoá được đọc), kèm một câu giải thích. Dùng khi tâm trạng nhân vật đổi: buồn → vui, tự tin → hoảng hốt.",
+  "category": "content",
+  "scene_type": "emotion",
+  "tags": [
+    "story",
+    "fable",
+    "psychology"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 12,
+    "recommended": 7
+  },
+  "inputs": {
+    "character": {
+      "type": "character",
+      "required": true
+    },
+    "before": {
+      "type": "character",
+      "required": true,
+      "description": "gương mặt cảm xúc lúc đầu (nhóm faces)"
+    },
+    "after": {
+      "type": "character",
+      "required": true,
+      "description": "gương mặt cảm xúc lúc sau (nhóm faces)"
+    },
+    "before_label": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "after_label": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "một từ khoá: lúc lời kể nói tới cảm xúc mới",
+  "sample": {
+    "voice_text": "Thỏ đang ngủ ngon thì giật mình thấy rùa đã gần tới đích.",
+    "keywords": [
+      "giật mình"
+    ],
+    "inputs": {
+      "character": "rabbit",
+      "before": "sleeping-face",
+      "after": "face-screaming-in-fear",
+      "before_label": "Chủ quan",
+      "after_label": "Hoảng hốt",
+      "caption": "Rùa đã gần tới đích!"
+    }
+  }
+}

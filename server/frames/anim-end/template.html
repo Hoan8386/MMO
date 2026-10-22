@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; overflow: hidden; background: #000; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; }
+        {{__r}} .stage { position: absolute; inset: 0; width: 100%; height: 100%; }
+        {{__r}} .end { position: absolute; left: 0; right: 0; top: 70px; display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+        {{__r}} .het { font-size: 150px; line-height: 1; color: #FFFFFF; -webkit-text-stroke: 8px #3A2A1A; paint-order: stroke fill; }
+        {{__r}} .moral { max-width: 1300px; padding: 22px 46px; border-radius: 26px; background: rgba(255, 246, 226, 0.95); border: 5px solid #8B5A2B; color: #3A2A1A; font-size: 46px; line-height: 1.3; }
+        {{__r}}:not([data-aspect="16x9"]) .moral { max-width: 86%; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        {{{__stage}}}
+        <div class="end"><div class="het">{{#end_text}}{{end_text}}{{/end_text}}{{^end_text}}Hết{{/end_text}}</div>{{#moral}}<div class="moral">{{moral}}</div>{{/moral}}</div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const tl = gsap.timeline({ paused: true });
+          {{{__engine}}}
+          animShot(R, P, tl);
+          tl.fromTo($(".het"), { scale: 0, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(2)" }, 0.3);
+          if ($(".moral")) tl.fromTo($(".moral"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.9);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

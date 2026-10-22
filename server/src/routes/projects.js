@@ -8,7 +8,7 @@ import { loadTopics } from "../video/catalog.js";
 import { projectDir, slugify, listImages, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
 import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
-import { VOICES, voiceHash } from "../video/tts.js";
+import { VOICES, voiceHash, voiceFor } from "../video/tts.js";
 import { ASPECTS, DEFAULT_ASPECT } from "../video/aspects.js";
 
 const router = Router();
@@ -27,7 +27,7 @@ const aspectFields = (ratio) => {
 
 router.get("/", async (_req, res) => {
   const rows = await query(
-    `SELECT p.id, p.slug, p.title, p.topic, p.aspect_ratio, p.status, p.progress, p.message, p.duration, p.current_version, p.manual_edit,
+    `SELECT p.id, p.slug, p.mode, p.title, p.topic, p.aspect_ratio, p.status, p.progress, p.message, p.duration, p.current_version, p.manual_edit,
        JSON_LENGTH(p.plan, '$.scenes') AS scene_count, p.created_at, p.updated_at,
        (SELECT v.file FROM project_versions v WHERE v.project_id=p.id ORDER BY v.version DESC LIMIT 1) AS latest_file,
        (SELECT COALESCE(SUM(a.input_tokens + a.output_tokens + a.cache_read_input_tokens), 0) FROM ai_calls a WHERE a.project_id=p.id) AS tokens
@@ -42,9 +42,12 @@ router.post("/", async (req, res) => {
   let slug = slugify(title) || "video";
   if (await one("SELECT id FROM projects WHERE slug=?", [slug])) slug = `${slug}-${Date.now().toString(36)}`;
   const size = aspectFields(req.body.aspect_ratio);
+  // Animation projects take the storybook look of the storytelling topic unless told otherwise.
+  const mode = req.body.mode === "animation" ? "animation" : "explainer";
+  const topic = loadTopics().has(req.body.topic) ? req.body.topic : mode === "animation" && loadTopics().has("storytelling") ? "storytelling" : "technology";
   const r = await query(
-    "INSERT INTO projects (slug, title, material, channel, topic, voice, voice_rate, target_seconds, aspect_ratio, width, height) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-    [slug, title.trim(), material, req.body.channel || null, loadTopics().has(req.body.topic) ? req.body.topic : "technology", req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height],
+    "INSERT INTO projects (slug, mode, title, material, channel, topic, voice, voice_rate, target_seconds, aspect_ratio, width, height) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+    [slug, mode, title.trim(), material, req.body.channel || null, topic, req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height],
   );
   const dir = projectDir(slug);
   await fs.mkdir(path.join(dir, "assets", "img"), { recursive: true });
@@ -69,7 +72,8 @@ router.get("/:id", async (req, res) => {
   const sceneDur = Object.fromEntries((timeline?.scenes ?? []).map((s) => [s.id, s.duration]));
   const audio = {};
   for (const s of p.plan?.scenes ?? []) {
-    const hit = byHash.get(voiceHash(s.voice_text, p.voice, p.voice_rate));
+    const v = voiceFor(s, { voice: p.voice, rate: p.voice_rate }, p.plan);
+    const hit = byHash.get(voiceHash(s.voice_text, v.voice, v.rate, v.pitch));
     if (s.id && hit) audio[s.id] = { url: `${storageUrl(path.join(voDir, `${hit.id}.mp3`))}?h=${hit.hash}`, duration: hit.duration, scene_duration: sceneDur[hit.id] };
   }
   const [versions, usage, jobs] = await Promise.all([

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 160px; right: 160px; top: 90px; bottom: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        {{__r}} .hero { position: relative; z-index: 2; width: 300px; height: 300px; margin-bottom: -70px; }
+        {{__r}} .hero img { width: 100%; height: 100%; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.25)); }
+        {{__r}} .page { position: relative; width: 100%; max-width: 1300px; padding: 100px 80px 70px; border-radius: 26px 26px 26px 6px; background: var(--bg2); box-shadow: 0 30px 70px rgba(0, 0, 0, 0.18), inset 0 0 0 3px var(--line); text-align: center; }
+        {{__r}} .page::after { content: ""; position: absolute; right: 0; bottom: 0; width: 90px; height: 90px; border-radius: 0 0 26px 0; background: linear-gradient(135deg, transparent 50%, var(--panel) 50%); }
+        {{__r}} .kicker { display: flex; align-items: center; justify-content: center; gap: 24px; font-size: 40px; font-style: italic; color: var(--accent); }
+        {{__r}} .kicker i { display: block; width: 110px; height: 3px; background: var(--accent); }
+        {{__r}} .title { margin-top: 24px; font-size: 104px; line-height: 1.06; }
+        {{__r}} .stars { position: absolute; inset: 0; pointer-events: none; }
+        {{__r}} .star { position: absolute; width: 38px; height: 38px; background: var(--accent2); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .page { padding: 110px 50px 70px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .title { font-size: 92px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .hero { width: 340px; height: 340px; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        {{#character}}<div class="hero"><img class="hi" src="assets/characters/{{character}}.svg" alt="" /></div>{{/character}}
+        <div class="page">
+        <div class="kicker"><i></i><span>{{#kicker}}{{kicker}}{{/kicker}}{{^kicker}}Ngày xửa ngày xưa…{{/kicker}}</span><i></i></div>
+        <div class="title">{{title}}</div>
+        <div class="stars"><div class="star" style="left: 60px; top: 40px"></div><div class="star" style="right: 80px; top: 70px"></div><div class="star" style="left: 140px; bottom: 50px"></div></div>
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".page"), { opacity: 0, rotationX: -70, transformPerspective: 1400, transformOrigin: "50% 100%" }, { opacity: 1, rotationX: 0, duration: 0.9, ease: "power3.out" }, 0.05);
+          tl.fromTo($$(".kicker i"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.out" }, 0.6);
+          tl.fromTo($(".kicker span"), { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0.65);
+          tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.85);
+          tl.fromTo($$(".star"), { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.5, stagger: 0.12, ease: "back.out(2.5)" }, 1);
+          if ($(".hero")) {
+          tl.fromTo($(".hero"), { y: 220, scale: 0.4, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }, 1.1);
+          const bobs = Math.max(1, Math.floor((P.D - 2.4) / 1.2));
+          tl.to($(".hero"), { y: -16, duration: 0.6, yoyo: true, repeat: bobs * 2 - 1, ease: "sine.inOut" }, 1.9);
+          }
+          tl.to($(".wrap"), { opacity: 0, scale: 0.97, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

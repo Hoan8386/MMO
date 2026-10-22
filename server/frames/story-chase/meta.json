@@ -1,0 +1,57 @@
+{
+  "frame_id": "story-chase",
+  "version": 1,
+  "status": "active",
+  "name": "Rượt đuổi",
+  "description": "Hai nhân vật chạy qua màn hình (kẻ đuổi phía sau, kẻ chạy phía trước) với vệt tốc độ và bụi bay, kèm một câu dẫn. Dùng cho cảnh rượt đuổi, cuộc đua, săn mồi.",
+  "category": "content",
+  "scene_type": "chase",
+  "tags": [
+    "story",
+    "fable",
+    "crime",
+    "nature"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 10,
+    "recommended": 5
+  },
+  "inputs": {
+    "chaser": {
+      "type": "character",
+      "required": true,
+      "description": "kẻ đuổi theo"
+    },
+    "runner": {
+      "type": "character",
+      "required": true,
+      "description": "kẻ chạy trốn / dẫn trước"
+    },
+    "caption": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 40
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Con cáo lao theo, nhưng chú thỏ đã kịp phóng vào bụi rậm.",
+    "inputs": {
+      "chaser": "fox",
+      "runner": "rabbit",
+      "caption": "Cáo lao theo, thỏ phóng vào bụi rậm",
+      "title": "Cuộc rượt đuổi"
+    }
+  }
+}

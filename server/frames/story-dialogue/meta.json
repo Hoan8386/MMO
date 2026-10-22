@@ -1,0 +1,73 @@
+{
+  "frame_id": "story-dialogue",
+  "version": 1,
+  "status": "active",
+  "name": "Hội thoại hai nhân vật",
+  "description": "Hai nhân vật đứng hai bên, 2–4 câu thoại hiện lần lượt trong bong bóng, xen kẽ bắt đầu từ nhân vật bên trái; người đang nói nhún lên. Dùng khi lời kể thuật lại một cuộc đối đáp.",
+  "category": "content",
+  "scene_type": "dialogue",
+  "tags": [
+    "story",
+    "fable",
+    "relationship"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "left": {
+      "type": "character",
+      "required": true,
+      "description": "nhân vật nói câu 1, 3"
+    },
+    "right": {
+      "type": "character",
+      "required": true,
+      "description": "nhân vật nói câu 2, 4"
+    },
+    "left_name": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "right_name": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "lines": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 70,
+      "description": "các câu thoại theo thứ tự, xen kẽ trái – phải"
+    }
+  },
+  "keywords": "một từ khoá cho mỗi câu thoại, theo đúng thứ tự: câu thứ i hiện ra khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Thỏ hỏi: rùa ơi, sao chậm thế? Rùa đáp: vậy ta thi chạy nhé! Thỏ cười: được thôi!",
+    "keywords": [
+      "Thỏ hỏi",
+      "Rùa đáp",
+      "Thỏ cười"
+    ],
+    "inputs": {
+      "left": "rabbit",
+      "right": "turtle",
+      "left_name": "Thỏ",
+      "right_name": "Rùa",
+      "lines": [
+        "Rùa ơi, sao chậm thế?",
+        "Vậy ta thi chạy nhé!",
+        "Được thôi, ta thắng chắc!"
+      ]
+    }
+  }
+}

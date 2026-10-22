@@ -1,0 +1,69 @@
+{
+  "frame_id": "anim-title",
+  "version": 1,
+  "status": "active",
+  "engine": "animation",
+  "name": "Mở đầu phim hoạt hình",
+  "description": "Tên phim trên tấm bảng gỗ phía trên, cả dàn nhân vật vẫy chào trong bối cảnh đầu tiên.",
+  "category": "animation",
+  "scene_type": "intro",
+  "tags": [
+    "animation"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 10,
+    "recommended": 5
+  },
+  "group_action": "wave",
+  "inputs": {
+    "setting": {
+      "type": "string",
+      "enum": "@settings",
+      "required": true,
+      "description": "bối cảnh"
+    },
+    "time": {
+      "type": "string",
+      "enum": "@times",
+      "description": "day, sunset hoặc night (mặc định day)"
+    },
+    "cast": {
+      "type": "list",
+      "enum": "@rigs",
+      "minItems": 1,
+      "maxItems": 3,
+      "required": true,
+      "description": "nhân vật có mặt, theo thứ tự trái → phải"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true
+    },
+    "kicker": {
+      "type": "string",
+      "maxLength": 30,
+      "description": "mặc định: Phim hoạt hình"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Câu chuyện hôm nay: Thỏ và Rùa.",
+    "inputs": {
+      "setting": "meadow",
+      "time": "day",
+      "cast": [
+        "rabbit",
+        "turtle"
+      ],
+      "title": "Thỏ và Rùa"
+    }
+  }
+}

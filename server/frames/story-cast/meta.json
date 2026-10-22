@@ -1,0 +1,88 @@
+{
+  "frame_id": "story-cast",
+  "version": 1,
+  "status": "active",
+  "name": "Giới thiệu nhân vật",
+  "description": "Dàn 2–5 nhân vật đứng thành hàng, mỗi người một vầng sáng, tên và vai trò, xuất hiện lần lượt. Dùng để giới thiệu các nhân vật của câu chuyện.",
+  "category": "content",
+  "scene_type": "cast",
+  "tags": [
+    "story",
+    "fable",
+    "people"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 16,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "characters": {
+      "type": "characters",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 5
+    },
+    "names": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 5,
+      "itemMaxLength": 18
+    },
+    "roles": {
+      "type": "list",
+      "minItems": 2,
+      "maxItems": 5,
+      "itemMaxLength": 26,
+      "description": "vai trò ngắn, vd. Kẻ kiêu ngạo"
+    }
+  },
+  "same_length": [
+    [
+      "characters",
+      "names"
+    ],
+    [
+      "characters",
+      "roles"
+    ]
+  ],
+  "keywords": "một từ khoá cho mỗi nhân vật, theo đúng thứ tự: nhân vật thứ i hiện ra khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Câu chuyện có ba nhân vật: chú thỏ kiêu ngạo, bác rùa kiên nhẫn và cáo làm trọng tài.",
+    "keywords": [
+      "thỏ",
+      "rùa",
+      "cáo"
+    ],
+    "inputs": {
+      "title": "Nhân vật",
+      "characters": [
+        "rabbit",
+        "turtle",
+        "fox"
+      ],
+      "names": [
+        "Thỏ",
+        "Rùa",
+        "Cáo"
+      ],
+      "roles": [
+        "Kiêu ngạo",
+        "Kiên nhẫn",
+        "Trọng tài"
+      ]
+    }
+  }
+}

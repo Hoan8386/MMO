@@ -11,6 +11,7 @@ export default function ProjectDetail() {
   const [p, setP] = useState(null);
   const [frames, setFrames] = useState([]);
   const [library, setLibrary] = useState({});
+  const [animation, setAnimation] = useState(null);
   const [draft, setDraft] = useState(null); // plan being edited, null = in sync with server
   const [errors, setErrors] = useState([]);
   const [error, setError] = useState("");
@@ -34,6 +35,7 @@ export default function ProjectDetail() {
   }, [load]);
   useEffect(() => {
     api.get("/frames").then(setFrames).catch((e) => setError(e.message));
+    api.get("/animation").then(setAnimation).catch(() => {});
   }, []);
   // Library icons, logos and photos that fit the project's topic, grouped by kind.
   useEffect(() => {
@@ -225,9 +227,11 @@ export default function ProjectDetail() {
               <ul>{p.warnings.map((w) => <li key={w}>{w}</li>)}</ul>
             </details>
           )}
+          {p.mode === "animation" && animation && <CastEditor plan={plan} animation={animation} disabled={busy} onChange={setDraft} />}
           <PlanEditor
             plan={plan}
-            frames={frames}
+            frames={frames.filter((f) => (f.engine || null) === (p.mode === "animation" ? "animation" : null))}
+            enumLabels={animationLabels(animation)}
             images={p.images}
             library={library}
             errors={errors}
@@ -380,5 +384,53 @@ function ImagesCard({ p, disabled, onChanged, onError }) {
         <p className="muted small">Chưa có ảnh. Khi có ảnh, AI có thể dùng frame “Ảnh kèm chú thích”.</p>
       )}
     </section>
+  );
+}
+
+// Display names for the animation choices shown in the plan editor.
+function animationLabels(a) {
+  if (!a) return {};
+  return {
+    narrator: "Người dẫn truyện",
+    ...Object.fromEntries(a.rigs.map((r) => [r.id, r.name])),
+    ...Object.fromEntries(a.settings.map((s) => [s.id, s.name])),
+    ...a.times,
+    ...a.actions,
+    wide: "Toàn cảnh",
+    close: "Cận mặt",
+    pan: "Lia ngang",
+    neutral: "bình thường",
+    happy: "vui",
+    sad: "buồn",
+    angry: "giận",
+    scared: "sợ",
+    surprised: "ngạc nhiên",
+    love: "yêu thương",
+  };
+}
+
+// The film's characters: name and voice style per character (plan.cast).
+function CastEditor({ plan, animation, disabled, onChange }) {
+  const cast = plan.cast || [];
+  const set = (i, patch) => onChange({ ...plan, cast: cast.map((c, j) => (j === i ? { ...c, ...patch } : c)) });
+  return (
+    <div className="cast-editor">
+      <h3>Nhân vật & giọng lồng tiếng</h3>
+      <div className="cast-row">
+        {cast.map((c, i) => {
+          const rig = animation.rigs.find((r) => r.id === c.rig);
+          return (
+            <div key={c.rig} className="cast-card">
+              <div className="cast-art" dangerouslySetInnerHTML={{ __html: rig?.svg || "" }} />
+              <input value={c.name} disabled={disabled} onChange={(e) => set(i, { name: e.target.value })} aria-label="Tên nhân vật" />
+              <select value={c.voice} disabled={disabled} onChange={(e) => set(i, { voice: e.target.value })} aria-label="Giọng">
+                {Object.entries(animation.voices).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+              </select>
+              <small className="muted">{rig?.name}</small>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

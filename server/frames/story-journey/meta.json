@@ -1,0 +1,79 @@
+{
+  "frame_id": "story-journey",
+  "version": 1,
+  "status": "active",
+  "name": "Hành trình của nhân vật",
+  "description": "Con đường nét đứt qua 2–4 chặng (mỗi chặng một hình và nhãn); nhân vật nhảy từ chặng này sang chặng kế khi lời kể nhắc tới. Dùng cho chuyến đi, các bước trong đời nhân vật, diễn biến theo thứ tự.",
+  "category": "content",
+  "scene_type": "journey",
+  "tags": [
+    "story",
+    "fable",
+    "travel"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 44
+    },
+    "character": {
+      "type": "character",
+      "required": true
+    },
+    "stops": {
+      "type": "icons",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "description": "hình cho mỗi chặng"
+    },
+    "labels": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 18,
+      "description": "tên mỗi chặng"
+    }
+  },
+  "same_length": [
+    [
+      "stops",
+      "labels"
+    ]
+  ],
+  "keywords": "một từ khoá cho mỗi chặng, theo đúng thứ tự: nhân vật tới chặng thứ i khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Rùa bò qua cây cầu, leo lên ngọn đồi rồi cuối cùng chạm tới vạch đích.",
+    "keywords": [
+      "cây cầu",
+      "ngọn đồi",
+      "vạch đích"
+    ],
+    "inputs": {
+      "title": "Đường đua của Rùa",
+      "character": "turtle",
+      "stops": [
+        "bridge-at-night",
+        "mountain",
+        "chequered-flag"
+      ],
+      "labels": [
+        "Cây cầu",
+        "Ngọn đồi",
+        "Vạch đích"
+      ]
+    }
+  }
+}

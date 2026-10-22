@@ -30,6 +30,10 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
         if (spec.required) errors.push(`${p}: bắt buộc`);
         continue;
       }
+      if (spec.enum && (spec.type === "string" || spec.type === "list")) {
+        const bad = [v].flat().filter((x) => !spec.enum.includes(x));
+        if (bad.length) errors.push(`${p}: "${bad.join('", "')}" không hợp lệ — chọn một trong: ${spec.enum.join(", ")}`);
+      }
       if (spec.type === "string") {
         if (typeof v !== "string") errors.push(`${p}: phải là chuỗi`);
         else if (spec.maxLength && v.length > spec.maxLength)
@@ -54,15 +58,16 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
         }
       } else if (spec.type === "image") {
         if (!images.includes(v) && !findAsset("photo", v)) errors.push(`${p}: ảnh "${v}" không có trong ảnh của dự án hay thư viện ảnh`);
-      } else if (spec.type === "icon" || spec.type === "logo" || spec.type === "cutout") {
+      } else if (["icon", "logo", "cutout", "character"].includes(spec.type)) {
         const kind = KIND_OF_INPUT[spec.type];
         if (typeof v !== "string" || !findAsset(kind, v)) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
-      } else if (spec.type === "icons") {
-        if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên icon`);
+      } else if (spec.type === "icons" || spec.type === "characters") {
+        const noun = spec.type === "icons" ? "icon" : "nhân vật";
+        if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên ${noun}`);
         else {
-          if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} icon`);
-          if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} icon`);
-          v.filter((x) => !findAsset("illustration", x)).forEach((x) => errors.push(`${p}: icon "${x}" không có trong thư viện`));
+          if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} ${noun}`);
+          if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} ${noun}`);
+          v.filter((x) => !findAsset(KIND_OF_INPUT[spec.type], x)).forEach((x) => errors.push(`${p}: ${noun} "${x}" không có trong thư viện`));
         }
       }
     }
@@ -70,6 +75,11 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
       const n = Array.isArray(inputs[list]) ? inputs[list].length : 0;
       if (inputs[k] != null && (!Number.isInteger(inputs[k]) || inputs[k] < 1 || inputs[k] > n))
         errors.push(`${at}.inputs.${k}: phải là số thứ tự từ 1 đến ${n} trong ${list}`);
+    }
+    // e.g. the speaker of an animation shot must be one of the characters in that shot.
+    for (const [k, list] of Object.entries(frame.member_of || {})) {
+      const v = inputs[k];
+      if (v != null && v !== "narrator" && !(inputs[list] || []).includes(v)) errors.push(`${at}.inputs.${k}: "${v}" phải là một trong ${list} (${(inputs[list] || []).join(", ")})`);
     }
     for (const [a, b] of frame.same_length || []) {
       if (Array.isArray(inputs[a]) && Array.isArray(inputs[b]) && inputs[a].length !== inputs[b].length)

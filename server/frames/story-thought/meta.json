@@ -1,0 +1,49 @@
+{
+  "frame_id": "story-thought",
+  "version": 1,
+  "status": "active",
+  "name": "Nhân vật suy nghĩ",
+  "description": "Nhân vật đứng dưới một đám mây suy nghĩ (ba bong bóng nhỏ bay lên), trong mây là ý nghĩ và có thể kèm một hình minh hoạ. Dùng cho suy nghĩ, giấc mơ, kế hoạch, nỗi lo của nhân vật.",
+  "category": "content",
+  "scene_type": "thought",
+  "tags": [
+    "story",
+    "fable"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 12,
+    "recommended": 6
+  },
+  "inputs": {
+    "character": {
+      "type": "character",
+      "required": true
+    },
+    "thought": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90,
+      "description": "điều nhân vật nghĩ"
+    },
+    "thought_icon": {
+      "type": "icon",
+      "description": "hình trong ý nghĩ"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Rùa nghĩ thầm: chậm mà chắc, mình sẽ không bỏ cuộc.",
+    "inputs": {
+      "character": "turtle",
+      "thought": "Chậm mà chắc, mình sẽ không bỏ cuộc",
+      "thought_icon": "trophy"
+    }
+  }
+}

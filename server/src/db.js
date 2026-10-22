@@ -23,11 +23,17 @@ export async function initDb({ resetJobs = true } = {}) {
     [database],
   );
   if (!hasTopic.length) await admin.query("ALTER TABLE projects ADD COLUMN topic VARCHAR(50) NOT NULL DEFAULT 'technology' AFTER channel");
+  const [hasMode] = await admin.query(
+    "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='projects' AND COLUMN_NAME='mode'",
+    [database],
+  );
+  if (!hasMode.length) await admin.query("ALTER TABLE projects ADD COLUMN mode ENUM('explainer','animation') NOT NULL DEFAULT 'explainer' AFTER slug");
   const [kind] = await admin.query(
     "SELECT COLUMN_TYPE AS t FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='assets' AND COLUMN_NAME='kind'",
     [database],
   );
-  if (kind.length && !kind[0].t.includes("'cutout'")) await admin.query("ALTER TABLE assets MODIFY kind ENUM('illustration','logo','photo','cutout') NOT NULL");
+  if (kind.length && !kind[0].t.includes("'character'"))
+    await admin.query("ALTER TABLE assets MODIFY kind ENUM('illustration','logo','photo','cutout','character') NOT NULL");
   await admin.end();
 
   pool = mysql.createPool({ ...config.db, charset: "utf8mb4", connectionLimit: 10 });

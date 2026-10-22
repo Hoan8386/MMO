@@ -63,6 +63,7 @@ export default function ProjectsPage() {
               <tr key={p.id}>
                 <td>
                   <Link className="title-link" to={`/projects/${p.id}`}>{p.title}</Link>
+                  {p.mode === "animation" && <span className="pill mode-pill">Hoạt hình</span>}
                   {p.current_version ? <div className="muted small">v{p.current_version}{p.manual_edit ? " · có sửa tay" : ""}</div> : null}
                 </td>
                 <td><TopicChip topic={topics.find((t) => t.topic_id === p.topic)} fallback={topicName(p.topic)} /></td>
@@ -103,10 +104,16 @@ export function TopicChip({ topic, fallback }) {
   );
 }
 
+const MODES = [
+  { id: "explainer", icon: "▦", name: "Video giải thích", text: "Thư viện frame: tiêu đề, số liệu, danh sách, ảnh… cho tin tức, kiến thức, đánh giá." },
+  { id: "animation", icon: "✿", name: "Phim hoạt hình", text: "Gửi mô tả câu chuyện, AI dựng phim với nhân vật người và con vật, lời thoại nhiều giọng." },
+];
+
 function NewProjectModal({ topics, onClose }) {
   const navigate = useNavigate();
   const [voices, setVoices] = useState([]);
-  const [form, setForm] = useState({ title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9" });
+  const [form, setForm] = useState({ mode: "explainer", title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9" });
+  const anim = form.mode === "animation";
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -138,6 +145,23 @@ function NewProjectModal({ topics, onClose }) {
           <input value={form.title} onChange={set("title")} placeholder="vd. Bản tin công nghệ 22/10" autoFocus required />
         </label>
         <div className="field">
+          <span className="field-label">Loại video</span>
+          <div className="mode-pick">
+            {MODES.map((m) => (
+              <button
+                type="button"
+                key={m.id}
+                className={`mode-card ${form.mode === m.id ? "active" : ""}`}
+                onClick={() => setForm((f) => ({ ...f, mode: m.id, target_seconds: m.id === "animation" ? 60 : 90, ...(m.id === "animation" ? { topic: "storytelling" } : {}) }))}
+              >
+                <span className="mode-icon" aria-hidden>{m.icon}</span>
+                <strong>{m.name}</strong>
+                <small>{m.text}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+        {!anim && <div className="field">
           <span className="field-label">Chủ đề</span>
           <div className="topic-pick">
             {topics.map((t) => (
@@ -157,14 +181,24 @@ function NewProjectModal({ topics, onClose }) {
               </button>
             ))}
           </div>
-        </div>
+        </div>}
         <div className="field">
           <span className="field-label">Khung hình — chọn theo nền tảng đăng</span>
           <AspectPicker value={form.aspect_ratio} onChange={(v) => setForm((f) => ({ ...f, aspect_ratio: v }))} />
         </div>
         <label>
-          Tư liệu / kịch bản
-          <textarea rows={9} value={form.material} onChange={set("material")} placeholder="Dán ghi chú, bài báo hoặc kịch bản. AI chỉ dùng thông tin có ở đây." required />
+          {anim ? "Mô tả câu chuyện" : "Tư liệu / kịch bản"}
+          <textarea
+            rows={9}
+            value={form.material}
+            onChange={set("material")}
+            placeholder={
+              anim
+                ? "Kể câu chuyện bạn muốn làm phim: nhân vật là ai (người, con vật), chuyện gì xảy ra, kết thúc thế nào. Có thể ghi sẵn vài câu thoại trong ngoặc kép. AI sẽ viết kịch bản, chọn nhân vật, bối cảnh và lồng tiếng."
+                : "Dán ghi chú, bài báo hoặc kịch bản. AI chỉ dùng thông tin có ở đây."
+            }
+            required
+          />
         </label>
         <div className="grid-2">
           <label>

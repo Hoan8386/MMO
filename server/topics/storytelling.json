@@ -1,0 +1,35 @@
+{
+  "topic_id": "storytelling",
+  "order": 41,
+  "name": "Kể chuyện & truyện ngụ ngôn",
+  "description": "Truyện cổ tích, ngụ ngôn, truyện ngắn có nhân vật người và con vật, kể theo cảnh với lời thoại và cảm xúc.",
+  "tone": "ấm áp, gợi hình như người kể chuyện cho trẻ nghe; có lời thoại nhân vật và bài học ở cuối",
+  "kicker": "Kể chuyện",
+  "icon": "open-book",
+  "default_tags": [
+    "fable",
+    "story"
+  ],
+  "related_tags": [
+    "people",
+    "nature",
+    "quote",
+    "relationship"
+  ],
+  "background": "paper",
+  "theme": {
+    "bg": "#FBF5E9",
+    "bg2": "#FFFDF7",
+    "ink": "#3A2A1A",
+    "muted": "#7C6A55",
+    "accent": "#E07A2E",
+    "accent2": "#3E8E7E",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(58, 42, 26, 0.05)",
+    "line": "rgba(58, 42, 26, 0.14)",
+    "glow": "rgba(224, 122, 46, 0.14)",
+    "cap-bg": "rgba(58, 42, 26, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

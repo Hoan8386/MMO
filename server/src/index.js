@@ -5,7 +5,7 @@ import cors from "cors";
 import { config, STORAGE_DIR, ROOT_DIR } from "./config.js";
 import { initDb } from "./db.js";
 import projectsRouter from "./routes/projects.js";
-import { framesRouter, topicsRouter, libraryRouter } from "./routes/catalog.js";
+import { framesRouter, topicsRouter, libraryRouter, animationRouter } from "./routes/catalog.js";
 import { seedTopics, refreshCatalog } from "./video/catalog.js";
 import { syncAssetsToDb } from "./video/library.js";
 
@@ -25,6 +25,7 @@ app.use("/api/projects", projectsRouter);
 app.use("/api/frames", framesRouter);
 app.use("/api/topics", topicsRouter);
 app.use("/api/library", libraryRouter);
+app.use("/api/animation", animationRouter);
 
 // Serve the built React app when it exists (npm run build in web/).
 const webDist = path.join(ROOT_DIR, "web", "dist");

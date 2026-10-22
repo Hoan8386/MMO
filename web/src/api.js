@@ -24,6 +24,7 @@ export const libraryUrl = {
   logo: (name) => `/storage/library/logos/${name}.svg`,
   photo: (name) => `/storage/library/photos/${name}`,
   cutout: (name) => `/storage/library/cutouts/${name}.png`,
+  character: (name) => `/storage/library/characters/${name}.svg`,
 };
 
 export const PROJECT_STATUS = {

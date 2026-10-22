@@ -81,7 +81,15 @@ export function buildTimeline(plan, vo, frames) {
       start,
       duration: D,
       audio: { start: r3(start + LEAD), duration: r3(audio.duration) },
-      props: { ...sc.inputs, D, vo: LEAD, voEnd: r3(LEAD + audio.duration), marks },
+      props: {
+        ...sc.inputs,
+        D,
+        vo: LEAD,
+        voEnd: r3(LEAD + audio.duration),
+        marks,
+        // Animation shots flap the speaker's mouth on every spoken word.
+        ...(frame.engine === "animation" ? { words: audio.words.map((w) => ({ t: r3(LEAD + w.t), d: r3(w.d) })) } : {}),
+      },
       captions: captionChunks(audio.words, start, start + D),
     };
   });

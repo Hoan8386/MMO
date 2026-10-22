@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; overflow: hidden; background: #000; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; }
+        {{__r}} .stage { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        {{{__stage}}}
+
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const tl = gsap.timeline({ paused: true });
+          {{{__engine}}}
+          animShot(R, P, tl);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

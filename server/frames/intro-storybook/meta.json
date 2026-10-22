@@ -1,0 +1,48 @@
+{
+  "frame_id": "intro-storybook",
+  "version": 1,
+  "status": "active",
+  "name": "Mở đầu truyện kể",
+  "description": "Trang sách mở đầu câu chuyện: dòng \"Ngày xửa ngày xưa…\" có hoa văn, tiêu đề lớn và nhân vật chính bật lên phía trên trang. Dùng mở đầu truyện kể, ngụ ngôn, chuyện có thật.",
+  "category": "intro",
+  "scene_type": "intro",
+  "tags": [
+    "story",
+    "fable"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 9,
+    "recommended": 5.5
+  },
+  "inputs": {
+    "kicker": {
+      "type": "string",
+      "maxLength": 30,
+      "description": "mặc định: Ngày xửa ngày xưa…"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 70
+    },
+    "character": {
+      "type": "character",
+      "description": "nhân vật chính"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Ngày xửa ngày xưa, có một chú thỏ rất tự tin vào đôi chân nhanh nhẹn của mình.",
+    "inputs": {
+      "title": "Thỏ và Rùa",
+      "character": "rabbit"
+    }
+  }
+}

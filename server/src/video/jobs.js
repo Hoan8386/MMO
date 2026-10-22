@@ -19,6 +19,7 @@ export async function loadProject(id) {
 // Shape the pipeline modules expect.
 export const pipelineProject = (p) => ({
   slug: p.slug,
+  mode: p.mode || "explainer",
   title: p.title,
   channel: p.channel || "",
   topic: p.topic,

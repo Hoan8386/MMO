@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS projects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   slug VARCHAR(80) NOT NULL UNIQUE,
+  mode ENUM('explainer','animation') NOT NULL DEFAULT 'explainer',
   title VARCHAR(255) NOT NULL,
   material MEDIUMTEXT NOT NULL,
   channel VARCHAR(100) NULL,
@@ -94,7 +95,7 @@ CREATE TABLE IF NOT EXISTS topics (
 -- `common` assets suit every topic; the others are linked to topics in topic_assets.
 CREATE TABLE IF NOT EXISTS assets (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  kind ENUM('illustration','logo','photo','cutout') NOT NULL,
+  kind ENUM('illustration','logo','photo','cutout','character') NOT NULL,
   name VARCHAR(120) NOT NULL,
   file VARCHAR(255) NOT NULL,
   label VARCHAR(255) NULL,

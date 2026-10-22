@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 100px; right: 100px; top: 80px; bottom: 270px; display: flex; flex-direction: column; gap: 30px; }
+        {{__r}} .title { font-size: 70px; text-align: center; }
+        {{__r}} .row { flex: 1; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; align-items: flex-end; gap: 30px 40px; }
+        {{__r}} .c { width: 330px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        {{__r}} .spot { position: relative; width: 320px; height: 340px; display: flex; align-items: flex-end; justify-content: center; }
+        {{__r}} .spot::before { content: ""; position: absolute; left: 10px; right: 10px; top: 0; bottom: 0; background: linear-gradient(180deg, transparent, var(--glow)); clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%); }
+        {{__r}} .spot::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: -12px; height: 40px; border-radius: 50%; background: var(--panel); border: 3px solid var(--line); }
+        {{__r}} .spot img { position: relative; z-index: 1; width: 290px; height: 290px; }
+        {{__r}} .nm { font-size: 46px; }
+        {{__r}} .rl { font-size: 30px; color: var(--muted); text-align: center; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .c { width: 360px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .spot img { width: 260px; height: 260px; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        {{#title}}<div class="title">{{title}}</div>{{/title}}
+        <div class="row">{{#characters}}<div class="c"><div class="spot"><img src="assets/characters/{{.}}.svg" alt="" /></div><div class="nm"></div><div class="rl"></div></div>{{/characters}}</div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          const cards = $$(".c");
+          cards.forEach((c, i) => {
+          c.querySelector(".nm").textContent = P.names[i] || "";
+          c.querySelector(".rl").textContent = (P.roles || [])[i] || "";
+          });
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.05);
+          let last = 0.3;
+          cards.forEach((c, i) => {
+          const t = Math.max(last + 0.3, at(i, cards.length) - 0.15);
+          last = t;
+          tl.fromTo(c.querySelector(".spot"), { opacity: 0 }, { opacity: 1, duration: 0.3 }, t);
+          tl.fromTo(c.querySelector("img"), { y: -300, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "bounce.out" }, t);
+          tl.fromTo([c.querySelector(".nm"), c.querySelector(".rl")], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, t + 0.4);
+          });
+          tl.to($(".wrap"), { opacity: 0, y: -24, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

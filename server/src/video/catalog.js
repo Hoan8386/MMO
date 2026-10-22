@@ -3,6 +3,19 @@ import path from "node:path";
 import { SERVER_DIR } from "../config.js";
 import { query } from "../db.js";
 import { loadAssets, refreshAssets, KIND_OF_INPUT } from "./library.js";
+import { RIG_IDS, ACTIONS, EMOTIONS } from "../animation/rigs.js";
+import { SETTING_IDS, TIMES } from "../animation/settings.js";
+
+// Named value lists that animation frames reference as "enum": "@name", so adding a character
+// or a setting never needs a meta.json edit.
+const ENUMS = {
+  "@rigs": RIG_IDS,
+  "@speakers": ["narrator", ...RIG_IDS],
+  "@settings": SETTING_IDS,
+  "@times": Object.keys(TIMES),
+  "@actions": Object.keys(ACTIONS),
+  "@emotions": EMOTIONS,
+};
 
 export const FRAMES_DIR = path.join(SERVER_DIR, "frames");
 
@@ -14,6 +27,7 @@ export function loadFrames() {
     if (!fs.existsSync(metaFile)) continue;
     const meta = JSON.parse(fs.readFileSync(metaFile, "utf8"));
     if (meta.frame_id !== name) throw new Error(`frames/${name}: frame_id "${meta.frame_id}" phải trùng tên thư mục`);
+    for (const spec of Object.values(meta.inputs)) if (typeof spec.enum === "string") spec.enum = ENUMS[spec.enum] || [];
     frames.set(name, meta);
   }
   return frames;
@@ -86,17 +100,19 @@ export async function refreshCatalog() {
 // Selects the frames the planner may use. Done in code (never by the AI) so the prompt
 // only carries frames that fit this video: active, right aspect ratio, sharing a tag with
 // the topic (or tagged "common"), at most `perType` per scene type and `maxContent` frames
-// besides intros and outros, best tag match first.
-export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [], perType = 4, maxContent = 20 } = {}) {
+// besides intros and outros, best tag match first. Animation projects (engine "animation")
+// get exactly the animation frames; other projects never see them.
+export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [], perType = 4, maxContent = 20, engine = null } = {}) {
   const usable = [...frames.values()].filter(
     (f) =>
       f.status === "active" &&
+      (f.engine || null) === engine &&
       f.aspect_ratios.includes(aspectRatio) &&
       // A frame that needs an image (or a library icon/logo) is useless when there is none.
       (images.length > 0 || !Object.values(f.inputs).some((i) => i.type === "image" && i.required)) &&
       Object.values(f.inputs).every((i) => !i.required || !KIND_OF_INPUT[i.type] || hasKind(KIND_OF_INPUT[i.type])),
   );
-  if (!topic) return usable;
+  if (!topic || engine) return usable;
 
   const weight = (t) => (topic.default_tags.includes(t) ? 3 : topic.related_tags.includes(t) ? 1 : t === "common" ? 1 : 0);
   const score = (f) => f.tags.reduce((s, t) => s + weight(t), 0);
@@ -134,6 +150,10 @@ export function describeFrames(list) {
                 ? "logo name"
               : i.type === "cutout"
                 ? "cutout name (transparent PNG object)"
+              : i.type === "character"
+                ? "character name"
+              : i.type === "characters"
+                ? `character names ${i.minItems ?? 1}-${i.maxItems ?? 5}`
               : i.type === "string"
                 ? `≤${i.maxLength ?? 80} chars`
                 : i.type;

@@ -1,0 +1,50 @@
+{
+  "frame_id": "story-speech",
+  "version": 1,
+  "status": "active",
+  "name": "Nhân vật nói",
+  "description": "Một nhân vật lớn kèm bảng tên, bên cạnh là bong bóng thoại với câu nói của nhân vật hiện ra từng chữ. Dùng khi lời kể trích lời một nhân vật.",
+  "category": "content",
+  "scene_type": "speech",
+  "tags": [
+    "story",
+    "fable"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 12,
+    "recommended": 6
+  },
+  "inputs": {
+    "character": {
+      "type": "character",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "tên nhân vật"
+    },
+    "line": {
+      "type": "string",
+      "required": true,
+      "maxLength": 110,
+      "description": "câu nhân vật nói, không có dấu ngoặc kép"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Thỏ cười lớn: chạy với rùa thì ta thắng chắc rồi!",
+    "inputs": {
+      "character": "rabbit",
+      "name": "Thỏ",
+      "line": "Chạy với rùa thì ta thắng chắc rồi!"
+    }
+  }
+}

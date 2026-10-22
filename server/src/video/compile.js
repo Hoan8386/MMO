@@ -6,6 +6,7 @@ import { findAsset, copyAsset, KIND_OF_INPUT } from "./library.js";
 import { fill, scriptJson } from "./template.js";
 import { layoutFor, aspectKey, DEFAULT_ASPECT } from "./aspects.js";
 import { sceneFx } from "./fx.js";
+import { shotLayout, shotProps, stageHtml, ENGINE_JS } from "../animation/stage.js";
 
 const FONT = "BeVietnamPro-SemiBold.ttf";
 const FONT_FACE = `@font-face { font-family: "Be Vietnam Pro"; src: url("assets/fonts/${FONT}") format("truetype"); font-weight: 600; }`;
@@ -36,20 +37,26 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
   await fs.writeFile(path.join(dir, "meta.json"), JSON.stringify({ id: path.basename(dir), name: title }, null, 2));
 
   const used = {};
-  for (const sc of timeline.scenes) {
+  for (const [i, sc] of timeline.scenes.entries()) {
     const tpl = await fs.readFile(templatePath(sc.frame_id), "utf8");
+    // Animation scenes get their stage (setting + characters) and the shot engine.
+    const anim = sc.frame.engine === "animation";
+    const layout = anim ? shotLayout(sc.inputs.cast || [], L.scene) : null;
+    const props = anim ? { ...sc.props, ...shotProps(sc, timeline.scenes[i - 1], layout), ...(sc.frame.group_action ? { group: true, action: sc.frame.group_action } : {}) } : sc.props;
     let html = fill(tpl, {
       ...sc.inputs,
+      ...(anim ? { __stage: stageHtml(sc, layout), __engine: ENGINE_JS } : {}),
       __id: sc.id,
       __r: `#${sc.id}-root`,
       __w: L.scene.w,
       __h: L.scene.h,
       __fontface: FONT_FACE,
-      __props: scriptJson(sc.props),
+      __props: scriptJson(props),
     })
       // Lets a template restyle itself per format: {{__r}}[data-aspect="9x16"] .cols { … }
       .replace(`id="${sc.id}-root"`, `id="${sc.id}-root" data-aspect="${aspectKey(aspectRatio)}"`);
-    html = withFx(html, sc, { L, wide: aspectRatio === "16:9" });
+    // The shared motion layer (particles, push-in) would jump at every cut of a cartoon.
+    if (!anim) html = withFx(html, sc, { L, wide: aspectRatio === "16:9" });
     await fs.writeFile(path.join(dir, "compositions", `${sc.id}.html`), html);
     used[sc.frame_id] = sc.frame.version;
   }

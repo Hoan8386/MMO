@@ -1,0 +1,69 @@
+{
+  "frame_id": "anim-end",
+  "version": 1,
+  "status": "active",
+  "engine": "animation",
+  "name": "Kết thúc phim hoạt hình",
+  "description": "Cả dàn nhân vật nhảy mừng, chữ \"Hết\" và bài học của câu chuyện.",
+  "category": "animation",
+  "scene_type": "outro",
+  "tags": [
+    "animation"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 12,
+    "recommended": 6
+  },
+  "group_action": "jump",
+  "inputs": {
+    "setting": {
+      "type": "string",
+      "enum": "@settings",
+      "required": true,
+      "description": "bối cảnh"
+    },
+    "time": {
+      "type": "string",
+      "enum": "@times",
+      "description": "day, sunset hoặc night (mặc định day)"
+    },
+    "cast": {
+      "type": "list",
+      "enum": "@rigs",
+      "minItems": 1,
+      "maxItems": 3,
+      "required": true,
+      "description": "nhân vật có mặt, theo thứ tự trái → phải"
+    },
+    "moral": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "bài học rút ra"
+    },
+    "end_text": {
+      "type": "string",
+      "maxLength": 20,
+      "description": "mặc định: Hết"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Chậm mà chắc vẫn hơn nhanh mà ẩu. Hẹn gặp lại các bạn!",
+    "inputs": {
+      "setting": "meadow",
+      "time": "sunset",
+      "cast": [
+        "rabbit",
+        "turtle"
+      ],
+      "moral": "Chậm mà chắc vẫn hơn nhanh mà ẩu"
+    }
+  }
+}

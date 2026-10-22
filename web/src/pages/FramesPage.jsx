@@ -3,8 +3,8 @@ import { api } from "../api.js";
 import { ErrorNote, AspectIcon, useAspects } from "../components.jsx";
 import { TopicChip } from "./ProjectsPage.jsx";
 
-const TYPE_LABEL = { string: "chữ", number: "số", list: "danh sách", numbers: "dãy số", image: "ảnh", icon: "icon", icons: "danh sách icon", logo: "logo", cutout: "ảnh tách nền" };
-const CATEGORY_LABEL = { intro: "Mở đầu", title: "Tiêu đề", content: "Nội dung", data: "Số liệu", media: "Hình ảnh", outro: "Kết thúc" };
+const TYPE_LABEL = { string: "chữ", number: "số", list: "danh sách", numbers: "dãy số", image: "ảnh", icon: "icon", icons: "danh sách icon", logo: "logo", cutout: "ảnh tách nền", character: "nhân vật", characters: "danh sách nhân vật" };
+const CATEGORY_LABEL = { animation: "Hoạt hình", intro: "Mở đầu", title: "Tiêu đề", content: "Nội dung", data: "Số liệu", media: "Hình ảnh", outro: "Kết thúc" };
 const categoryLabel = (c) => CATEGORY_LABEL[c] || c;
 
 // Stills made by `npm --prefix server run preview:frames` (16:9 at the root, other formats in a sub-folder).
@@ -24,6 +24,8 @@ export default function FramesPage() {
   const [view, setView] = useState("frames");
   const [icons, setIcons] = useState([]);
   const [cutouts, setCutouts] = useState([]);
+  const [characters, setCharacters] = useState([]);
+  const [animation, setAnimation] = useState(null);
   const [error, setError] = useState("");
   const aspects = useAspects();
   useEffect(() => {
@@ -31,6 +33,8 @@ export default function FramesPage() {
     api.get("/topics").then(setTopics).catch((e) => setError(e.message));
     api.get("/library?kind=illustration").then(setIcons).catch((e) => setError(e.message));
     api.get("/library?kind=cutout").then(setCutouts).catch((e) => setError(e.message));
+    api.get("/library?kind=character").then(setCharacters).catch((e) => setError(e.message));
+    api.get("/animation").then(setAnimation).catch((e) => setError(e.message));
   }, []);
 
   const current = topics.find((t) => t.topic_id === topicId);
@@ -66,6 +70,7 @@ export default function FramesPage() {
           <div><strong>{topics.length}</strong><span>chủ đề</span></div>
           <div><strong>{icons.length}</strong><span>icon</span></div>
           <div><strong>{cutouts.length}</strong><span>ảnh tách nền</span></div>
+          <div><strong>{characters.length}</strong><span>nhân vật</span></div>
           <div><strong>{aspects.length || "—"}</strong><span>khung hình</span></div>
         </div>
       </header>
@@ -79,6 +84,12 @@ export default function FramesPage() {
         </button>
         <button role="tab" aria-selected={view === "cutouts"} className={view === "cutouts" ? "active" : ""} onClick={() => setView("cutouts")}>
           Ảnh tách nền <span className="chip-count">{cutouts.length}</span>
+        </button>
+        <button role="tab" aria-selected={view === "characters"} className={view === "characters" ? "active" : ""} onClick={() => setView("characters")}>
+          Nhân vật <span className="chip-count">{characters.length}</span>
+        </button>
+        <button role="tab" aria-selected={view === "animation"} className={view === "animation" ? "active" : ""} onClick={() => setView("animation")}>
+          Hoạt hình <span className="chip-count">{animation ? animation.rigs.length : 0}</span>
         </button>
       </div>
 
@@ -119,8 +130,10 @@ export default function FramesPage() {
         </div>
       )}
 
-      {view !== "frames" ? (
-        <AssetLibrary kind={view} assets={view === "icons" ? icons : cutouts} topic={current} search={search} />
+      {view === "animation" ? (
+        <AnimationGallery data={animation} search={search} />
+      ) : view !== "frames" ? (
+        <AssetLibrary kind={view} assets={{ icons, cutouts, characters }[view]} topic={current} search={search} />
       ) : (
         <>
           <p className="muted small result-count">{shown.length} frame</p>
@@ -163,11 +176,11 @@ function Preview({ frame, topic, ratio }) {
   );
 }
 
-// Library icons (Fluent Emoji) or cutouts (transparent PNG photos) that frames can show;
+// Library icons and story characters (Fluent Emoji) or cutouts (transparent PNG photos) that frames can show;
 // click copies the name for the plan editor.
 function AssetLibrary({ kind, assets, topic, search }) {
   const [copied, setCopied] = useState("");
-  const noun = kind === "icons" ? "icon" : "ảnh tách nền";
+  const noun = { icons: "icon", cutouts: "ảnh tách nền", characters: "nhân vật" }[kind];
   const list = assets.filter((a) => (!topic || a.common || a.topics.includes(topic.topic_id)) && (!search || fold(`${a.name} ${a.label}`).includes(fold(search))));
   async function copy(name) {
     try {
@@ -183,7 +196,7 @@ function AssetLibrary({ kind, assets, topic, search }) {
       <p className="muted small result-count">
         {list.length} {noun}{topic ? ` dùng được cho chủ đề ${topic.name}` : ""} · bấm để chép tên
       </p>
-      <div className={kind === "icons" ? "icon-grid" : "icon-grid cutout-grid"}>
+      <div className={kind === "cutouts" ? "icon-grid cutout-grid" : "icon-grid"}>
         {list.map((a, i) => (
           <button key={a.name} className="icon-tile" style={{ "--i": Math.min(i, 40) }} onClick={() => copy(a.name)} title={a.credit ? `${a.name} — ${a.credit}` : a.name}>
             <img src={a.url} alt="" loading="lazy" />
@@ -302,6 +315,42 @@ function FrameDetail({ frame: f, topic: initialTopic, topics, aspects, initialRa
             <div className="chips">{f.tags.map((t) => <span key={t} className="chip static">{t}</span>)}</div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Animation mode: the rigged characters and the settings the screenplay can use.
+function AnimationGallery({ data, search }) {
+  if (!data) return <p className="muted">Đang tải…</p>;
+  const match = (x) => !search || fold(`${x.id} ${x.name}`).includes(fold(search));
+  const people = data.rigs.filter((r) => r.kind === "person" && match(r));
+  const animals = data.rigs.filter((r) => r.kind === "animal" && match(r));
+  const card = (r) => (
+    <div key={r.id} className="rig-card" title={`${r.id} · giọng ${data.voices[r.voice]}`}>
+      <div className="rig-art" dangerouslySetInnerHTML={{ __html: r.svg }} />
+      <strong>{r.name}</strong>
+      <small className="muted">{r.id} · {data.voices[r.voice]}</small>
+    </div>
+  );
+  return (
+    <div className="anim-gallery">
+      <p className="muted small">
+        Nhân vật có khớp tay, chân, đầu, mắt chớp, miệng nói theo lời thoại và {data.emotions.length} cảm xúc. Hành động:{" "}
+        {Object.values(data.actions).join(", ")}.
+      </p>
+      <h3>Người ({people.length})</h3>
+      <div className="rig-grid">{people.map(card)}</div>
+      <h3>Con vật ({animals.length})</h3>
+      <div className="rig-grid">{animals.map(card)}</div>
+      <h3>Bối cảnh ({data.settings.length}) · {Object.values(data.times).join(" / ")}</h3>
+      <div className="setting-grid">
+        {data.settings.filter(match).map((st) => (
+          <div key={st.id} className="setting-card">
+            <div dangerouslySetInnerHTML={{ __html: st.svg }} />
+            <strong>{st.name}</strong> <small className="muted">{st.id}</small>
+          </div>
+        ))}
       </div>
     </div>
   );
