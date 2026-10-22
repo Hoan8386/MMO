@@ -8,7 +8,10 @@
   "scene_type": "question",
   "tags": [
     "common",
-    "hook"
+    "hook",
+    "whatif",
+    "mystery",
+    "philosophy"
   ],
   "aspect_ratios": [
     "16:9"

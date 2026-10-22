@@ -1,0 +1,34 @@
+{
+  "topic_id": "crime",
+  "order": 21,
+  "name": "Tội phạm và điều tra",
+  "description": "Vụ án nổi tiếng, kỹ thuật điều tra, pháp y và những cuộc truy bắt.",
+  "tone": "điềm tĩnh, hồi hộp như phim tài liệu điều tra; tôn trọng nạn nhân, không miêu tả bạo lực chi tiết",
+  "kicker": "Hồ sơ điều tra",
+  "icon": "detective",
+  "default_tags": [
+    "crime",
+    "story"
+  ],
+  "related_tags": [
+    "mystery",
+    "history",
+    "people"
+  ],
+  "background": "vignette",
+  "theme": {
+    "bg": "#0D0F12",
+    "bg2": "#1C2027",
+    "ink": "#F1F1EE",
+    "muted": "#A3A7AD",
+    "accent": "#DC2626",
+    "accent2": "#FACC15",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(220, 38, 38, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#F1F1EE",
+    "cap-hi": "#FACC15"
+  }
+}

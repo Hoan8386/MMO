@@ -1,0 +1,51 @@
+{
+  "frame_id": "story-chapter",
+  "version": 1,
+  "status": "active",
+  "name": "Chương truyện",
+  "description": "Màn chuyển chương kiểu phim: dải đen trên dưới, số chương, tiêu đề lớn và thời gian/địa điểm. Dùng để mở một phần mới trong câu chuyện dài.",
+  "category": "title",
+  "scene_type": "chapter",
+  "tags": [
+    "story",
+    "history",
+    "crime",
+    "mystery",
+    "ancient"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 2.5,
+    "max": 7,
+    "recommended": 4
+  },
+  "inputs": {
+    "chapter": {
+      "type": "string",
+      "required": true,
+      "maxLength": 20,
+      "description": "ví dụ: Phần 2"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "when": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "thời gian hoặc địa điểm"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Phần hai. Cuộc truy lùng bắt đầu.",
+    "inputs": {
+      "chapter": "Phần 2",
+      "title": "Cuộc truy lùng",
+      "when": "Mùa đông năm 1972"
+    }
+  }
+}

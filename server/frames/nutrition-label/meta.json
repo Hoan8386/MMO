@@ -1,0 +1,83 @@
+{
+  "frame_id": "nutrition-label",
+  "version": 1,
+  "status": "active",
+  "name": "Bảng dinh dưỡng",
+  "description": "Minh hoạ món ăn với số calo đếm lên, bên cạnh là bảng thành phần dinh dưỡng (2–5 chất) có thanh độ dài theo khối lượng. Dùng khi nói về dinh dưỡng của một thực phẩm.",
+  "category": "data",
+  "scene_type": "nutrition",
+  "tags": [
+    "nutrition",
+    "health"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "food": {
+      "type": "string",
+      "required": true,
+      "maxLength": 30
+    },
+    "icon": {
+      "type": "icon",
+      "required": true,
+      "description": "hình món ăn"
+    },
+    "serving": {
+      "type": "string",
+      "maxLength": 20,
+      "description": "khẩu phần, ví dụ: 100 g"
+    },
+    "calories": {
+      "type": "number",
+      "description": "kcal"
+    },
+    "labels": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 5,
+      "itemMaxLength": 14,
+      "description": "tên chất"
+    },
+    "values": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 5,
+      "description": "khối lượng (g)"
+    }
+  },
+  "same_length": [
+    [
+      "labels",
+      "values"
+    ]
+  ],
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Một trăm gam ức gà có khoảng một trăm sáu mươi lăm calo và ba mươi mốt gam đạm.",
+    "inputs": {
+      "food": "Ức gà",
+      "icon": "cut-of-meat",
+      "serving": "100 g",
+      "calories": 165,
+      "labels": [
+        "Đạm",
+        "Chất béo",
+        "Tinh bột"
+      ],
+      "values": [
+        31,
+        3.6,
+        0
+      ]
+    }
+  }
+}

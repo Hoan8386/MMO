@@ -70,3 +70,47 @@ CREATE TABLE IF NOT EXISTS jobs (
   CONSTRAINT fk_jobs_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
   INDEX idx_jobs_project (project_id, id)
 );
+
+-- Video topics. Seeded from server/topics/*.json (only topics not yet in the table), then edited in the web UI.
+CREATE TABLE IF NOT EXISTS topics (
+  topic_id VARCHAR(50) PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  description TEXT NULL,
+  tone VARCHAR(500) NULL,
+  kicker VARCHAR(60) NULL,
+  icon VARCHAR(100) NULL,
+  default_tags JSON NOT NULL,
+  related_tags JSON NOT NULL,
+  background VARCHAR(20) NOT NULL DEFAULT 'grid',
+  theme JSON NOT NULL,
+  sort_order INT NOT NULL DEFAULT 99,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Shared asset library (storage/library/, downloaded by scripts/download-assets.js).
+-- `common` assets suit every topic; the others are linked to topics in topic_assets.
+CREATE TABLE IF NOT EXISTS assets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  kind ENUM('illustration','logo','photo') NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  file VARCHAR(255) NOT NULL,
+  label VARCHAR(255) NULL,
+  common TINYINT(1) NOT NULL DEFAULT 0,
+  source VARCHAR(80) NOT NULL,
+  license VARCHAR(100) NULL,
+  credit VARCHAR(255) NULL,
+  source_url VARCHAR(500) NULL,
+  width INT NULL,
+  height INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_assets_kind_name (kind, name)
+);
+
+CREATE TABLE IF NOT EXISTS topic_assets (
+  topic_id VARCHAR(50) NOT NULL,
+  asset_id INT NOT NULL,
+  PRIMARY KEY (topic_id, asset_id),
+  CONSTRAINT fk_topic_assets_asset FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
+);

@@ -1,0 +1,35 @@
+{
+  "topic_id": "world-history",
+  "order": 8,
+  "name": "Lịch sử thế giới",
+  "description": "Sự kiện, nhân vật và bước ngoặt lịch sử thế giới từ cổ đại đến hiện đại.",
+  "tone": "kể chuyện cuốn hút như phim tài liệu, mốc thời gian rõ ràng, đúng sự thật lịch sử",
+  "kicker": "Lịch sử",
+  "icon": "scroll",
+  "default_tags": [
+    "history",
+    "story"
+  ],
+  "related_tags": [
+    "ancient",
+    "people",
+    "statistics",
+    "list"
+  ],
+  "background": "paper",
+  "theme": {
+    "bg": "#F4ECDD",
+    "bg2": "#FBF6EC",
+    "ink": "#3A2A18",
+    "muted": "#7A6650",
+    "accent": "#A0522D",
+    "accent2": "#2F5D62",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(58, 42, 24, 0.05)",
+    "line": "rgba(58, 42, 24, 0.14)",
+    "glow": "rgba(160, 82, 45, 0.14)",
+    "cap-bg": "rgba(58, 42, 24, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

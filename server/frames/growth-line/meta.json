@@ -1,0 +1,83 @@
+{
+  "frame_id": "growth-line",
+  "version": 1,
+  "status": "active",
+  "name": "Biểu đồ đường",
+  "description": "Biểu đồ đường vẽ dần qua 2–7 mốc (năm, tháng), giá trị cuối được nhấn mạnh. Dùng cho xu hướng tăng giảm theo thời gian: giá, dân số, nhiệt độ, doanh thu.",
+  "category": "data",
+  "scene_type": "linechart",
+  "tags": [
+    "finance",
+    "business",
+    "statistics",
+    "environment",
+    "technology"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "labels": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 7,
+      "itemMaxLength": 10,
+      "description": "mốc thời gian"
+    },
+    "values": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 7
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 10,
+      "description": "đơn vị ngắn, ví dụ: %, tỷ, °C"
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 50
+    }
+  },
+  "same_length": [
+    [
+      "labels",
+      "values"
+    ]
+  ],
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Giá trị một trăm triệu gửi tiết kiệm tăng dần theo lãi kép qua từng năm.",
+    "inputs": {
+      "title": "100 triệu với lãi kép 7%/năm",
+      "labels": [
+        "Năm 0",
+        "Năm 5",
+        "Năm 10",
+        "Năm 15",
+        "Năm 20"
+      ],
+      "values": [
+        100,
+        140,
+        197,
+        276,
+        387
+      ],
+      "unit": " triệu",
+      "source": "Tính toán minh hoạ"
+    }
+  }
+}

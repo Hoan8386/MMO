@@ -1,0 +1,46 @@
+{
+  "frame_id": "icon-hero",
+  "version": 1,
+  "status": "active",
+  "name": "Minh hoạ lớn + ý chính",
+  "description": "Một hình minh hoạ lớn nảy vào bên trái, tiêu đề và câu giải thích bên phải. Dùng cho một ý chính cần hình ảnh sinh động thay cho chữ thuần.",
+  "category": "content",
+  "scene_type": "hero",
+  "tags": [
+    "common",
+    "explainer"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 12,
+    "recommended": 6
+  },
+  "inputs": {
+    "icon": {
+      "type": "icon",
+      "required": true,
+      "description": "hình minh hoạ đúng chủ thể của câu"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "subtitle": {
+      "type": "string",
+      "maxLength": 110
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Não bộ chỉ nặng khoảng hai phần trăm cơ thể nhưng dùng tới hai mươi phần trăm năng lượng.",
+    "inputs": {
+      "icon": "brain",
+      "title": "Cỗ máy ngốn năng lượng",
+      "subtitle": "Não chỉ chiếm 2% cân nặng nhưng dùng 20% năng lượng của cơ thể"
+    }
+  }
+}

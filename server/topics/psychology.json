@@ -1,0 +1,36 @@
+{
+  "topic_id": "psychology",
+  "order": 1,
+  "name": "Tâm lý con người",
+  "description": "Cảm xúc, hành vi, thói quen suy nghĩ, các hiệu ứng tâm lý và lý do con người hành động như vậy.",
+  "tone": "ấm áp, thấu hiểu, giải thích hiệu ứng tâm lý bằng ví dụ đời thường; không chẩn đoán bệnh",
+  "kicker": "Tâm lý học",
+  "icon": "brain",
+  "default_tags": [
+    "psychology",
+    "explainer"
+  ],
+  "related_tags": [
+    "myth",
+    "statistics",
+    "quiz",
+    "society",
+    "list"
+  ],
+  "background": "bokeh",
+  "theme": {
+    "bg": "#F6F1FA",
+    "bg2": "#FFFFFF",
+    "ink": "#2A1E3F",
+    "muted": "#6B5E80",
+    "accent": "#8B5CF6",
+    "accent2": "#EC4899",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(42, 30, 63, 0.05)",
+    "line": "rgba(42, 30, 63, 0.14)",
+    "glow": "rgba(139, 92, 246, 0.14)",
+    "cap-bg": "rgba(42, 30, 63, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

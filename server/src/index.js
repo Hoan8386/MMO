@@ -4,10 +4,16 @@ import express from "express";
 import cors from "cors";
 import { config, STORAGE_DIR, ROOT_DIR } from "./config.js";
 import { initDb } from "./db.js";
-import projectsRouter, { framesRouter, topicsRouter } from "./routes/projects.js";
+import projectsRouter from "./routes/projects.js";
+import { framesRouter, topicsRouter, libraryRouter } from "./routes/catalog.js";
+import { seedTopics, refreshCatalog } from "./video/catalog.js";
+import { syncAssetsToDb } from "./video/library.js";
 
 fs.mkdirSync(STORAGE_DIR, { recursive: true });
 await initDb();
+await seedTopics();
+await syncAssetsToDb();
+await refreshCatalog();
 
 const app = express();
 app.use(cors());
@@ -18,6 +24,7 @@ app.get("/api/health", (_req, res) => res.json({ ok: true, ai: config.ai.mode, m
 app.use("/api/projects", projectsRouter);
 app.use("/api/frames", framesRouter);
 app.use("/api/topics", topicsRouter);
+app.use("/api/library", libraryRouter);
 
 // Serve the built React app when it exists (npm run build in web/).
 const webDist = path.join(ROOT_DIR, "web", "dist");

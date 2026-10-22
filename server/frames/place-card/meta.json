@@ -1,0 +1,62 @@
+{
+  "frame_id": "place-card",
+  "version": 1,
+  "status": "active",
+  "name": "Thẻ địa danh",
+  "description": "Ghim bản đồ rơi xuống kèm minh hoạ, tên địa danh, quốc gia và 1–3 thông tin nhanh. Dùng cho điểm du lịch, kỳ quan, nơi xảy ra sự kiện.",
+  "category": "content",
+  "scene_type": "place",
+  "tags": [
+    "travel",
+    "culture",
+    "nature",
+    "history",
+    "ancient"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "place": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "country": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "facts": {
+      "type": "list",
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 44
+    },
+    "icon": {
+      "type": "icon",
+      "description": "hình minh hoạ cho nơi đó"
+    }
+  },
+  "keywords": "một từ khoá cho mỗi thông tin, theo đúng thứ tự",
+  "sample": {
+    "voice_text": "Vịnh Hạ Long ở Quảng Ninh có gần hai nghìn hòn đảo đá vôi và là di sản thiên nhiên thế giới.",
+    "keywords": [
+      "hai nghìn",
+      "di sản"
+    ],
+    "inputs": {
+      "place": "Vịnh Hạ Long",
+      "country": "Quảng Ninh, Việt Nam",
+      "facts": [
+        "Gần 2.000 đảo đá vôi",
+        "Di sản thiên nhiên thế giới"
+      ],
+      "icon": "desert-island"
+    }
+  }
+}

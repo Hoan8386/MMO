@@ -1,0 +1,62 @@
+{
+  "frame_id": "brand-card",
+  "version": 1,
+  "status": "active",
+  "name": "Thẻ thương hiệu",
+  "description": "Logo thương hiệu trên ô trắng, tên công ty, năm thành lập và 1–3 thông tin nhanh. Dùng khi lời thoại nói về một công ty, ứng dụng, nền tảng có trong danh sách logo.",
+  "category": "content",
+  "scene_type": "brand",
+  "tags": [
+    "business",
+    "technology",
+    "gaming",
+    "finance"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "logo": {
+      "type": "logo",
+      "required": true,
+      "description": "logo của thương hiệu được nhắc tới"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 30
+    },
+    "founded": {
+      "type": "string",
+      "maxLength": 30,
+      "description": "ví dụ: Thành lập 2004"
+    },
+    "facts": {
+      "type": "list",
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 50
+    }
+  },
+  "keywords": "một từ khoá cho mỗi thông tin, theo đúng thứ tự",
+  "sample": {
+    "voice_text": "Nvidia, thành lập năm 1993, hiện là nhà cung cấp chip AI lớn nhất thế giới.",
+    "keywords": [
+      "chip"
+    ],
+    "inputs": {
+      "logo": "nvidia",
+      "name": "Nvidia",
+      "founded": "Thành lập 1993",
+      "facts": [
+        "Dẫn đầu thị trường chip AI",
+        "Trụ sở tại California, Mỹ"
+      ]
+    }
+  }
+}

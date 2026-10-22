@@ -1,0 +1,35 @@
+{
+  "topic_id": "science-discovery",
+  "order": 15,
+  "name": "Khám phá khoa học",
+  "description": "Thí nghiệm, phát hiện mới, nhà khoa học và cách khoa học thay đổi hiểu biết của chúng ta.",
+  "tone": "chính xác, hào hứng, giải thích thuật ngữ bằng ví dụ",
+  "kicker": "Khám phá khoa học",
+  "icon": "microscope",
+  "default_tags": [
+    "science",
+    "invention"
+  ],
+  "related_tags": [
+    "explainer",
+    "history",
+    "people",
+    "news"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#EEF3FB",
+    "bg2": "#FFFFFF",
+    "ink": "#12233F",
+    "muted": "#546584",
+    "accent": "#2563EB",
+    "accent2": "#F43F5E",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(18, 35, 63, 0.05)",
+    "line": "rgba(18, 35, 63, 0.14)",
+    "glow": "rgba(37, 99, 235, 0.14)",
+    "cap-bg": "rgba(18, 35, 63, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

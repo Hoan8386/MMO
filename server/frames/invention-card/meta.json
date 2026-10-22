@@ -1,0 +1,58 @@
+{
+  "frame_id": "invention-card",
+  "version": 1,
+  "status": "active",
+  "name": "Thẻ phát minh",
+  "description": "Bản vẽ kỹ thuật: minh hoạ phát minh trong vòng đo đạc, năm, tên phát minh, người phát minh và tác động. Dùng khi giới thiệu một phát minh hay sản phẩm lịch sử.",
+  "category": "content",
+  "scene_type": "invention",
+  "tags": [
+    "invention",
+    "history",
+    "technology",
+    "science"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "icon": {
+      "type": "icon",
+      "required": true,
+      "description": "hình minh hoạ phát minh"
+    },
+    "year": {
+      "type": "string",
+      "maxLength": 12
+    },
+    "inventor": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "impact": {
+      "type": "string",
+      "maxLength": 100
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Năm 1879, Thomas Edison hoàn thiện bóng đèn sợi đốt, mở ra kỷ nguyên điện chiếu sáng.",
+    "inputs": {
+      "name": "Bóng đèn sợi đốt",
+      "icon": "light-bulb",
+      "year": "1879",
+      "inventor": "Thomas Edison",
+      "impact": "Mở ra kỷ nguyên chiếu sáng bằng điện cho mọi gia đình"
+    }
+  }
+}

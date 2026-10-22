@@ -1,0 +1,94 @@
+{
+  "frame_id": "versus",
+  "version": 1,
+  "status": "active",
+  "name": "Đối đầu VS",
+  "description": "Hai bên đối đầu (người chơi, đội, con vật, sản phẩm) với minh hoạ, chữ VS ở giữa và 1–4 thanh chỉ số so sánh. Dùng cho trận đấu, so tài, ai mạnh hơn.",
+  "category": "content",
+  "scene_type": "versus",
+  "tags": [
+    "gaming",
+    "comparison",
+    "nature",
+    "entertainment",
+    "technology"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "left": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24
+    },
+    "right": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24
+    },
+    "left_icon": {
+      "type": "icon"
+    },
+    "right_icon": {
+      "type": "icon"
+    },
+    "stats": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4,
+      "itemMaxLength": 18,
+      "description": "tên chỉ số"
+    },
+    "left_values": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4
+    },
+    "right_values": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4
+    }
+  },
+  "same_length": [
+    [
+      "stats",
+      "left_values"
+    ],
+    [
+      "stats",
+      "right_values"
+    ]
+  ],
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Sư tử và hổ, ai mạnh hơn? Hổ nặng hơn, nhưng sư tử lại chạy nhanh hơn một chút.",
+    "inputs": {
+      "left": "Sư tử",
+      "right": "Hổ",
+      "left_icon": "lion",
+      "right_icon": "tiger-face",
+      "stats": [
+        "Cân nặng (kg)",
+        "Tốc độ (km/h)"
+      ],
+      "left_values": [
+        190,
+        80
+      ],
+      "right_values": [
+        220,
+        65
+      ]
+    }
+  }
+}

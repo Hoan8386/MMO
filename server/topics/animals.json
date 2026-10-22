@@ -1,0 +1,35 @@
+{
+  "topic_id": "animals",
+  "order": 12,
+  "name": "Động vật và thế giới tự nhiên",
+  "description": "Loài vật, thực vật, hệ sinh thái và những khả năng đáng kinh ngạc của tự nhiên.",
+  "tone": "hào hứng, tò mò như phim khám phá thiên nhiên",
+  "kicker": "Thế giới tự nhiên",
+  "icon": "paw-prints",
+  "default_tags": [
+    "nature",
+    "fun"
+  ],
+  "related_tags": [
+    "comparison",
+    "science",
+    "statistics",
+    "ranking"
+  ],
+  "background": "waves",
+  "theme": {
+    "bg": "#F0F6EC",
+    "bg2": "#FFFFFF",
+    "ink": "#1F3318",
+    "muted": "#5D7155",
+    "accent": "#4D7C0F",
+    "accent2": "#F59E0B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(31, 51, 24, 0.05)",
+    "line": "rgba(31, 51, 24, 0.14)",
+    "glow": "rgba(77, 124, 15, 0.14)",
+    "cap-bg": "rgba(31, 51, 24, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

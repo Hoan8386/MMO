@@ -1,0 +1,36 @@
+{
+  "topic_id": "gaming",
+  "order": 27,
+  "name": "Game và thể thao điện tử",
+  "description": "Game mới, esports, giải đấu, tuyển thủ, mẹo chơi và ngành công nghiệp game.",
+  "tone": "sôi động, trẻ trung, dùng thuật ngữ game phổ biến",
+  "kicker": "Gaming",
+  "icon": "video-game",
+  "default_tags": [
+    "gaming",
+    "entertainment"
+  ],
+  "related_tags": [
+    "ranking",
+    "comparison",
+    "product_review",
+    "business",
+    "statistics"
+  ],
+  "background": "burst",
+  "theme": {
+    "bg": "#0B0716",
+    "bg2": "#1B1033",
+    "ink": "#F5F3FF",
+    "muted": "#A89BD0",
+    "accent": "#22D3EE",
+    "accent2": "#E040FB",
+    "on-accent": "#0B0716",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(34, 211, 238, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#F5F3FF",
+    "cap-hi": "#22D3EE"
+  }
+}

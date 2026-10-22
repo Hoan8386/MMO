@@ -1,0 +1,34 @@
+{
+  "topic_id": "self-development",
+  "order": 5,
+  "name": "Phát triển bản thân",
+  "description": "Tư duy, mục tiêu, kỷ luật, quản lý thời gian và cách trở thành phiên bản tốt hơn.",
+  "tone": "tích cực, gần gũi, đưa bước làm cụ thể; tránh sáo rỗng",
+  "kicker": "Phát triển bản thân",
+  "icon": "seedling",
+  "default_tags": [
+    "selfhelp",
+    "tips"
+  ],
+  "related_tags": [
+    "list",
+    "quote",
+    "psychology"
+  ],
+  "background": "bokeh",
+  "theme": {
+    "bg": "#FFF7ED",
+    "bg2": "#FFFFFF",
+    "ink": "#3B2414",
+    "muted": "#7A5E4A",
+    "accent": "#F97316",
+    "accent2": "#0EA5E9",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(59, 36, 20, 0.05)",
+    "line": "rgba(59, 36, 20, 0.14)",
+    "glow": "rgba(249, 115, 22, 0.14)",
+    "cap-bg": "rgba(59, 36, 20, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

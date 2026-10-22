@@ -1,0 +1,72 @@
+{
+  "frame_id": "icon-points",
+  "version": 1,
+  "status": "active",
+  "name": "Các ý kèm minh hoạ",
+  "description": "Tiêu đề và 2–4 thẻ, mỗi thẻ một hình minh hoạ lớn và một ý ngắn, hiện lần lượt. Dùng khi liệt kê các thứ cụ thể có thể vẽ thành hình (thực phẩm, đồ vật, con vật, thói quen).",
+  "category": "content",
+  "scene_type": "iconlist",
+  "tags": [
+    "common",
+    "list",
+    "explainer",
+    "tips"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 18,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "items": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 36
+    },
+    "icons": {
+      "type": "icons",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "description": "một icon cho mỗi ý, đúng thứ tự"
+    }
+  },
+  "same_length": [
+    [
+      "items",
+      "icons"
+    ]
+  ],
+  "keywords": "một từ khoá cho mỗi ý, theo đúng thứ tự: thẻ thứ i hiện ra khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "Ba thực phẩm tốt cho não là cá hồi, quả bơ và các loại hạt.",
+    "keywords": [
+      "cá hồi",
+      "bơ",
+      "hạt"
+    ],
+    "inputs": {
+      "title": "Thực phẩm tốt cho não",
+      "items": [
+        "Cá hồi giàu omega-3",
+        "Quả bơ",
+        "Các loại hạt"
+      ],
+      "icons": [
+        "fish",
+        "avocado",
+        "brain"
+      ]
+    }
+  }
+}

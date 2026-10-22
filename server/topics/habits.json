@@ -1,0 +1,35 @@
+{
+  "topic_id": "habits",
+  "order": 24,
+  "name": "Thói quen và lối sống",
+  "description": "Thói quen buổi sáng, giấc ngủ, tập trung, sống tối giản và cân bằng.",
+  "tone": "nhẹ nhàng, thực tế, chia nhỏ thành bước dễ làm",
+  "kicker": "Lối sống",
+  "icon": "alarm-clock",
+  "default_tags": [
+    "selfhelp",
+    "health"
+  ],
+  "related_tags": [
+    "tips",
+    "list",
+    "statistics",
+    "myth"
+  ],
+  "background": "dots",
+  "theme": {
+    "bg": "#F2F8F4",
+    "bg2": "#FFFFFF",
+    "ink": "#183126",
+    "muted": "#5B7266",
+    "accent": "#0D9488",
+    "accent2": "#F97316",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(24, 49, 38, 0.05)",
+    "line": "rgba(24, 49, 38, 0.14)",
+    "glow": "rgba(13, 148, 136, 0.14)",
+    "cap-bg": "rgba(24, 49, 38, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

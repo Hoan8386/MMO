@@ -1,0 +1,35 @@
+{
+  "topic_id": "philosophy",
+  "order": 22,
+  "name": "Triết học và ý nghĩa cuộc sống",
+  "description": "Câu hỏi lớn về cuộc sống, các trường phái và triết gia, áp dụng vào đời thường.",
+  "tone": "chậm rãi, sâu lắng, gợi suy ngẫm; diễn giải triết lý bằng ví dụ đơn giản",
+  "kicker": "Triết học",
+  "icon": "thinking-face",
+  "default_tags": [
+    "philosophy",
+    "explainer"
+  ],
+  "related_tags": [
+    "quote",
+    "people",
+    "history",
+    "psychology"
+  ],
+  "background": "stars",
+  "theme": {
+    "bg": "#14121C",
+    "bg2": "#241F33",
+    "ink": "#F3EEE2",
+    "muted": "#B2A994",
+    "accent": "#D4A64A",
+    "accent2": "#7C9CBF",
+    "on-accent": "#14121C",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(212, 166, 74, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#F3EEE2",
+    "cap-hi": "#D4A64A"
+  }
+}

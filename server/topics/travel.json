@@ -1,0 +1,35 @@
+{
+  "topic_id": "travel",
+  "order": 20,
+  "name": "Du lịch và khám phá thế giới",
+  "description": "Điểm đến, kỳ quan, kinh nghiệm du lịch và những vùng đất đặc biệt trên thế giới.",
+  "tone": "hào hứng, giàu hình ảnh, có thông tin thực tế",
+  "kicker": "Khám phá thế giới",
+  "icon": "airplane",
+  "default_tags": [
+    "travel",
+    "culture"
+  ],
+  "related_tags": [
+    "ranking",
+    "nature",
+    "fun",
+    "list"
+  ],
+  "background": "waves",
+  "theme": {
+    "bg": "#EAF6FB",
+    "bg2": "#FFFFFF",
+    "ink": "#0F2B3A",
+    "muted": "#4E6C7C",
+    "accent": "#0284C7",
+    "accent2": "#F59E0B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(15, 43, 58, 0.05)",
+    "line": "rgba(15, 43, 58, 0.14)",
+    "glow": "rgba(2, 132, 199, 0.14)",
+    "cap-bg": "rgba(15, 43, 58, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

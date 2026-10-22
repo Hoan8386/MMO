@@ -1,0 +1,50 @@
+{
+  "frame_id": "myth-fact",
+  "version": 1,
+  "status": "active",
+  "name": "Lầm tưởng & sự thật",
+  "description": "Thẻ LẦM TƯỞNG bị gạch đi, rồi thẻ SỰ THẬT trượt vào. Dùng khi lời thoại bác bỏ một quan niệm sai phổ biến.",
+  "category": "content",
+  "scene_type": "myth",
+  "tags": [
+    "myth",
+    "health",
+    "nutrition",
+    "psychology",
+    "science",
+    "fun"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "myth": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90,
+      "description": "quan niệm sai"
+    },
+    "fact": {
+      "type": "string",
+      "required": true,
+      "maxLength": 110,
+      "description": "sự thật đúng"
+    }
+  },
+  "keywords": "một từ khoá: từ đầu tiên của phần nói sự thật (thẻ sự thật hiện ra lúc đó)",
+  "sample": {
+    "voice_text": "Nhiều người nghĩ con người chỉ dùng mười phần trăm bộ não. Thực ra, gần như mọi vùng não đều hoạt động mỗi ngày.",
+    "keywords": [
+      "Thực ra"
+    ],
+    "inputs": {
+      "myth": "Con người chỉ dùng 10% bộ não",
+      "fact": "Gần như mọi vùng não đều hoạt động trong một ngày"
+    }
+  }
+}

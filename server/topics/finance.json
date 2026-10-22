@@ -1,0 +1,35 @@
+{
+  "topic_id": "finance",
+  "order": 4,
+  "name": "Tiền bạc và tài chính",
+  "description": "Quản lý tiền, tiết kiệm, đầu tư, lãi kép, lạm phát và kiến thức tài chính cá nhân.",
+  "tone": "rõ ràng, thực tế, có con số minh hoạ; không đưa lời khuyên đầu tư cụ thể",
+  "kicker": "Tài chính",
+  "icon": "money-bag",
+  "default_tags": [
+    "finance",
+    "statistics"
+  ],
+  "related_tags": [
+    "tips",
+    "comparison",
+    "business",
+    "list"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#F1F7F2",
+    "bg2": "#FFFFFF",
+    "ink": "#12301F",
+    "muted": "#557060",
+    "accent": "#16A34A",
+    "accent2": "#EAB308",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(18, 48, 31, 0.05)",
+    "line": "rgba(18, 48, 31, 0.14)",
+    "glow": "rgba(22, 163, 74, 0.14)",
+    "cap-bg": "rgba(18, 48, 31, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

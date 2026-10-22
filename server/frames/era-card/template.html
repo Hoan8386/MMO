@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .ghost { position: absolute; left: 0; right: 0; top: 60px; text-align: center; font-size: 300px; line-height: 1; color: transparent; -webkit-text-stroke: 4px var(--line); white-space: nowrap; }
+        {{__r}} .wrap { position: absolute; left: 160px; right: 160px; top: 120px; bottom: 270px; display: flex; align-items: center; gap: 80px; }
+        {{__r}} .medal { flex: none; width: 400px; height: 400px; border-radius: 50%; border: 10px double var(--accent); background: var(--panel); display: flex; align-items: center; justify-content: center; }
+        {{__r}} .medal img { width: 250px; height: 250px; }
+        {{__r}} .text { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        {{__r}} .era { align-self: flex-start; padding: 10px 26px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font-size: 42px; }
+        {{__r}} .name { font-size: 88px; line-height: 1.06; }
+        {{__r}} .fact { display: flex; gap: 18px; font-size: 42px; line-height: 1.25; color: var(--ink); }
+        {{__r}} .fact::before { content: ""; flex: none; width: 16px; height: 16px; margin-top: 18px; background: var(--accent2); transform: rotate(45deg); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="ghost">{{era}}</div>
+        <div class="wrap">
+        {{#icon}}<div class="medal"><img class="mi" src="assets/icons/{{icon}}.svg" alt="" /></div>{{/icon}}
+        <div class="text">
+        <div class="era">{{era}}</div>
+        <div class="name">{{name}}</div>
+        {{#facts}}<div class="fact">{{.}}</div>{{/facts}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".ghost"), { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0);
+          tl.fromTo($(".ghost"), { x: 0 }, { x: -80, duration: P.D, ease: "none" }, 0);
+          if ($(".medal")) {
+          tl.fromTo($(".medal"), { scale: 0, rotation: -180 }, { scale: 1, rotation: 0, duration: 0.8, ease: "back.out(1.4)" }, 0.15);
+          tl.fromTo($(".mi"), { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 0.6);
+          }
+          tl.fromTo($(".era"), { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5 }, 0.35);
+          tl.fromTo($(".name"), { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.5);
+          const fs = $$(".fact");
+          let last = 0.8;
+          fs.forEach((el, i) => {
+          const t = Math.max(last + 0.25, at(i, fs.length) - 0.1);
+          last = t;
+          tl.fromTo(el, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, t);
+          });
+          tl.to([$(".wrap"), $(".ghost")], { opacity: 0, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

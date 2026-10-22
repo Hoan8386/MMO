@@ -1,0 +1,35 @@
+{
+  "topic_id": "health",
+  "order": 10,
+  "name": "Sức khỏe và thể chất",
+  "description": "Cơ thể, giấc ngủ, vận động, phòng bệnh và thói quen tốt cho sức khỏe.",
+  "tone": "rõ ràng, đáng tin, dựa trên khuyến nghị y khoa phổ biến; khuyên hỏi bác sĩ khi cần",
+  "kicker": "Sức khỏe",
+  "icon": "anatomical-heart",
+  "default_tags": [
+    "health",
+    "tips"
+  ],
+  "related_tags": [
+    "myth",
+    "statistics",
+    "science",
+    "list"
+  ],
+  "background": "dots",
+  "theme": {
+    "bg": "#EFF8F3",
+    "bg2": "#FFFFFF",
+    "ink": "#11352A",
+    "muted": "#567267",
+    "accent": "#10B981",
+    "accent2": "#3B82F6",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(17, 53, 42, 0.05)",
+    "line": "rgba(17, 53, 42, 0.14)",
+    "glow": "rgba(16, 185, 129, 0.14)",
+    "cap-bg": "rgba(17, 53, 42, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

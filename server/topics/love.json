@@ -1,0 +1,35 @@
+{
+  "topic_id": "love",
+  "order": 6,
+  "name": "Tình yêu và hôn nhân",
+  "description": "Hẹn hò, giao tiếp trong tình yêu, hôn nhân, giữ lửa và vượt qua mâu thuẫn.",
+  "tone": "nhẹ nhàng, chân thành, tôn trọng mọi lựa chọn; không phán xét",
+  "kicker": "Tình yêu",
+  "icon": "heart-with-ribbon",
+  "default_tags": [
+    "relationship",
+    "tips"
+  ],
+  "related_tags": [
+    "psychology",
+    "statistics",
+    "quote",
+    "story"
+  ],
+  "background": "bokeh",
+  "theme": {
+    "bg": "#FFF1F4",
+    "bg2": "#FFFFFF",
+    "ink": "#4A1426",
+    "muted": "#8A5A69",
+    "accent": "#E11D48",
+    "accent2": "#F472B6",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(74, 20, 38, 0.05)",
+    "line": "rgba(74, 20, 38, 0.14)",
+    "glow": "rgba(225, 29, 72, 0.14)",
+    "cap-bg": "rgba(74, 20, 38, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

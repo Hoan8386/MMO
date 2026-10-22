@@ -1,0 +1,34 @@
+{
+  "topic_id": "family-friends",
+  "order": 7,
+  "name": "Gia đình và tình bạn",
+  "description": "Quan hệ cha mẹ – con cái, anh chị em, tình bạn và cách gắn kết những người thân yêu.",
+  "tone": "ấm áp, gần gũi, kể bằng tình huống quen thuộc",
+  "kicker": "Gia đình & bạn bè",
+  "icon": "people-hugging",
+  "default_tags": [
+    "relationship",
+    "story"
+  ],
+  "related_tags": [
+    "tips",
+    "quote",
+    "psychology"
+  ],
+  "background": "bokeh",
+  "theme": {
+    "bg": "#FFF8EC",
+    "bg2": "#FFFFFF",
+    "ink": "#3D2B12",
+    "muted": "#7D6A4E",
+    "accent": "#EA8A0B",
+    "accent2": "#22A06B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(61, 43, 18, 0.05)",
+    "line": "rgba(61, 43, 18, 0.14)",
+    "glow": "rgba(234, 138, 11, 0.14)",
+    "cap-bg": "rgba(61, 43, 18, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

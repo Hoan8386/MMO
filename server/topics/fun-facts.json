@@ -1,0 +1,36 @@
+{
+  "topic_id": "fun-facts",
+  "order": 32,
+  "name": "Những sự thật thú vị",
+  "description": "Những sự thật bất ngờ, kỷ lục và chi tiết ít ai để ý.",
+  "tone": "vui, nhanh, mỗi ý một cú bất ngờ; chỉ dùng sự thật có nguồn",
+  "kicker": "Sự thật thú vị",
+  "icon": "exploding-head",
+  "default_tags": [
+    "fun",
+    "myth"
+  ],
+  "related_tags": [
+    "science",
+    "nature",
+    "ranking",
+    "statistics",
+    "quiz"
+  ],
+  "background": "burst",
+  "theme": {
+    "bg": "#FFF9E6",
+    "bg2": "#FFFFFF",
+    "ink": "#2E2205",
+    "muted": "#7A6A3A",
+    "accent": "#EC4899",
+    "accent2": "#06B6D4",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(46, 34, 5, 0.05)",
+    "line": "rgba(46, 34, 5, 0.14)",
+    "glow": "rgba(236, 72, 153, 0.14)",
+    "cap-bg": "rgba(46, 34, 5, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

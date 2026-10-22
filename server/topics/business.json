@@ -1,0 +1,35 @@
+{
+  "topic_id": "business",
+  "order": 33,
+  "name": "Kinh doanh và khởi nghiệp",
+  "description": "Câu chuyện doanh nghiệp, mô hình kinh doanh, khởi nghiệp, thương hiệu và bài học quản trị.",
+  "tone": "sắc sảo, có số liệu, rút ra bài học kinh doanh",
+  "kicker": "Kinh doanh",
+  "icon": "chart-increasing",
+  "default_tags": [
+    "business",
+    "finance"
+  ],
+  "related_tags": [
+    "statistics",
+    "people",
+    "comparison",
+    "technology"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#F4F5F8",
+    "bg2": "#FFFFFF",
+    "ink": "#151B2E",
+    "muted": "#5C6479",
+    "accent": "#7C3AED",
+    "accent2": "#10B981",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(21, 27, 46, 0.05)",
+    "line": "rgba(21, 27, 46, 0.14)",
+    "glow": "rgba(124, 58, 237, 0.14)",
+    "cap-bg": "rgba(21, 27, 46, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

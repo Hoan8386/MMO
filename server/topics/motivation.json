@@ -1,0 +1,34 @@
+{
+  "topic_id": "motivation",
+  "order": 23,
+  "name": "Động lực và truyền cảm hứng",
+  "description": "Câu chuyện vượt khó, bài học thành công, lời khuyên tiếp thêm động lực.",
+  "tone": "mạnh mẽ, truyền lửa, có câu chốt đáng nhớ; không hứa hẹn viển vông",
+  "kicker": "Truyền cảm hứng",
+  "icon": "fire",
+  "default_tags": [
+    "selfhelp",
+    "story"
+  ],
+  "related_tags": [
+    "quote",
+    "people",
+    "statistics"
+  ],
+  "background": "burst",
+  "theme": {
+    "bg": "#FFF6E5",
+    "bg2": "#FFFFFF",
+    "ink": "#2B1A05",
+    "muted": "#7A6240",
+    "accent": "#F59E0B",
+    "accent2": "#EF4444",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(43, 26, 5, 0.05)",
+    "line": "rgba(43, 26, 5, 0.14)",
+    "glow": "rgba(245, 158, 11, 0.14)",
+    "cap-bg": "rgba(43, 26, 5, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

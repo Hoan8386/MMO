@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .stripe { position: absolute; left: 0; right: 0; height: 56px; background: repeating-linear-gradient(-45deg, #F5C518 0 40px, #111 40px 80px); }
+        {{__r}} .stripe.t { top: 0; } .stripe.b { top: 750px; }
+        {{__r}} .wrap { position: absolute; left: 150px; right: 150px; top: 110px; bottom: 360px; display: flex; align-items: center; gap: 80px; }
+        {{__r}} .sign { position: relative; flex: none; width: 400px; height: 400px; display: flex; align-items: center; justify-content: center; }
+        {{__r}} .tri { position: absolute; inset: 0; background: #F5C518; clip-path: polygon(50% 4%, 97% 92%, 3% 92%); }
+        {{__r}} .tri2 { position: absolute; inset: 26px; background: #111; clip-path: polygon(50% 8%, 92% 88%, 8% 88%); }
+        {{__r}} .bang { position: relative; margin-top: 60px; font-size: 220px; line-height: 1; color: #F5C518; }
+        {{__r}} .sign img { position: relative; width: 300px; height: 300px; }
+        {{__r}} .text { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        {{__r}} .level { align-self: flex-start; padding: 10px 26px; border-radius: 10px; background: #E5484D; color: #fff; font-size: 38px; text-transform: uppercase; letter-spacing: 0.05em; }
+        {{__r}} .title { font-size: 76px; line-height: 1.1; }
+        {{__r}} .tip { display: flex; gap: 18px; align-items: center; font-size: 42px; }
+        {{__r}} .tip b { flex: none; width: 50px; height: 50px; border-radius: 50%; background: #F5C518; color: #111; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="stripe t"></div>
+        <div class="wrap">
+        <div class="sign">{{#icon}}<img class="si" src="assets/icons/{{icon}}.svg" alt="" />{{/icon}}{{^icon}}<div class="tri"></div><div class="tri2"></div><div class="bang">!</div>{{/icon}}</div>
+        <div class="text">
+        <div class="level">{{level}}</div>
+        <div class="title">{{title}}</div>
+        {{#tips}}<div class="tip"><b>{{@n}}</b><span>{{.}}</span></div>{{/tips}}
+        </div>
+        </div>
+        <div class="stripe b"></div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".stripe.t"), { xPercent: -100 }, { xPercent: 0, duration: 0.5, ease: "power3.out" }, 0);
+          tl.fromTo($(".stripe.b"), { xPercent: 100 }, { xPercent: 0, duration: 0.5, ease: "power3.out" }, 0);
+          tl.fromTo($(".stripe.t"), { backgroundPositionX: 0 }, { backgroundPositionX: 400, duration: P.D, ease: "none" }, 0);
+          tl.fromTo($(".sign"), { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.6, ease: "back.out(2)" }, 0.2);
+          const blinks = Math.max(1, Math.floor((P.D - 1.6) / 0.8));
+          tl.to($(".sign"), { scale: 1.08, duration: 0.4, yoyo: true, repeat: blinks * 2 - 1, ease: "sine.inOut" }, 0.9);
+          tl.fromTo($(".level"), { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45 }, 0.4);
+          tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.55);
+          const tips = $$(".tip");
+          let last = 0.8;
+          tips.forEach((el, i) => {
+          const t = Math.max(last + 0.3, at(i, tips.length) - 0.1);
+          last = t;
+          tl.fromTo(el, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, t);
+          });
+          tl.to([$(".wrap"), $(".stripe.t"), $(".stripe.b")], { opacity: 0, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

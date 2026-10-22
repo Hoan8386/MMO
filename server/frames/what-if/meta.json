@@ -1,0 +1,57 @@
+{
+  "frame_id": "what-if",
+  "version": 1,
+  "status": "active",
+  "name": "Giả thuyết nếu như",
+  "description": "Câu hỏi \"Nếu như…\" lớn, bên dưới là chuỗi 2–4 hệ quả nối bằng mũi tên hiện lần lượt. Dùng cho kịch bản giả định và hệ quả dây chuyền.",
+  "category": "content",
+  "scene_type": "whatif",
+  "tags": [
+    "whatif",
+    "future",
+    "science",
+    "space",
+    "philosophy"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80,
+      "description": "câu hỏi giả định, không cần chữ Nếu như ở đầu"
+    },
+    "steps": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 44,
+      "description": "các hệ quả theo thứ tự"
+    }
+  },
+  "keywords": "một từ khoá cho mỗi hệ quả, theo đúng thứ tự",
+  "sample": {
+    "voice_text": "Nếu Trái Đất ngừng quay? Mọi thứ trên bề mặt bị hất văng, một nửa hành tinh chìm trong đêm dài sáu tháng, và từ trường dần biến mất.",
+    "keywords": [
+      "hất văng",
+      "đêm",
+      "từ trường"
+    ],
+    "inputs": {
+      "question": "Trái Đất đột ngột ngừng quay?",
+      "steps": [
+        "Mọi thứ bị hất văng",
+        "Đêm dài 6 tháng",
+        "Từ trường biến mất"
+      ]
+    }
+  }
+}

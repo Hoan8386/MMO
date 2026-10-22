@@ -1,0 +1,64 @@
+{
+  "frame_id": "intro-topic",
+  "version": 1,
+  "status": "active",
+  "name": "Mở đầu có minh hoạ",
+  "description": "Mở đầu với một hình minh hoạ lớn xoay quanh vòng quỹ đạo, nhãn chủ đề và tiêu đề video. Hợp với chủ đề kiến thức, đời sống, khoa học.",
+  "category": "intro",
+  "scene_type": "intro",
+  "tags": [
+    "psychology",
+    "science",
+    "health",
+    "nutrition",
+    "relationship",
+    "selfhelp",
+    "culture",
+    "travel",
+    "environment",
+    "society",
+    "finance",
+    "business",
+    "tips",
+    "fun",
+    "myth",
+    "whatif",
+    "future",
+    "education"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 9,
+    "recommended": 5
+  },
+  "inputs": {
+    "kicker": {
+      "type": "string",
+      "required": true,
+      "maxLength": 30,
+      "description": "nhãn chủ đề"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "icon": {
+      "type": "icon",
+      "required": true,
+      "description": "hình minh hoạ cho chủ đề video"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Vì sao chúng ta hay trì hoãn, dù biết rõ việc cần làm?",
+    "inputs": {
+      "kicker": "Tâm lý học",
+      "title": "Vì sao ta hay trì hoãn?",
+      "icon": "brain"
+    }
+  }
+}

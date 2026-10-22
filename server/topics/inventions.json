@@ -1,0 +1,34 @@
+{
+  "topic_id": "inventions",
+  "order": 31,
+  "name": "Các phát minh và nhà phát minh",
+  "description": "Phát minh làm thay đổi thế giới, người tạo ra chúng và câu chuyện phía sau.",
+  "tone": "hào hứng, kể chuyện, có năm tháng và tác động cụ thể",
+  "kicker": "Phát minh",
+  "icon": "light-bulb",
+  "default_tags": [
+    "invention",
+    "history"
+  ],
+  "related_tags": [
+    "people",
+    "technology",
+    "science"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#EAF1FB",
+    "bg2": "#FFFFFF",
+    "ink": "#0F2547",
+    "muted": "#50648A",
+    "accent": "#1E40AF",
+    "accent2": "#F59E0B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(15, 37, 71, 0.05)",
+    "line": "rgba(15, 37, 71, 0.14)",
+    "glow": "rgba(30, 64, 175, 0.14)",
+    "cap-bg": "rgba(15, 37, 71, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

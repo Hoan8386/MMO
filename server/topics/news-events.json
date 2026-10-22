@@ -1,0 +1,35 @@
+{
+  "topic_id": "news-events",
+  "order": 26,
+  "name": "Tin tức và sự kiện nổi bật",
+  "description": "Tin tức, sự kiện đáng chú ý trong nước và quốc tế, tóm tắt nhanh và khách quan.",
+  "tone": "khách quan, ngắn gọn như bản tin; chỉ dùng thông tin trong tư liệu",
+  "kicker": "Tin nổi bật",
+  "icon": "newspaper",
+  "default_tags": [
+    "news",
+    "statistics"
+  ],
+  "related_tags": [
+    "people",
+    "comparison",
+    "history",
+    "disaster"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#F4F6F9",
+    "bg2": "#FFFFFF",
+    "ink": "#111827",
+    "muted": "#5B6474",
+    "accent": "#DC2626",
+    "accent2": "#1D4ED8",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(17, 24, 39, 0.05)",
+    "line": "rgba(17, 24, 39, 0.14)",
+    "glow": "rgba(220, 38, 38, 0.14)",
+    "cap-bg": "rgba(17, 24, 39, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

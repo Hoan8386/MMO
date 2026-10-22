@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { ASSETS_DIR } from "../config.js";
 import { templatePath } from "./catalog.js";
+import { findAsset, copyAsset, KIND_OF_INPUT } from "./library.js";
 import { fill, scriptJson } from "./template.js";
 
 const FONT = "BeVietnamPro-SemiBold.ttf";
@@ -46,6 +47,8 @@ export async function compileProject(dir, { title, width = 1920, height = 1080, 
     used[sc.frame_id] = sc.frame.version;
   }
 
+  await copyLibraryAssets(dir, timeline.scenes);
+
   // Shared layers are sub-compositions too, so Studio shows one clean row per layer.
   const size = { W: width, H: height, total: timeline.total };
   const wipes = timeline.scenes
@@ -60,6 +63,24 @@ export async function compileProject(dir, { title, width = 1920, height = 1080, 
 
   await fs.writeFile(path.join(dir, "index.html"), hostHtml({ title, ...size }, timeline, wipes.length > 0, silent));
   return { frames: used };
+}
+
+// Copies the library icons, logos and photos the scenes use into the project's assets/.
+async function copyLibraryAssets(dir, scenes) {
+  const wanted = new Map();
+  for (const sc of scenes) {
+    for (const [k, spec] of Object.entries(sc.frame.inputs)) {
+      const v = sc.inputs[k];
+      if (v == null || v === "") continue;
+      const kind = spec.type === "image" ? "photo" : KIND_OF_INPUT[spec.type];
+      if (!kind) continue;
+      for (const name of [v].flat()) {
+        const a = findAsset(kind, name);
+        if (a) wanted.set(`${kind}:${name}`, a);
+      }
+    }
+  }
+  for (const a of wanted.values()) await copyAsset(dir, a);
 }
 
 const cssVars = () => Object.entries(THEME).map(([k, v]) => `--${k}: ${v};`).join(" ");
@@ -92,27 +113,74 @@ ${script}
 `;
 }
 
-// Background layer per topic: "grid" (technology), "burst" (entertainment), "paper" (education).
+// Background layer per topic. Each style: CSS, extra elements, and slow motion over the whole video.
+// Positions come from fixed lists, never Math.random, so every render is identical.
+const SPOTS = [[180, 160, 420], [1500, 120, 360], [980, 620, 520], [320, 760, 300], [1680, 820, 460], [720, 260, 260], [1300, 420, 320], [60, 480, 380]];
+const STARS = [[40, 60], [130, 190], [210, 40], [300, 150], [390, 70], [470, 210], [90, 130], [260, 230], [340, 20], [440, 120]];
 const BACKGROUNDS = {
-  grid: `        #background-root .pattern { position: absolute; inset: 0; opacity: 0.35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 96px 96px; }`,
-  burst: `        #background-root .pattern { position: absolute; left: 50%; top: 50%; width: 3000px; height: 3000px; margin: -1500px 0 0 -1500px; opacity: 0.5; background: repeating-conic-gradient(from 0deg, var(--panel) 0deg 9deg, transparent 9deg 18deg); }
+  grid: {
+    css: `        #background-root .pattern { position: absolute; inset: 0; opacity: 0.35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 96px 96px; }`,
+  },
+  burst: {
+    css: `        #background-root .pattern { position: absolute; left: 50%; top: 50%; width: 3000px; height: 3000px; margin: -1500px 0 0 -1500px; opacity: 0.5; background: repeating-conic-gradient(from 0deg, var(--panel) 0deg 9deg, transparent 9deg 18deg); }
         #background-root .dots { position: absolute; inset: 0; opacity: 0.45; background-image: radial-gradient(var(--line) 2px, transparent 2.5px); background-size: 44px 44px; }`,
-  paper: `        #background-root .pattern { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px); background-size: 100% 64px; background-position: 0 40px; opacity: 0.6; }
+    html: '<div class="dots"></div>',
+    anim: (total) => `tl.fromTo(R.querySelector(".pattern"), { rotation: 0 }, { rotation: 40, duration: ${total}, ease: "none" }, 0);`,
+  },
+  paper: {
+    css: `        #background-root .pattern { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px); background-size: 100% 64px; background-position: 0 40px; opacity: 0.6; }
         #background-root .margin { position: absolute; top: 0; bottom: 0; left: 96px; width: 3px; background: rgba(229, 72, 77, 0.35); }`,
+    html: '<div class="margin"></div>',
+  },
+  dots: {
+    css: `        #background-root .pattern { position: absolute; inset: -120px; opacity: 0.7; background-image: radial-gradient(var(--line) 2.6px, transparent 3px); background-size: 40px 40px; }
+        #background-root .band { position: absolute; left: -200px; right: -200px; top: 640px; height: 300px; transform: rotate(-6deg); background: var(--panel); }`,
+    html: '<div class="band"></div>',
+    anim: (total) => `tl.fromTo(R.querySelector(".pattern"), { x: 0, y: 0 }, { x: 80, y: 40, duration: ${total}, ease: "none" }, 0);`,
+  },
+  stars: {
+    css: `        #background-root .pattern { position: absolute; inset: -300px; opacity: 0.85; background-image: ${STARS.map(([x, y], i) => `radial-gradient(${i % 3 ? 1.6 : 2.6}px ${i % 3 ? 1.6 : 2.6}px at ${x}px ${y}px, var(--ink), transparent)`).join(", ")}; background-size: 500px 250px; }
+        #background-root .far { position: absolute; inset: -300px; opacity: 0.4; background-image: ${STARS.map(([x, y]) => `radial-gradient(1.2px 1.2px at ${Math.round(y * 1.7)}px ${Math.round(x * 0.7)}px, var(--ink), transparent)`).join(", ")}; background-size: 420px 330px; }
+        #background-root .nebula { position: absolute; width: 1500px; height: 900px; left: -300px; top: 400px; border-radius: 50%; background: radial-gradient(ellipse, var(--glow), transparent 70%); }`,
+    html: '<div class="far"></div><div class="nebula"></div>',
+    anim: (total) => `tl.fromTo(R.querySelector(".pattern"), { x: 0 }, { x: -160, duration: ${total}, ease: "none" }, 0);
+          tl.fromTo(R.querySelector(".far"), { x: 0 }, { x: -60, duration: ${total}, ease: "none" }, 0);`,
+  },
+  waves: {
+    css: `        #background-root .wave { position: absolute; left: 50%; width: 3400px; height: 3400px; margin-left: -1700px; border-radius: 43%; background: var(--panel); }
+        #background-root .w1 { top: 760px; } #background-root .w2 { top: 830px; border-radius: 41%; } #background-root .w3 { top: 910px; border-radius: 45%; }
+        #background-root .pattern { position: absolute; inset: 0; opacity: 0.3; background-image: radial-gradient(var(--line) 2px, transparent 2.5px); background-size: 56px 56px; }`,
+    html: '<div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div>',
+    anim: (total) => `[[".w1", 30], [".w2", -24], [".w3", 18]].forEach(([s, r]) => tl.fromTo(R.querySelector(s), { rotation: 0 }, { rotation: r, duration: ${total}, ease: "none" }, 0));`,
+  },
+  bokeh: {
+    css: `        #background-root .pattern { position: absolute; inset: 0; }
+        #background-root .spot { position: absolute; border-radius: 50%; }
+${SPOTS.map(([x, y, d], i) => `        #background-root .b${i} { left: ${x}px; top: ${y}px; width: ${d}px; height: ${d}px; background: radial-gradient(circle, var(${i % 2 ? "--accent2" : "--accent"}) 0%, transparent 68%); opacity: ${i % 3 ? 0.16 : 0.24}; }`).join("\n")}`,
+    html: SPOTS.map((_, i) => `<div class="spot b${i}"></div>`).join(""),
+    anim: (total) => `${JSON.stringify(SPOTS.map((_, i) => [i, (i % 2 ? -1 : 1) * (60 + i * 12)]))}.forEach(([i, dy]) => tl.fromTo(R.querySelector(".b" + i), { y: 0 }, { y: dy, duration: ${total}, ease: "sine.inOut" }, 0));`,
+  },
+  vignette: {
+    css: `        #background-root .pattern { position: absolute; inset: 0; opacity: 0.18; background-image: repeating-linear-gradient(0deg, var(--line) 0 1px, transparent 1px 5px); }
+        #background-root .light { position: absolute; width: 1700px; height: 1300px; left: 110px; top: -260px; border-radius: 50%; background: radial-gradient(ellipse, var(--bg2), transparent 70%); opacity: 0.9; }
+        #background-root .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(0, 0, 0, 0.55) 100%); }`,
+    html: '<div class="light"></div><div class="vig"></div>',
+    anim: (total) => `tl.fromTo(R.querySelector(".light"), { x: -120 }, { x: 120, duration: ${total}, ease: "sine.inOut" }, 0);`,
+  },
 };
+export const BACKGROUND_STYLES = Object.keys(BACKGROUNDS);
 
 function backgroundHtml(size) {
-  const extra = { burst: '<div class="dots"></div>', paper: '<div class="margin"></div>' }[BACKGROUND] || "";
-  const spin = BACKGROUND === "burst" ? `
-          tl.fromTo(R.querySelector(".pattern"), { rotation: 0 }, { rotation: 40, duration: ${size.total}, ease: "none" }, 0);` : "";
+  const bg = BACKGROUNDS[BACKGROUND] || BACKGROUNDS.grid;
   return subComp(
     "background",
     size,
     `        #background-root .base { position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 0%, var(--bg2) 0%, var(--bg) 60%); }
-${BACKGROUNDS[BACKGROUND] || BACKGROUNDS.grid}
+${bg.css}
         #background-root .glow { position: absolute; width: 1100px; height: 1100px; left: 1100px; top: -300px; border-radius: 50%; background: radial-gradient(circle, var(--glow), transparent 65%); }`,
-    `        <div class="base"></div><div class="pattern"></div>${extra}<div class="glow"></div>`,
-    `          tl.fromTo(R.querySelector(".glow"), { x: 0, y: 0 }, { x: -700, y: 260, duration: ${size.total}, ease: "sine.inOut" }, 0);${spin}`,
+    `        <div class="base"></div><div class="pattern"></div>${bg.html || ""}<div class="glow"></div>`,
+    `          tl.fromTo(R.querySelector(".glow"), { x: 0, y: 0 }, { x: -700, y: 260, duration: ${size.total}, ease: "sine.inOut" }, 0);${bg.anim ? `
+          ${bg.anim(size.total)}` : ""}`,
   );
 }
 

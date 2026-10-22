@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import { STORAGE_DIR } from "../config.js";
 import { loadFrames, selectFrames, getTopic } from "./catalog.js";
 import { planVideo } from "./planner.js";
+import { topicAssets, findAsset } from "./library.js";
 import { validatePlan } from "./validate.js";
 import { voiceScenes } from "./tts.js";
 import { buildTimeline } from "./timeline.js";
@@ -37,7 +38,8 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   const images = await listImages(dir);
   const topic = getTopic(project.topic);
   const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images });
-  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh`);
+  const library = topicLibrary(topic.topic_id);
+  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon`);
   const { plan, calls } = await planVideo({
     material,
     title: project.title,
@@ -46,6 +48,7 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     frames,
     allowed,
     images,
+    library,
     targetSeconds: project.targetSeconds,
     mock,
     onLog,
@@ -60,6 +63,15 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   return { plan, calls: stamped };
 }
 
+// Names of the library icons, logos and photos that suit a topic (what the planner may pick from).
+export function topicLibrary(topicId) {
+  return {
+    icons: topicAssets(topicId, "illustration").map((a) => a.name),
+    logos: topicAssets(topicId, "logo").map((a) => a.name),
+    photos: topicAssets(topicId, "photo").map(({ name, label, credit }) => ({ name, label, credit })),
+  };
+}
+
 // Numbers scenes s01… in order and applies project-level values the AI must not decide.
 export function finalizePlan(plan, project, frames = loadFrames()) {
   plan.scenes.forEach((s, i) => {
@@ -67,9 +79,20 @@ export function finalizePlan(plan, project, frames = loadFrames()) {
     s.inputs ||= {};
     s.keywords ||= [];
     s.transition_out ||= "fade";
-    if (project.channel && frames.get(s.frame_id)?.inputs.channel) s.inputs.channel = project.channel;
+    const frame = frames.get(s.frame_id);
+    if (project.channel && frame?.inputs.channel) s.inputs.channel = project.channel;
+    // A library photo always carries its licence credit.
+    const photo = typeof s.inputs.image === "string" && findAsset("photo", s.inputs.image);
+    if (photo?.credit && frame?.inputs.credit && !s.inputs.credit) s.inputs.credit = shortCredit(photo.credit, frame.inputs.credit.maxLength ?? 40);
   });
   return plan;
+}
+
+// "Author / licence" cut to fit, always keeping the licence.
+function shortCredit(credit, max) {
+  if (credit.length <= max) return credit;
+  const [author, license = ""] = credit.split(" / ");
+  return `${author.slice(0, Math.max(1, max - license.length - 4))}… / ${license}`.slice(0, max);
 }
 
 export async function planErrors(dir, plan) {

@@ -1,0 +1,35 @@
+{
+  "topic_id": "space",
+  "order": 14,
+  "name": "Vũ trụ và thiên văn học",
+  "description": "Hành tinh, ngôi sao, hố đen, thám hiểm không gian và những con số khổng lồ của vũ trụ.",
+  "tone": "kỳ vĩ, truyền cảm hứng, so sánh con số với thứ quen thuộc cho dễ hình dung",
+  "kicker": "Vũ trụ",
+  "icon": "ringed-planet",
+  "default_tags": [
+    "space",
+    "science"
+  ],
+  "related_tags": [
+    "comparison",
+    "statistics",
+    "whatif",
+    "mystery"
+  ],
+  "background": "stars",
+  "theme": {
+    "bg": "#070B1F",
+    "bg2": "#141C44",
+    "ink": "#E8EEFF",
+    "muted": "#9AA6D6",
+    "accent": "#818CF8",
+    "accent2": "#F472B6",
+    "on-accent": "#070B1F",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(129, 140, 248, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#E8EEFF",
+    "cap-hi": "#818CF8"
+  }
+}

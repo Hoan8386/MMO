@@ -1,0 +1,35 @@
+{
+  "topic_id": "disasters",
+  "order": 34,
+  "name": "Thiên tai và thảm họa",
+  "description": "Động đất, bão, núi lửa, sóng thần, thảm họa lịch sử và cách phòng tránh.",
+  "tone": "nghiêm túc, tôn trọng nạn nhân, giải thích nguyên nhân khoa học và cách an toàn",
+  "kicker": "Thảm họa",
+  "icon": "volcano",
+  "default_tags": [
+    "disaster",
+    "news"
+  ],
+  "related_tags": [
+    "history",
+    "statistics",
+    "nature",
+    "science"
+  ],
+  "background": "vignette",
+  "theme": {
+    "bg": "#120B08",
+    "bg2": "#2A140C",
+    "ink": "#FFF1E8",
+    "muted": "#C7A291",
+    "accent": "#F97316",
+    "accent2": "#EF4444",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(249, 115, 22, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#FFF1E8",
+    "cap-hi": "#F97316"
+  }
+}

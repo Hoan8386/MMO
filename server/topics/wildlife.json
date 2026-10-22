@@ -1,0 +1,35 @@
+{
+  "topic_id": "wildlife",
+  "order": 36,
+  "name": "Đời sống động vật hoang dã",
+  "description": "Tập tính săn mồi, di cư, sinh tồn của động vật hoang dã và nỗ lực bảo tồn.",
+  "tone": "trầm ấm như người dẫn phim thiên nhiên, giàu hình ảnh",
+  "kicker": "Hoang dã",
+  "icon": "lion",
+  "default_tags": [
+    "nature",
+    "story"
+  ],
+  "related_tags": [
+    "comparison",
+    "ranking",
+    "statistics",
+    "environment"
+  ],
+  "background": "waves",
+  "theme": {
+    "bg": "#F4F1E6",
+    "bg2": "#FFFFFF",
+    "ink": "#2B2A14",
+    "muted": "#6E6A4C",
+    "accent": "#B45309",
+    "accent2": "#15803D",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(43, 42, 20, 0.05)",
+    "line": "rgba(43, 42, 20, 0.14)",
+    "glow": "rgba(180, 83, 9, 0.14)",
+    "cap-bg": "rgba(43, 42, 20, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

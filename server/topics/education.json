@@ -1,10 +1,11 @@
 {
   "topic_id": "education",
-  "order": 2,
-  "name": "Học tập",
-  "description": "Bài giảng ngắn, giải thích khái niệm, kiến thức phổ thông, kỹ năng, ôn tập có câu hỏi.",
+  "order": 17,
+  "name": "Giáo dục và học tập",
+  "description": "Bài giảng ngắn, giải thích khái niệm, phương pháp học, ôn tập có câu hỏi.",
   "tone": "chậm rãi, dễ hiểu như giáo viên giảng bài; giải thích thuật ngữ, có ví dụ, có câu hỏi ôn tập",
   "kicker": "Bài học",
+  "icon": "graduation-cap",
   "default_tags": [
     "education",
     "explainer"
@@ -13,7 +14,8 @@
     "statistics",
     "comparison",
     "list",
-    "quiz"
+    "quiz",
+    "tips"
   ],
   "background": "paper",
   "theme": {

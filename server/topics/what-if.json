@@ -1,0 +1,34 @@
+{
+  "topic_id": "what-if",
+  "order": 30,
+  "name": "Giả thuyết “Nếu như…”",
+  "description": "Kịch bản giả định: nếu Trái Đất ngừng quay, nếu con người không ngủ… và khoa học nói gì.",
+  "tone": "tò mò, dẫn dắt từng bước hệ quả, nói rõ đây là giả thuyết",
+  "kicker": "Nếu như…",
+  "icon": "thought-balloon",
+  "default_tags": [
+    "whatif",
+    "science"
+  ],
+  "related_tags": [
+    "future",
+    "space",
+    "explainer"
+  ],
+  "background": "stars",
+  "theme": {
+    "bg": "#0A1022",
+    "bg2": "#18234A",
+    "ink": "#EAF0FF",
+    "muted": "#9AA8CF",
+    "accent": "#38BDF8",
+    "accent2": "#FB923C",
+    "on-accent": "#0A1022",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(56, 189, 248, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#EAF0FF",
+    "cap-hi": "#38BDF8"
+  }
+}

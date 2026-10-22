@@ -1,0 +1,51 @@
+{
+  "frame_id": "people-grid",
+  "version": 1,
+  "status": "active",
+  "name": "Cứ 10 người thì…",
+  "description": "Hàng 10 hình người, một số được tô màu theo tỉ lệ (ví dụ 3 trên 10). Dùng khi lời thoại nói \"cứ 10 người thì có X người…\" hoặc một tỉ lệ tròn chục phần trăm.",
+  "category": "data",
+  "scene_type": "people",
+  "tags": [
+    "statistics",
+    "psychology",
+    "society",
+    "health"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 12,
+    "recommended": 7
+  },
+  "inputs": {
+    "value": {
+      "type": "number",
+      "required": true,
+      "description": "số người được tô, từ 1 đến 10"
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 50
+    }
+  },
+  "keywords": "một từ khoá: con số khi được đọc",
+  "sample": {
+    "voice_text": "Cứ mười người trưởng thành thì có ba người thường xuyên mất ngủ.",
+    "keywords": [
+      "ba người"
+    ],
+    "inputs": {
+      "value": 3,
+      "label": "người trưởng thành thường xuyên mất ngủ",
+      "source": "WHO"
+    }
+  }
+}

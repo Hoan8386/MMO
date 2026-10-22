@@ -1,10 +1,11 @@
 {
   "topic_id": "technology",
   "order": 3,
-  "name": "Công nghệ",
-  "description": "Tin công nghệ, sản phẩm mới, AI, phần mềm, đánh giá thiết bị.",
+  "name": "Công nghệ và trí tuệ nhân tạo",
+  "description": "Tin công nghệ, AI, sản phẩm mới, phần mềm, đánh giá thiết bị.",
   "tone": "rõ ràng, nhanh, chính xác như bản tin; thuật ngữ tiếng Anh giữ nguyên khi phổ biến",
   "kicker": "Tin công nghệ",
+  "icon": "robot",
   "default_tags": [
     "technology",
     "news"
@@ -13,7 +14,9 @@
     "product_review",
     "statistics",
     "comparison",
-    "code"
+    "code",
+    "future",
+    "business"
   ],
   "background": "grid",
   "theme": {

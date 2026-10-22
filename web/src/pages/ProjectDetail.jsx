@@ -10,6 +10,7 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const [p, setP] = useState(null);
   const [frames, setFrames] = useState([]);
+  const [library, setLibrary] = useState({});
   const [draft, setDraft] = useState(null); // plan being edited, null = in sync with server
   const [errors, setErrors] = useState([]);
   const [error, setError] = useState("");
@@ -34,6 +35,14 @@ export default function ProjectDetail() {
   useEffect(() => {
     api.get("/frames").then(setFrames).catch((e) => setError(e.message));
   }, []);
+  // Library icons, logos and photos that fit the project's topic, grouped by kind.
+  useEffect(() => {
+    if (!p?.topic) return;
+    api
+      .get(`/library?topic=${encodeURIComponent(p.topic)}`)
+      .then((list) => setLibrary(Object.groupBy ? Object.groupBy(list, (a) => a.kind) : list.reduce((g, a) => ((g[a.kind] ||= []).push(a), g), {})))
+      .catch(() => {});
+  }, [p?.topic]);
 
   const busy = !!p && (p.busy || PROJECT_BUSY.includes(p.status));
   // Poll fast while a job runs; slowly while Studio is open, which also keeps it alive.
@@ -220,6 +229,7 @@ export default function ProjectDetail() {
             plan={plan}
             frames={frames}
             images={p.images}
+            library={library}
             errors={errors}
             audio={draft ? {} : p.audio}
             disabled={busy}

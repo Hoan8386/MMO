@@ -1,0 +1,35 @@
+{
+  "topic_id": "career",
+  "order": 18,
+  "name": "Nghề nghiệp và sự nghiệp",
+  "description": "Chọn nghề, phỏng vấn, kỹ năng công việc, thăng tiến và thu nhập.",
+  "tone": "thực tế, chuyên nghiệp, đưa lời khuyên làm được ngay",
+  "kicker": "Sự nghiệp",
+  "icon": "briefcase",
+  "default_tags": [
+    "business",
+    "selfhelp"
+  ],
+  "related_tags": [
+    "tips",
+    "statistics",
+    "comparison",
+    "list"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#F2F5FA",
+    "bg2": "#FFFFFF",
+    "ink": "#172238",
+    "muted": "#5A6680",
+    "accent": "#1D4ED8",
+    "accent2": "#0D9488",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(23, 34, 56, 0.05)",
+    "line": "rgba(23, 34, 56, 0.14)",
+    "glow": "rgba(29, 78, 216, 0.14)",
+    "cap-bg": "rgba(23, 34, 56, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

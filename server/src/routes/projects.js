@@ -4,7 +4,7 @@ import { Router } from "express";
 import multer from "multer";
 import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
-import { loadFrames, loadTopics, selectFrames } from "../video/catalog.js";
+import { loadTopics } from "../video/catalog.js";
 import { projectDir, slugify, listImages, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
 import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
@@ -176,14 +176,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 export default router;
-
-// Frame library (read-only for now): metadata the planner and the plan editor use.
-export const framesRouter = Router();
-framesRouter.get("/", (_req, res) => res.json([...loadFrames().values()]));
-
-// Topics: name, theme and the frames the planner may use for that topic.
-export const topicsRouter = Router();
-topicsRouter.get("/", (_req, res) => {
-  const frames = loadFrames();
-  res.json([...loadTopics().values()].map((t) => ({ ...t, frame_ids: selectFrames(frames, { topic: t, images: ["x"] }).map((f) => f.frame_id) })));
-});

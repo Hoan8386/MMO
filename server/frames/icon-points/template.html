@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 130px; right: 130px; top: 90px; bottom: 270px; display: flex; flex-direction: column; justify-content: center; gap: 50px; }
+        {{__r}} .title { font-size: 74px; line-height: 1.12; text-align: center; }
+        {{__r}} .cards { display: flex; justify-content: center; gap: 40px; }
+        {{__r}} .card { flex: 1; max-width: 400px; display: flex; flex-direction: column; align-items: center; gap: 26px; padding: 40px 26px 36px; border-radius: 30px; background: var(--panel); border: 2px solid var(--line); text-align: center; }
+        {{__r}} .halo { width: 220px; height: 220px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--glow), transparent 70%); }
+        {{__r}} .ico { width: 190px; height: 190px; }
+        {{__r}} .text { font-size: 40px; line-height: 1.25; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="title">{{title}}</div>
+        <div class="cards">
+        {{#items}}<div class="card"><div class="halo"><img class="ico" src="assets/icons/{{icons@}}.svg" alt="" /></div><div class="text">{{.}}</div></div>{{/items}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for item i of n: its keyword if spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          tl.fromTo($(".title"), { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          const cards = $$(".card");
+          let last = 0.4;
+          cards.forEach((el, i) => {
+          const t = Math.max(last + 0.25, at(i, cards.length) - 0.15);
+          last = t;
+          tl.fromTo(el, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, t);
+          tl.fromTo(el.querySelector(".ico"), { scale: 0, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.6, ease: "back.out(2.2)" }, t + 0.1);
+          });
+          const bobs = Math.max(0, Math.floor((P.D - last - 1.5) / 1.2));
+          if (bobs) tl.to($$(".ico"), { y: -10, duration: 0.6, yoyo: true, repeat: bobs * 2 - 1, ease: "sine.inOut", stagger: 0.2 }, last + 0.8);
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

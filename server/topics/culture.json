@@ -1,0 +1,35 @@
+{
+  "topic_id": "culture",
+  "order": 19,
+  "name": "Văn hóa và phong tục",
+  "description": "Lễ hội, phong tục, ẩm thực, ngôn ngữ và nét độc đáo của các nền văn hoá.",
+  "tone": "tôn trọng, tò mò, kể kèm nguồn gốc và ý nghĩa",
+  "kicker": "Văn hóa",
+  "icon": "red-paper-lantern",
+  "default_tags": [
+    "culture",
+    "story"
+  ],
+  "related_tags": [
+    "travel",
+    "history",
+    "fun",
+    "list"
+  ],
+  "background": "paper",
+  "theme": {
+    "bg": "#FBF3E8",
+    "bg2": "#FFFFFF",
+    "ink": "#3A1C12",
+    "muted": "#7D5E50",
+    "accent": "#C2410C",
+    "accent2": "#0F766E",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(58, 28, 18, 0.05)",
+    "line": "rgba(58, 28, 18, 0.14)",
+    "glow": "rgba(194, 65, 12, 0.14)",
+    "cap-bg": "rgba(58, 28, 18, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

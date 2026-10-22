@@ -1,0 +1,64 @@
+{
+  "frame_id": "alert-box",
+  "version": 1,
+  "status": "active",
+  "name": "Cảnh báo",
+  "description": "Dải sọc cảnh báo vàng đen, biểu tượng nhấp nháy, mức cảnh báo, tiêu đề và 1–3 lưu ý an toàn. Dùng cho thiên tai, nguy cơ sức khỏe, cảnh báo lừa đảo.",
+  "category": "content",
+  "scene_type": "alert",
+  "tags": [
+    "disaster",
+    "health",
+    "news",
+    "environment",
+    "tips"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "level": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24,
+      "description": "ví dụ: Cảnh báo cấp 4"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "tips": {
+      "type": "list",
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 50,
+      "description": "lưu ý an toàn"
+    },
+    "icon": {
+      "type": "icon"
+    }
+  },
+  "keywords": "một từ khoá cho mỗi lưu ý, theo đúng thứ tự",
+  "sample": {
+    "voice_text": "Khi có động đất, hãy nấp dưới gầm bàn chắc chắn và tránh xa cửa kính.",
+    "keywords": [
+      "nấp",
+      "tránh xa"
+    ],
+    "inputs": {
+      "level": "Khi có động đất",
+      "title": "Bình tĩnh và tìm chỗ nấp",
+      "tips": [
+        "Nấp dưới gầm bàn chắc chắn",
+        "Tránh xa cửa kính"
+      ],
+      "icon": "warning"
+    }
+  }
+}

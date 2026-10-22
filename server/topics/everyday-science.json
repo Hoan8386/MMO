@@ -1,0 +1,35 @@
+{
+  "topic_id": "everyday-science",
+  "order": 2,
+  "name": "Khoa học đời sống",
+  "description": "Giải thích hiện tượng quen thuộc hằng ngày bằng khoa học: nấu ăn, thời tiết, cơ thể, đồ vật.",
+  "tone": "tò mò, dễ hiểu, đi từ câu hỏi đời thường tới lời giải khoa học",
+  "kicker": "Khoa học quanh ta",
+  "icon": "test-tube",
+  "default_tags": [
+    "science",
+    "explainer"
+  ],
+  "related_tags": [
+    "myth",
+    "fun",
+    "statistics",
+    "tips"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#EEF7F6",
+    "bg2": "#FFFFFF",
+    "ink": "#10302E",
+    "muted": "#4F6B69",
+    "accent": "#0EA5A4",
+    "accent2": "#F59E0B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(16, 48, 46, 0.05)",
+    "line": "rgba(16, 48, 46, 0.14)",
+    "glow": "rgba(14, 165, 164, 0.14)",
+    "cap-bg": "rgba(16, 48, 46, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "topic_id": "environment",
+  "order": 13,
+  "name": "Môi trường và biến đổi khí hậu",
+  "description": "Biến đổi khí hậu, ô nhiễm, năng lượng sạch và những việc mỗi người có thể làm.",
+  "tone": "nghiêm túc nhưng có hy vọng, dùng số liệu đáng tin, đưa hành động cụ thể",
+  "kicker": "Môi trường",
+  "icon": "globe-showing-asia-australia",
+  "default_tags": [
+    "environment",
+    "statistics"
+  ],
+  "related_tags": [
+    "nature",
+    "science",
+    "future",
+    "disaster",
+    "news"
+  ],
+  "background": "waves",
+  "theme": {
+    "bg": "#ECF7F4",
+    "bg2": "#FFFFFF",
+    "ink": "#0F332B",
+    "muted": "#4F6E67",
+    "accent": "#059669",
+    "accent2": "#0284C7",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(15, 51, 43, 0.05)",
+    "line": "rgba(15, 51, 43, 0.14)",
+    "glow": "rgba(5, 150, 105, 0.14)",
+    "cap-bg": "rgba(15, 51, 43, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "frame_id": "do-dont",
+  "version": 1,
+  "status": "active",
+  "name": "Nên & không nên",
+  "description": "Hai cột NÊN (dấu tích xanh) và KHÔNG NÊN (dấu chéo đỏ), mỗi cột 1–3 ý. Dùng cho lời khuyên, mẹo, hướng dẫn an toàn.",
+  "category": "content",
+  "scene_type": "dodont",
+  "tags": [
+    "tips",
+    "health",
+    "selfhelp",
+    "relationship",
+    "nutrition",
+    "disaster"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "dos": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 40,
+      "description": "việc nên làm"
+    },
+    "donts": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 40,
+      "description": "việc không nên làm"
+    }
+  },
+  "keywords": "hai từ khoá: lúc bắt đầu nói phần nên làm, lúc bắt đầu nói phần không nên làm",
+  "sample": {
+    "voice_text": "Trước khi ngủ, bạn nên đọc sách và tắt đèn sớm. Đừng lướt điện thoại hay uống cà phê buổi tối.",
+    "keywords": [
+      "nên",
+      "Đừng"
+    ],
+    "inputs": {
+      "title": "Để ngủ ngon hơn",
+      "dos": [
+        "Đọc sách giấy",
+        "Tắt đèn đúng giờ"
+      ],
+      "donts": [
+        "Lướt điện thoại",
+        "Uống cà phê buổi tối"
+      ]
+    }
+  }
+}

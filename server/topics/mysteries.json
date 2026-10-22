@@ -1,0 +1,35 @@
+{
+  "topic_id": "mysteries",
+  "order": 9,
+  "name": "Bí ẩn và hiện tượng kỳ lạ",
+  "description": "Hiện tượng chưa có lời giải, nơi chốn kỳ lạ, giả thuyết và những gì khoa học đã biết.",
+  "tone": "hồi hộp, gợi tò mò, phân biệt rõ giả thuyết với sự thật đã được chứng minh",
+  "kicker": "Bí ẩn",
+  "icon": "crystal-ball",
+  "default_tags": [
+    "mystery",
+    "story"
+  ],
+  "related_tags": [
+    "whatif",
+    "science",
+    "hook",
+    "history"
+  ],
+  "background": "vignette",
+  "theme": {
+    "bg": "#0E0B1A",
+    "bg2": "#1E1636",
+    "ink": "#EDE7FF",
+    "muted": "#A79CC8",
+    "accent": "#A855F7",
+    "accent2": "#22D3EE",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(168, 85, 247, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#EDE7FF",
+    "cap-hi": "#A855F7"
+  }
+}

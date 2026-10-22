@@ -1,0 +1,35 @@
+{
+  "topic_id": "little-known",
+  "order": 40,
+  "name": "Những điều ít người biết",
+  "description": "Bí mật đằng sau đồ vật, sự kiện, thương hiệu và những chi tiết bị lãng quên.",
+  "tone": "thì thầm bí mật, gây tò mò, chỉ dùng sự thật có nguồn",
+  "kicker": "Ít người biết",
+  "icon": "magnifying-glass-tilted-left",
+  "default_tags": [
+    "mystery",
+    "fun"
+  ],
+  "related_tags": [
+    "myth",
+    "history",
+    "science",
+    "hook"
+  ],
+  "background": "vignette",
+  "theme": {
+    "bg": "#0F1115",
+    "bg2": "#1F232B",
+    "ink": "#F2F4F8",
+    "muted": "#9EA6B5",
+    "accent": "#FACC15",
+    "accent2": "#38BDF8",
+    "on-accent": "#0F1115",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(250, 204, 21, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#F2F4F8",
+    "cap-hi": "#FACC15"
+  }
+}

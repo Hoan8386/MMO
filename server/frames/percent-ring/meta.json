@@ -1,0 +1,58 @@
+{
+  "frame_id": "percent-ring",
+  "version": 1,
+  "status": "active",
+  "name": "Vòng phần trăm",
+  "description": "Vòng tròn tô dần tới một tỉ lệ phần trăm, số đếm ở giữa, nhãn giải thích bên cạnh, có thể kèm hình minh hoạ. Dùng khi lời thoại nói X% của một nhóm.",
+  "category": "data",
+  "scene_type": "percent",
+  "tags": [
+    "statistics",
+    "finance",
+    "health",
+    "environment",
+    "society",
+    "psychology"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 12,
+    "recommended": 7
+  },
+  "inputs": {
+    "value": {
+      "type": "number",
+      "required": true,
+      "description": "phần trăm từ 0 đến 100"
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "icon": {
+      "type": "icon",
+      "description": "hình minh hoạ cho nhóm được nói tới"
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 50
+    }
+  },
+  "keywords": "một từ khoá: con số phần trăm khi được đọc",
+  "sample": {
+    "voice_text": "Khoảng bảy mươi phần trăm bề mặt Trái Đất được bao phủ bởi nước.",
+    "keywords": [
+      "bảy mươi"
+    ],
+    "inputs": {
+      "value": 71,
+      "label": "bề mặt Trái Đất được bao phủ bởi nước",
+      "icon": "droplet",
+      "source": "NASA"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "topic_id": "modern-society",
+  "order": 16,
+  "name": "Xã hội và đời sống hiện đại",
+  "description": "Xu hướng xã hội, mạng xã hội, đô thị, công việc và cách sống của con người hôm nay.",
+  "tone": "khách quan, gần gũi, đưa số liệu và góc nhìn nhiều phía",
+  "kicker": "Đời sống hiện đại",
+  "icon": "cityscape",
+  "default_tags": [
+    "society",
+    "statistics"
+  ],
+  "related_tags": [
+    "psychology",
+    "comparison",
+    "news",
+    "list"
+  ],
+  "background": "dots",
+  "theme": {
+    "bg": "#F3F4F6",
+    "bg2": "#FFFFFF",
+    "ink": "#1F2937",
+    "muted": "#6B7280",
+    "accent": "#0F766E",
+    "accent2": "#F59E0B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(31, 41, 55, 0.05)",
+    "line": "rgba(31, 41, 55, 0.14)",
+    "glow": "rgba(15, 118, 110, 0.14)",
+    "cap-bg": "rgba(31, 41, 55, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

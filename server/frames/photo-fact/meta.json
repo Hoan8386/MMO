@@ -1,0 +1,52 @@
+{
+  "frame_id": "photo-fact",
+  "version": 1,
+  "status": "active",
+  "name": "Ảnh toàn màn hình + thông tin",
+  "description": "Ảnh phủ kín khung hình chuyển động chậm, lớp tối phía dưới với nhãn và một câu thông tin lớn. Dùng khi có ảnh minh hoạ đúng nội dung (ảnh dự án hoặc ảnh thư viện).",
+  "category": "media",
+  "scene_type": "image",
+  "tags": [
+    "common",
+    "media"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3.5,
+    "max": 12,
+    "recommended": 6
+  },
+  "inputs": {
+    "image": {
+      "type": "image",
+      "required": true,
+      "description": "tên ảnh của dự án hoặc ảnh thư viện"
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "text": {
+      "type": "string",
+      "required": true,
+      "maxLength": 90
+    },
+    "credit": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "nguồn ảnh"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Kim tự tháp Giza được xây dựng cách đây hơn bốn nghìn năm.",
+    "inputs": {
+      "image": "sample.jpg",
+      "label": "Ai Cập cổ đại",
+      "text": "Kim tự tháp Giza đã đứng vững hơn 4.500 năm",
+      "credit": "Ảnh: Wikimedia Commons"
+    }
+  }
+}

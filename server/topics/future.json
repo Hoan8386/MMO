@@ -1,0 +1,35 @@
+{
+  "topic_id": "future",
+  "order": 35,
+  "name": "Tương lai của nhân loại",
+  "description": "Công nghệ tương lai, dự báo, thành phố, việc làm và con người trong 50–100 năm tới.",
+  "tone": "truyền cảm hứng, cân bằng giữa lạc quan và thận trọng; nói rõ đâu là dự báo",
+  "kicker": "Tương lai",
+  "icon": "rocket",
+  "default_tags": [
+    "future",
+    "technology"
+  ],
+  "related_tags": [
+    "whatif",
+    "science",
+    "space",
+    "statistics"
+  ],
+  "background": "stars",
+  "theme": {
+    "bg": "#050D17",
+    "bg2": "#0E2235",
+    "ink": "#E6F6FF",
+    "muted": "#8FB1C8",
+    "accent": "#06B6D4",
+    "accent2": "#A3E635",
+    "on-accent": "#050D17",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(6, 182, 212, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#E6F6FF",
+    "cap-hi": "#06B6D4"
+  }
+}

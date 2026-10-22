@@ -34,7 +34,7 @@ for (const topic of topics) {
     run("ffmpeg", ["-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=1280x720", "-frames:v", "1", sample]),
   );
 
-  let list = selectFrames(frames, { topic, images: ["sample.jpg"], perType: 99 });
+  let list = selectFrames(frames, { topic, images: ["sample.jpg"], perType: 99, maxContent: 99 });
   if (opt("frame")) list = list.filter((f) => f.frame_id === opt("frame") || ["intro", "outro"].includes(f.scene_type));
   // A valid plan needs an intro first and an outro last.
   const order = (f) => (f.scene_type === "intro" ? 0 : f.scene_type === "outro" ? 2 : 1);

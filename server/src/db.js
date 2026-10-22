@@ -6,7 +6,9 @@ import { config, SERVER_DIR } from "./config.js";
 let pool;
 
 // Creates the database if needed, applies schema.sql, and opens the shared pool.
-export async function initDb() {
+// Scripts that run beside the server pass resetJobs: false so they leave running jobs alone.
+export async function initDb({ resetJobs = true } = {}) {
+  if (pool) return;
   const { database, ...conn } = config.db;
   const admin = await mysql.createConnection({ ...conn, multipleStatements: true });
   await admin.query(
@@ -24,6 +26,7 @@ export async function initDb() {
   await admin.end();
 
   pool = mysql.createPool({ ...config.db, charset: "utf8mb4", connectionLimit: 10 });
+  if (!resetJobs) return;
   // Jobs live in memory, so anything left mid-flight by a previous run is dead.
   await pool.query(
     "UPDATE projects SET status='failed', message='Server khởi động lại khi đang xử lý' WHERE status IN ('planning','building','rendering')",
@@ -34,6 +37,11 @@ export async function initDb() {
 export async function query(sql, params = []) {
   const [rows] = await pool.query(sql, params);
   return rows;
+}
+
+export async function closeDb() {
+  await pool?.end();
+  pool = null;
 }
 
 export async function one(sql, params = []) {

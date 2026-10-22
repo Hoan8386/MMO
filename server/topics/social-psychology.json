@@ -1,0 +1,35 @@
+{
+  "topic_id": "social-psychology",
+  "order": 38,
+  "name": "Tâm lý học xã hội",
+  "description": "Hiệu ứng đám đông, thí nghiệm tâm lý nổi tiếng, định kiến và ảnh hưởng xã hội.",
+  "tone": "tò mò, khách quan, kể thí nghiệm rồi rút ra bài học",
+  "kicker": "Tâm lý xã hội",
+  "icon": "busts-in-silhouette",
+  "default_tags": [
+    "psychology",
+    "society"
+  ],
+  "related_tags": [
+    "statistics",
+    "myth",
+    "people",
+    "history"
+  ],
+  "background": "bokeh",
+  "theme": {
+    "bg": "#F5F2FB",
+    "bg2": "#FFFFFF",
+    "ink": "#241B3A",
+    "muted": "#675D80",
+    "accent": "#7C3AED",
+    "accent2": "#0EA5E9",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(36, 27, 58, 0.05)",
+    "line": "rgba(36, 27, 58, 0.14)",
+    "glow": "rgba(124, 58, 237, 0.14)",
+    "cap-bg": "rgba(36, 27, 58, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

@@ -15,16 +15,19 @@ Rules:
 - On-screen text (inputs) is short and punchy, NOT a copy of the narration. Respect every character limit. Write numbers in inputs with digits.
 - keywords: exact phrases copied verbatim from the same scene's voice_text, in spoken order, used to time the animation as described for each frame. Use [] when the frame needs none.
 - transition_out: "wipe" when the next scene starts a new topic, otherwise "fade".
+- Icons and logos: pick the icon that literally shows the scene's subject (a planet for space, a pill for medicine); the same icon at most twice per video. Use a brand logo only for a brand the material names.
+- Image frames may use project images or library photos. Use a library photo only when its description matches what the scene says, and copy its credit into the credit input.
 - Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state. The only exception: wrong answer options in a quiz, which must be plausible but clearly wrong.`;
 
 let client;
 
 // Asks the AI for a plan, validates it, and gives the AI one chance to repair errors.
 // Returns { plan, calls } where calls records token usage for cost tracking.
-export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], targetSeconds = 90, mock = false, onLog = () => {} }) {
+// library: { icons: [name], logos: [name], photos: [{ name, label, credit }] } that suit the topic.
+export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, mock = false, onLog = () => {} }) {
   const allowedIds = allowed.map((f) => f.frame_id);
   if (mock || config.ai.mode === "mock") {
-    const plan = mockPlan({ material, title, allowed, images, topic });
+    const plan = mockPlan({ material, title, allowed, images, library, topic });
     const errors = validatePlan(plan, frames, { allowedFrameIds: allowedIds, images });
     if (errors.length) throw new Error(`Plan mẫu không hợp lệ:\n- ${errors.join("\n- ")}`);
     return { plan, calls: [] };
@@ -32,7 +35,7 @@ export async function planVideo({ material, title, channel, topic, frames, allow
 
   // Extra retries ride out brief network/DNS drops on the way to the API or gateway.
   client ??= new Anthropic({ maxRetries: 4 });
-  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, targetSeconds });
+  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, library, targetSeconds });
   const calls = [];
   for (let attempt = 1; attempt <= 3; attempt++) {
     onLog(`AI lập kế hoạch (lần ${attempt})`);
@@ -53,15 +56,24 @@ export async function planVideo({ material, title, channel, topic, frames, allow
   }
 }
 
+const EMPTY_LIBRARY = { icons: [], logos: [], photos: [] };
+
 // The planning request (system prompt, first user message, output schema), without calling the API.
-export function planRequest({ material, title, channel, topic, allowed, images = [], targetSeconds = 90 }) {
-  const schema = planSchema(allowed, images);
+// Library lists only reach the prompt when an allowed frame can use them.
+export function planRequest({ material, title, channel, topic, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90 }) {
+  const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
+  const lib = {
+    icons: uses("icon", "icons") ? library.icons : [],
+    logos: uses("logo") ? library.logos : [],
+    photos: uses("image") ? library.photos : [],
+  };
+  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], lib);
   const words = Math.round(targetSeconds * 2.6);
   const prompt = `Available frames (* = required input):
 ${describeFrames(allowed)}
 
-Project images: ${images.length ? images.join(", ") : "(none — do not use image frames)"}
-Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
+Project images: ${images.length ? images.join(", ") : lib.photos.length ? "(none)" : "(none — do not use image frames)"}
+${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
 Narration tone: ${topic?.tone || "clear and natural"}
 Target length: about ${targetSeconds}s of narration (~${words} Vietnamese words in total).
 ${title ? `Video title: ${title}\n` : ""}Channel name: ${channel || "(none — leave every channel input empty)"}
@@ -111,7 +123,12 @@ async function callModel(messages, schema) {
 
 // One schema branch per allowed frame, so the model can only emit inputs that frame accepts.
 // Length limits live in the prompt and the validator: structured outputs ignore maxLength.
-function planSchema(allowed, images) {
+function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
+  // Shared enums live in $defs so a long icon list is sent once, not once per frame.
+  const $defs = {};
+  if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
+  if (lib.logos.length) $defs.logo = { type: "string", enum: lib.logos };
+  const ref = (name) => ($defs[name] ? { $ref: `#/$defs/${name}` } : { type: "string" });
   const branch = (f) => {
     const props = {};
     const required = [];
@@ -121,6 +138,8 @@ function planSchema(allowed, images) {
       else if (i.type === "list")
         props[k] = { type: "array", items: { type: "string", description: `at most ${i.itemMaxLength ?? 60} characters` }, description: `${i.minItems ?? 1}-${i.maxItems ?? 5} items` };
       else if (i.type === "image") props[k] = images.length ? { type: "string", enum: images } : { type: "string" };
+      else if (i.type === "icon" || i.type === "logo") props[k] = ref(i.type);
+      else if (i.type === "icons") props[k] = { type: "array", items: ref("icon"), description: `${i.minItems ?? 1}-${i.maxItems ?? 4} icon names` };
       else props[k] = { type: "string", description: `at most ${i.maxLength ?? 80} characters` };
       if (i.required) required.push(k);
     }
@@ -145,24 +164,27 @@ function planSchema(allowed, images) {
     },
     required: ["title", "scenes"],
     additionalProperties: false,
+    ...(Object.keys($defs).length ? { $defs } : {}),
   };
 }
 
 // Deterministic plan for running the pipeline without spending tokens:
 // one sentence per scene, frame picked by simple heuristics.
 // Fills a frame's required text inputs with a cut-down string (mock mode only).
-function fillText(frame, text, cut) {
+function fillText(frame, text, cut, library = EMPTY_LIBRARY) {
   const inputs = {};
   for (const [k, i] of Object.entries(frame.inputs)) {
     if (!i.required) continue;
     if (i.type === "string") inputs[k] = cut(text, i.maxLength ?? 60);
     else if (i.type === "list") inputs[k] = Array.from({ length: i.minItems ?? 2 }, (_, n) => cut(`${text} ${n + 1}`, i.itemMaxLength ?? 40));
     else if (i.type === "number") inputs[k] = 1;
+    else if (i.type === "icon" && library.icons.length) inputs[k] = library.icons[0];
+    else if (i.type === "logo" && library.logos.length) inputs[k] = library.logos[0];
   }
   return inputs;
 }
 
-function mockPlan({ material, title, allowed, images, topic }) {
+function mockPlan({ material, title, allowed, images, library, topic }) {
   const has = (id) => allowed.some((f) => f.frame_id === id);
   const sentences = material
     .replace(/\s+/g, " ")
@@ -178,7 +200,7 @@ function mockPlan({ material, title, allowed, images, topic }) {
       voice_text: `Chào mừng bạn đến với video hôm nay: ${videoTitle}.`,
       keywords: [],
       transition_out: "wipe",
-      inputs: { ...fillText(intro, videoTitle, cut), ...(intro.inputs.kicker ? { kicker: topic?.kicker || "Video" } : {}) },
+      inputs: { ...fillText(intro, videoTitle, cut, library), ...(intro.inputs.kicker ? { kicker: topic?.kicker || "Video" } : {}) },
     },
   ];
   let img = 0;

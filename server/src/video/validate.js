@@ -1,3 +1,5 @@
+import { findAsset } from "./library.js";
+
 // Checks a plan against the frame library. Returns a list of human-readable errors;
 // an empty list means the plan can be compiled. Never trusts the AI output.
 export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}) {
@@ -51,7 +53,17 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
           if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} số`);
         }
       } else if (spec.type === "image") {
-        if (!images.includes(v)) errors.push(`${p}: ảnh "${v}" không có trong danh sách ảnh của dự án`);
+        if (!images.includes(v) && !findAsset("photo", v)) errors.push(`${p}: ảnh "${v}" không có trong ảnh của dự án hay thư viện ảnh`);
+      } else if (spec.type === "icon" || spec.type === "logo") {
+        const kind = spec.type === "icon" ? "illustration" : "logo";
+        if (typeof v !== "string" || !findAsset(kind, v)) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
+      } else if (spec.type === "icons") {
+        if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên icon`);
+        else {
+          if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} icon`);
+          if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} icon`);
+          v.filter((x) => !findAsset("illustration", x)).forEach((x) => errors.push(`${p}: icon "${x}" không có trong thư viện`));
+        }
       }
     }
     for (const [k, list] of Object.entries(frame.index_of || {})) {

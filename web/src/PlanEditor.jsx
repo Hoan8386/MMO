@@ -1,3 +1,5 @@
+import { libraryUrl } from "./api.js";
+
 // Edits a video plan scene by scene. Input fields are generated from each frame's meta.json,
 // so a new frame in server/frames/ shows up here without UI changes.
 const TRANSITIONS = [
@@ -5,7 +7,8 @@ const TRANSITIONS = [
   { value: "wipe", label: "Quét màu (đổi chủ đề)" },
 ];
 
-export default function PlanEditor({ plan, frames, images, errors, audio, disabled, onChange }) {
+// library: assets of the project's topic, { illustration: [], logo: [], photo: [] }.
+export default function PlanEditor({ plan, frames, images, library = {}, errors, audio, disabled, onChange }) {
   const byId = Object.fromEntries(frames.map((f) => [f.frame_id, f]));
   const scenes = plan.scenes;
   const update = (i, patch) => onChange({ ...plan, scenes: scenes.map((s, j) => (j === i ? { ...s, ...patch } : s)) });
@@ -37,6 +40,7 @@ export default function PlanEditor({ plan, frames, images, errors, audio, disabl
           frame={byId[s.frame_id]}
           frames={frames}
           images={images}
+          library={library}
           errors={errors.filter((e) => e.startsWith(`scenes[${i}]`)).map((e) => e.replace(/^scenes\[\d+\]\.?/, ""))}
           audio={audio[s.id]}
           disabled={disabled}
@@ -60,7 +64,7 @@ export default function PlanEditor({ plan, frames, images, errors, audio, disabl
   );
 }
 
-function SceneEditor({ index, scene, frame, frames, images, errors, audio, disabled, first, last, onChange, onMove, onRemove }) {
+function SceneEditor({ index, scene, frame, frames, images, library, errors, audio, disabled, first, last, onChange, onMove, onRemove }) {
   const setInput = (k, v) => onChange({ inputs: { ...scene.inputs, [k]: v } });
   // Switching frame keeps only the inputs the new frame understands.
   const switchFrame = (id) => {
@@ -119,7 +123,7 @@ function SceneEditor({ index, scene, frame, frames, images, errors, audio, disab
         <div className="plan-inputs">
           {frame ? (
             Object.entries(frame.inputs).map(([k, spec]) => (
-              <InputField key={k} name={k} spec={spec} value={scene.inputs?.[k]} images={images} disabled={disabled} onChange={(v) => setInput(k, v)} />
+              <InputField key={k} name={k} spec={spec} value={scene.inputs?.[k]} images={images} library={library} disabled={disabled} onChange={(v) => setInput(k, v)} />
             ))
           ) : (
             <p className="note error">Frame “{scene.frame_id}” không có trong thư viện.</p>
@@ -131,7 +135,7 @@ function SceneEditor({ index, scene, frame, frames, images, errors, audio, disab
   );
 }
 
-function InputField({ name, spec, value, images, disabled, onChange }) {
+function InputField({ name, spec, value, images, library, disabled, onChange }) {
   const label = (
     <span className="input-label">
       {name}{spec.required ? " *" : ""}
@@ -182,14 +186,45 @@ function InputField({ name, spec, value, images, disabled, onChange }) {
     );
   }
   if (spec.type === "image") {
+    const photos = library.photo || [];
+    const preview = images.find((img) => img.name === value)?.url || (photos.some((a) => a.name === value) ? libraryUrl.photo(value) : null);
     return (
       <label>
         {label}
-        <select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value || undefined)}>
-          <option value="">{images.length ? "Chọn ảnh…" : "Chưa có ảnh — tải ảnh lên ở mục Ảnh"}</option>
-          {images.map((img) => <option key={img.name} value={img.name}>{img.name}</option>)}
-        </select>
+        <span className="asset-pick">
+          {preview && <img className="asset-thumb photo" src={preview} alt="" />}
+          <select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value || undefined)}>
+            <option value="">{images.length || photos.length ? "Chọn ảnh…" : "Chưa có ảnh — tải ảnh lên ở mục Ảnh"}</option>
+            {images.length > 0 && <optgroup label="Ảnh của dự án">{images.map((img) => <option key={img.name} value={img.name}>{img.name}</option>)}</optgroup>}
+            {photos.length > 0 && <optgroup label="Ảnh thư viện">{photos.map((a) => <option key={a.name} value={a.name}>{a.label}</option>)}</optgroup>}
+          </select>
+        </span>
       </label>
+    );
+  }
+  if (spec.type === "icon" || spec.type === "logo") {
+    const kind = spec.type === "icon" ? "illustration" : "logo";
+    return (
+      <label>
+        {label}
+        <AssetSelect kind={kind} list={library[kind] || []} value={value} disabled={disabled} onChange={onChange} />
+      </label>
+    );
+  }
+  if (spec.type === "icons") {
+    const names = Array.isArray(value) ? value : [];
+    const setAt = (i, v) => onChange(v ? names.map((n, j) => (j === i ? v : n)) : names.filter((_, j) => j !== i));
+    return (
+      <div className="field">
+        {label}
+        <div className="asset-list">
+          {names.map((n, i) => <AssetSelect key={i} kind="illustration" list={library.illustration || []} value={n} disabled={disabled} onChange={(v) => setAt(i, v)} />)}
+          {names.length < (spec.maxItems ?? 4) && (
+            <AssetSelect kind="illustration" list={library.illustration || []} value="" placeholder="+ Thêm icon…" disabled={disabled} onChange={(v) => v && onChange([...names, v])} />
+          )}
+        </div>
+        <small className="count">{names.length}/{spec.maxItems ?? 4} icon, theo thứ tự các ý</small>
+      </div>
     );
   }
   const text = value ?? "";
@@ -200,5 +235,20 @@ function InputField({ name, spec, value, images, disabled, onChange }) {
       <input value={text} disabled={disabled} onChange={(e) => onChange(e.target.value)} />
       {spec.maxLength && <small className={over ? "count over" : "count"}>{text.length}/{spec.maxLength}</small>}
     </label>
+  );
+}
+
+// Dropdown of library icons or logos with a preview of the chosen one.
+function AssetSelect({ kind, list, value, placeholder, disabled, onChange }) {
+  const known = !value || list.some((a) => a.name === value);
+  return (
+    <span className="asset-pick">
+      {value ? <img className="asset-thumb" src={libraryUrl[kind](value)} alt="" /> : <span className="asset-thumb empty" />}
+      <select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value || undefined)}>
+        <option value="">{placeholder || (list.length ? "Chọn…" : "Thư viện trống — chạy npm run assets:download")}</option>
+        {!known && <option value={value}>{value}</option>}
+        {list.map((a) => <option key={a.name} value={a.name}>{a.label || a.name}</option>)}
+      </select>
+    </span>
   );
 }

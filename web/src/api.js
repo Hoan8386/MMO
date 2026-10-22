@@ -18,6 +18,13 @@ export const api = {
   del: (url) => request("DELETE", url),
 };
 
+// Files of the shared asset library (storage/library/).
+export const libraryUrl = {
+  illustration: (name) => `/storage/library/illustrations/${name}.svg`,
+  logo: (name) => `/storage/library/logos/${name}.svg`,
+  photo: (name) => `/storage/library/photos/${name}`,
+};
+
 export const PROJECT_STATUS = {
   draft: { label: "Nháp", tone: "muted" },
   planning: { label: "AI đang lập kế hoạch", tone: "info" },

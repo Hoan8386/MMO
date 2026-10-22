@@ -4,6 +4,7 @@
 //   {{#name}}…{{/name}} loop over an array ({{.}}, {{@index}}, {{@n}}) or render once if truthy
 //   {{^name}}…{{/name}} render when empty / falsy
 //   {{?name}}…{{/?name}} render once when not empty (e.g. a wrapper around a {{#name}} loop)
+//   {{name@}}           inside a loop: element @index of another array (e.g. {{icons@}} beside {{#items}})
 const esc = (s) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -22,6 +23,7 @@ export function fill(tpl, data) {
     if (Array.isArray(v)) return v.map((item, i) => fill(inner, { ...data, ".": item, "@index": i, "@n": i + 1 })).join("");
     return fill(inner, data);
   });
+  out = out.replace(/\{\{(\w+)@\}\}/g, (_, k) => esc(Array.isArray(data[k]) ? data[k][data["@index"]] : ""));
   out = out.replace(/\{\{\{([\w@.]+)\}\}\}/g, (_, k) => String(data[k] ?? ""));
   return out.replace(/\{\{([\w@.]+)\}\}/g, (_, k) => esc(data[k]));
 }

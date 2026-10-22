@@ -1,0 +1,56 @@
+{
+  "frame_id": "intro-documentary",
+  "version": 1,
+  "status": "active",
+  "name": "Mở đầu phim tài liệu",
+  "description": "Mở đầu kiểu phim tài liệu: hai dải đen điện ảnh, đường kẻ mảnh, tiêu đề hiện chậm và giãn chữ. Hợp với lịch sử, bí ẩn, điều tra, thiên nhiên, vũ trụ.",
+  "category": "intro",
+  "scene_type": "intro",
+  "tags": [
+    "story",
+    "history",
+    "ancient",
+    "crime",
+    "mystery",
+    "nature",
+    "space",
+    "disaster",
+    "philosophy",
+    "people"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 3,
+    "max": 9,
+    "recommended": 5.5
+  },
+  "inputs": {
+    "kicker": {
+      "type": "string",
+      "required": true,
+      "maxLength": 30,
+      "description": "nhãn nhỏ phía trên, ví dụ: Hồ sơ bí ẩn"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 70
+    },
+    "subtitle": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "thời gian, địa điểm hoặc một câu dẫn"
+    }
+  },
+  "keywords": "không cần",
+  "sample": {
+    "voice_text": "Năm 1947, một vật thể lạ rơi xuống sa mạc New Mexico.",
+    "inputs": {
+      "kicker": "Hồ sơ bí ẩn",
+      "title": "Sự kiện Roswell",
+      "subtitle": "New Mexico, tháng 7 năm 1947"
+    }
+  }
+}

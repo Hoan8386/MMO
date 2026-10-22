@@ -1,0 +1,92 @@
+{
+  "frame_id": "scale-compare",
+  "version": 1,
+  "status": "active",
+  "name": "So sánh kích thước",
+  "description": "2–4 vòng tròn có đường kính tỉ lệ thuận với giá trị (vòng quá nhỏ được giữ ở cỡ tối thiểu), kèm minh hoạ, tên và con số. Dùng để so sánh độ lớn: đường kính hành tinh, chiều cao con vật, toà nhà, khoảng cách.",
+  "category": "data",
+  "scene_type": "scale",
+  "tags": [
+    "space",
+    "nature",
+    "science",
+    "comparison",
+    "fun"
+  ],
+  "aspect_ratios": [
+    "16:9"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "labels": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4,
+      "itemMaxLength": 20
+    },
+    "values": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "icons": {
+      "type": "icons",
+      "minItems": 2,
+      "maxItems": 4,
+      "description": "một icon cho mỗi thứ, đúng thứ tự"
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 12
+    }
+  },
+  "same_length": [
+    [
+      "labels",
+      "values"
+    ],
+    [
+      "labels",
+      "icons"
+    ]
+  ],
+  "keywords": "một từ khoá cho mỗi thứ, theo đúng thứ tự: vòng thứ i lớn dần khi từ khoá thứ i được đọc",
+  "sample": {
+    "voice_text": "So với Trái Đất, Sao Mộc lớn hơn khoảng mười một lần, còn Mặt Trăng chỉ bằng một phần tư.",
+    "keywords": [
+      "Trái Đất",
+      "Sao Mộc",
+      "Mặt Trăng"
+    ],
+    "inputs": {
+      "title": "Đường kính so với Trái Đất",
+      "labels": [
+        "Trái Đất",
+        "Sao Mộc",
+        "Mặt Trăng"
+      ],
+      "values": [
+        1,
+        11.2,
+        0.27
+      ],
+      "icons": [
+        "globe-showing-asia-australia",
+        "ringed-planet",
+        "full-moon"
+      ],
+      "unit": "×"
+    }
+  }
+}

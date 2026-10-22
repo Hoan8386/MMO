@@ -1,0 +1,34 @@
+{
+  "topic_id": "true-stories",
+  "order": 29,
+  "name": "Những câu chuyện có thật",
+  "description": "Câu chuyện người thật việc thật: sinh tồn, kỳ tích, số phận đặc biệt.",
+  "tone": "kể chuyện cảm xúc, có mở đầu – cao trào – kết; đúng sự thật, không thêm thắt",
+  "kicker": "Chuyện có thật",
+  "icon": "open-book",
+  "default_tags": [
+    "story",
+    "people"
+  ],
+  "related_tags": [
+    "history",
+    "crime",
+    "quote"
+  ],
+  "background": "vignette",
+  "theme": {
+    "bg": "#15110D",
+    "bg2": "#2A2119",
+    "ink": "#F5ECDF",
+    "muted": "#BBA88F",
+    "accent": "#E0A458",
+    "accent2": "#C2554A",
+    "on-accent": "#15110D",
+    "panel": "rgba(255, 255, 255, 0.06)",
+    "line": "rgba(255, 255, 255, 0.13)",
+    "glow": "rgba(224, 164, 88, 0.26)",
+    "cap-bg": "rgba(0, 0, 0, 0.7)",
+    "cap-ink": "#F5ECDF",
+    "cap-hi": "#E0A458"
+  }
+}

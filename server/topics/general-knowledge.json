@@ -1,0 +1,35 @@
+{
+  "topic_id": "general-knowledge",
+  "order": 37,
+  "name": "Kiến thức phổ thông",
+  "description": "Kiến thức nền về địa lý, lịch sử, khoa học, ngôn ngữ mà ai cũng nên biết.",
+  "tone": "rõ ràng, vui, có câu hỏi kiểm tra nhanh",
+  "kicker": "Kiến thức",
+  "icon": "books",
+  "default_tags": [
+    "education",
+    "fun"
+  ],
+  "related_tags": [
+    "quiz",
+    "statistics",
+    "list",
+    "ranking"
+  ],
+  "background": "paper",
+  "theme": {
+    "bg": "#F3F6FF",
+    "bg2": "#FFFFFF",
+    "ink": "#1B2340",
+    "muted": "#5C6688",
+    "accent": "#4F46E5",
+    "accent2": "#F59E0B",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(27, 35, 64, 0.05)",
+    "line": "rgba(27, 35, 64, 0.14)",
+    "glow": "rgba(79, 70, 229, 0.14)",
+    "cap-bg": "rgba(27, 35, 64, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}
