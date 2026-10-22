@@ -1,9 +1,11 @@
 // Renders a still of every frame, per topic, from the sample data in its meta.json.
 // No AI and no TTS: scene lengths come from each frame's recommended duration.
 //
-//   node scripts/preview-frames.js [--topic entertainment] [--frame quiz]
+//   node scripts/preview-frames.js [--topic entertainment] [--frame quiz] [--aspect 9:16|all]
 //
-// Output: storage/frame-previews/<topic>/<frame_id>.png (+ contact-sheet*.jpg), shown on the
+// Output: storage/frame-previews/<topic>/<frame_id>.png for 16:9, and
+// storage/frame-previews/<9x16|1x1|4x5>/<topic>/<frame_id>.png for the other formats
+// (+ contact-sheet*.jpg), shown on the
 // "Thư viện frame" page. The HyperFrames project used to shoot them stays next to the images.
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -15,6 +17,7 @@ import { compileProject } from "../src/video/compile.js";
 import { checkProject } from "../src/video/render.js";
 import { run } from "../src/video/proc.js";
 import { config } from "../src/config.js";
+import { ASPECTS, aspectKey } from "../src/video/aspects.js";
 
 const args = process.argv.slice(2);
 const opt = (name) => {
@@ -24,9 +27,11 @@ const opt = (name) => {
 const OUT = path.join(STORAGE_DIR, "frame-previews");
 const frames = loadFrames();
 const topics = [...loadTopics().values()].filter((t) => !opt("topic") || t.topic_id === opt("topic"));
+const aspects = opt("aspect") === "all" ? Object.keys(ASPECTS) : [opt("aspect") || "16:9"];
+if (!aspects.every((a) => ASPECTS[a])) throw new Error(`--aspect phải là all hoặc một trong: ${Object.keys(ASPECTS).join(", ")}`);
 
-for (const topic of topics) {
-  const dir = path.join(OUT, topic.topic_id);
+for (const [aspectRatio, topic] of aspects.flatMap((a) => topics.map((t) => [a, t]))) {
+  const dir = aspectRatio === "16:9" ? path.join(OUT, topic.topic_id) : path.join(OUT, aspectKey(aspectRatio), topic.topic_id);
   await fs.mkdir(path.join(dir, "assets", "img"), { recursive: true });
   // A neutral test picture so image frames have something to show.
   const sample = path.join(dir, "assets", "img", "sample.jpg");
@@ -34,7 +39,7 @@ for (const topic of topics) {
     run("ffmpeg", ["-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=1280x720", "-frames:v", "1", sample]),
   );
 
-  let list = selectFrames(frames, { topic, images: ["sample.jpg"], perType: 99, maxContent: 99 });
+  let list = selectFrames(frames, { topic, aspectRatio, images: ["sample.jpg"], perType: 99, maxContent: 99 });
   if (opt("frame")) list = list.filter((f) => f.frame_id === opt("frame") || ["intro", "outro"].includes(f.scene_type));
   // A valid plan needs an intro first and an outro last.
   const order = (f) => (f.scene_type === "intro" ? 0 : f.scene_type === "outro" ? 2 : 1);
@@ -53,7 +58,7 @@ for (const topic of topics) {
     plan.scenes.map((s) => [s.id, { duration: Math.max(1, frames.get(s.frame_id).duration.recommended - LEAD - TAIL), words: [] }]),
   );
   const timeline = buildTimeline(plan, vo, frames);
-  await compileProject(dir, { title: plan.title, topic, silent: true }, timeline);
+  await compileProject(dir, { title: plan.title, aspectRatio, topic, silent: true }, timeline);
   await checkProject(dir);
 
   // Shoot each scene just before its exit, when everything has appeared.
@@ -66,5 +71,5 @@ for (const topic of topics) {
     if (files[i]) await fs.copyFile(path.join(shots, files[i]), path.join(dir, `${s.frame_id}.png`));
   }
   for (const f of (await fs.readdir(shots)).filter((n) => n.startsWith("contact-sheet"))) await fs.copyFile(path.join(shots, f), path.join(dir, f));
-  console.log(`${topic.topic_id}: ${timeline.scenes.length} frame → ${dir}`);
+  console.log(`${aspectRatio} ${topic.topic_id}: ${timeline.scenes.length} frame → ${dir}`);
 }

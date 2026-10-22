@@ -1,6 +1,6 @@
 {
   "frame_id": "headline",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Tiêu đề tin",
   "description": "Tiêu đề lớn kèm dòng mô tả ngắn. Dùng để mở một tin mới hoặc nêu ý chính.",
@@ -12,7 +12,10 @@
     "explainer"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 3,
@@ -34,6 +37,10 @@
       "type": "string",
       "maxLength": 110,
       "description": "một câu giải thích ngắn"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "tuỳ chọn 1 từ khoá: dòng mô tả hiện ra khi từ này được đọc",
@@ -45,7 +52,8 @@
     "inputs": {
       "label": "Apple",
       "title": "iPhone 18 chính thức ra mắt",
-      "subtitle": "Ba thay đổi lớn về camera, pin và chip xử lý"
+      "subtitle": "Ba thay đổi lớn về camera, pin và chip xử lý",
+      "corner_icon": "megaphone"
     }
   }
 }

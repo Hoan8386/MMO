@@ -1,6 +1,6 @@
 {
   "frame_id": "do-dont",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Nên & không nên",
   "description": "Hai cột NÊN (dấu tích xanh) và KHÔNG NÊN (dấu chéo đỏ), mỗi cột 1–3 ý. Dùng cho lời khuyên, mẹo, hướng dẫn an toàn.",
@@ -15,7 +15,10 @@
     "disaster"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -43,6 +46,10 @@
       "maxItems": 3,
       "itemMaxLength": 40,
       "description": "việc không nên làm"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "hai từ khoá: lúc bắt đầu nói phần nên làm, lúc bắt đầu nói phần không nên làm",
@@ -61,7 +68,8 @@
       "donts": [
         "Lướt điện thoại",
         "Uống cà phê buổi tối"
-      ]
+      ],
+      "corner_icon": "light-bulb"
     }
   }
 }

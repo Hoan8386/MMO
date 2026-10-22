@@ -1,6 +1,6 @@
 {
   "frame_id": "invention-card",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Thẻ phát minh",
   "description": "Bản vẽ kỹ thuật: minh hoạ phát minh trong vòng đo đạc, năm, tên phát minh, người phát minh và tác động. Dùng khi giới thiệu một phát minh hay sản phẩm lịch sử.",
@@ -13,7 +13,10 @@
     "science"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,

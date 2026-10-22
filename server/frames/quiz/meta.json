@@ -1,6 +1,6 @@
 {
   "frame_id": "quiz",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Câu hỏi trắc nghiệm",
   "description": "Câu hỏi với 2–4 đáp án A/B/C/D; đáp án đúng được tô màu và các đáp án khác mờ đi, kèm giải thích ngắn. Dùng để ôn tập hoặc tạo tương tác.",
@@ -12,7 +12,10 @@
     "fun"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 6,
@@ -40,6 +43,10 @@
     "explanation": {
       "type": "string",
       "maxLength": 90
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "index_of": {
@@ -60,7 +67,8 @@
         "Do gió"
       ],
       "answer": 2,
-      "explanation": "Cơ thể có xu hướng giữ nguyên vận tốc cũ."
+      "explanation": "Cơ thể có xu hướng giữ nguyên vận tốc cũ.",
+      "corner_icon": "red-question-mark"
     }
   }
 }

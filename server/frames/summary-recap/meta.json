@@ -1,6 +1,6 @@
 {
   "frame_id": "summary-recap",
-  "version": 1,
+  "version": 3,
   "status": "active",
   "name": "Ghi nhớ / tóm tắt",
   "description": "Khung tóm tắt 2–4 ý chính, mỗi ý có dấu tích. Dùng gần cuối video để chốt kiến thức.",
@@ -12,7 +12,10 @@
     "list"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,
@@ -32,6 +35,10 @@
       "minItems": 2,
       "maxItems": 4,
       "itemMaxLength": 70
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "mỗi ý một từ khoá theo thứ tự: ý thứ i hiện ra khi từ khoá thứ i được đọc",
@@ -46,7 +53,8 @@
       "points": [
         "Mọi vật đều có quán tính",
         "Khối lượng càng lớn, quán tính càng lớn"
-      ]
+      ],
+      "corner_icon": "pushpin"
     }
   }
 }

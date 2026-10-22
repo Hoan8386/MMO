@@ -1,6 +1,6 @@
 {
   "frame_id": "stat-big",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Số liệu lớn",
   "description": "Một con số nổi bật đếm lên, kèm nhãn và nguồn. Dùng khi lời thoại nhấn mạnh một con số.",
@@ -12,7 +12,10 @@
     "news"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 3.5,
@@ -44,6 +47,10 @@
       "type": "string",
       "maxLength": 50,
       "description": "nguồn số liệu nếu kịch bản có"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "1 từ khoá: con số bắt đầu đếm khi từ này được đọc",
@@ -55,7 +62,8 @@
     "inputs": {
       "value": 1200000,
       "label": "máy bán ra trong tuần đầu",
-      "source": "Counterpoint"
+      "source": "Counterpoint",
+      "corner_icon": "hundred-points"
     }
   }
 }

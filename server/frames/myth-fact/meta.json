@@ -1,6 +1,6 @@
 {
   "frame_id": "myth-fact",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Lầm tưởng & sự thật",
   "description": "Thẻ LẦM TƯỞNG bị gạch đi, rồi thẻ SỰ THẬT trượt vào. Dùng khi lời thoại bác bỏ một quan niệm sai phổ biến.",
@@ -15,7 +15,10 @@
     "fun"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -34,6 +37,10 @@
       "required": true,
       "maxLength": 110,
       "description": "sự thật đúng"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "một từ khoá: từ đầu tiên của phần nói sự thật (thẻ sự thật hiện ra lúc đó)",
@@ -44,7 +51,8 @@
     ],
     "inputs": {
       "myth": "Con người chỉ dùng 10% bộ não",
-      "fact": "Gần như mọi vùng não đều hoạt động trong một ngày"
+      "fact": "Gần như mọi vùng não đều hoạt động trong một ngày",
+      "corner_icon": "magnifying-glass-tilted-left"
     }
   }
 }

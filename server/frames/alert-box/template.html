@@ -19,6 +19,10 @@
         {{__r}} .title { font-size: 76px; line-height: 1.1; }
         {{__r}} .tip { display: flex; gap: 18px; align-items: center; font-size: 42px; }
         {{__r}} .tip b { flex: none; width: 50px; height: 50px; border-radius: 50%; background: #F5C518; color: #111; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        /* Narrower formats: sign above the text, lower stripe at the bottom of the scene. */
+        {{__r}}:not([data-aspect="16x9"]) .stripe.b { top: auto; bottom: 300px; }
+        {{__r}}:not([data-aspect="16x9"]) .wrap { flex-direction: column; justify-content: center; gap: 50px; bottom: 380px; }
+        {{__r}}:not([data-aspect="16x9"]) .text { flex: none; align-self: stretch; }
       </style>
       <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
         <div class="stripe t"></div>

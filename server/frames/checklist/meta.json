@@ -1,6 +1,6 @@
 {
   "frame_id": "checklist",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Danh sách đánh dấu",
   "description": "Tiêu đề và 2–5 việc trong ô vuông, mỗi ô được tích khi lời thoại nhắc tới. Dùng cho thói quen, các bước chuẩn bị, việc cần làm.",
@@ -13,7 +13,10 @@
     "list"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,
@@ -32,6 +35,10 @@
       "minItems": 2,
       "maxItems": 5,
       "itemMaxLength": 50
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "một từ khoá cho mỗi việc, theo đúng thứ tự: ô thứ i được tích khi từ khoá thứ i được đọc",
@@ -48,7 +55,8 @@
         "Uống một cốc nước",
         "Vận động 10 phút",
         "Viết ra 3 việc quan trọng"
-      ]
+      ],
+      "corner_icon": "check-mark-button"
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "frame_id": "growth-line",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Biểu đồ đường",
   "description": "Biểu đồ đường vẽ dần qua 2–7 mốc (năm, tháng), giá trị cuối được nhấn mạnh. Dùng cho xu hướng tăng giảm theo thời gian: giá, dân số, nhiệt độ, doanh thu.",
@@ -14,7 +14,10 @@
     "technology"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,
@@ -49,6 +52,10 @@
     "source": {
       "type": "string",
       "maxLength": 50
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "same_length": [
@@ -77,7 +84,8 @@
         387
       ],
       "unit": " triệu",
-      "source": "Tính toán minh hoạ"
+      "source": "Tính toán minh hoạ",
+      "corner_icon": "chart-increasing"
     }
   }
 }

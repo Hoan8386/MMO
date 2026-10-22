@@ -1,6 +1,6 @@
 {
   "frame_id": "percent-ring",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Vòng phần trăm",
   "description": "Vòng tròn tô dần tới một tỉ lệ phần trăm, số đếm ở giữa, nhãn giải thích bên cạnh, có thể kèm hình minh hoạ. Dùng khi lời thoại nói X% của một nhóm.",
@@ -15,7 +15,10 @@
     "psychology"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,

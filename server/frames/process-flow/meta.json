@@ -1,6 +1,6 @@
 {
   "frame_id": "process-flow",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Sơ đồ quy trình",
   "description": "2–4 khối nối bằng mũi tên theo chiều ngang (A → B → C), kèm chú thích. Dùng cho quy trình, nguyên nhân – kết quả, cách một hệ thống hoạt động.",
@@ -14,7 +14,10 @@
     "tips"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -37,6 +40,10 @@
     "caption": {
       "type": "string",
       "maxLength": 90
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "mỗi khối một từ khoá theo thứ tự: khối thứ i hiện ra khi từ khoá thứ i được đọc",
@@ -54,7 +61,8 @@
         "Lục lạp",
         "Đường + O₂"
       ],
-      "caption": "Diễn ra chủ yếu ở lá cây vào ban ngày"
+      "caption": "Diễn ra chủ yếu ở lá cây vào ban ngày",
+      "corner_icon": "gear"
     }
   }
 }

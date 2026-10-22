@@ -1,6 +1,6 @@
 {
   "frame_id": "place-card",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Thẻ địa danh",
   "description": "Ghim bản đồ rơi xuống kèm minh hoạ, tên địa danh, quốc gia và 1–3 thông tin nhanh. Dùng cho điểm du lịch, kỳ quan, nơi xảy ra sự kiện.",
@@ -14,7 +14,10 @@
     "ancient"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,

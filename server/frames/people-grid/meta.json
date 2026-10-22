@@ -1,6 +1,6 @@
 {
   "frame_id": "people-grid",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Cứ 10 người thì…",
   "description": "Hàng 10 hình người, một số được tô màu theo tỉ lệ (ví dụ 3 trên 10). Dùng khi lời thoại nói \"cứ 10 người thì có X người…\" hoặc một tỉ lệ tròn chục phần trăm.",
@@ -13,7 +13,10 @@
     "health"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,
@@ -34,6 +37,10 @@
     "source": {
       "type": "string",
       "maxLength": 50
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "một từ khoá: con số khi được đọc",
@@ -45,7 +52,8 @@
     "inputs": {
       "value": 3,
       "label": "người trưởng thành thường xuyên mất ngủ",
-      "source": "WHO"
+      "source": "WHO",
+      "corner_icon": "person-raising-hand"
     }
   }
 }

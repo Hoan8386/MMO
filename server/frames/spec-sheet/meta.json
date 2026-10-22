@@ -1,6 +1,6 @@
 {
   "frame_id": "spec-sheet",
-  "version": 1,
+  "version": 3,
   "status": "active",
   "name": "Bảng thông số",
   "description": "Thông số kỹ thuật của một sản phẩm: tên, nhãn nổi bật, giá, và 3–6 dòng 'Nhãn: giá trị'. Dùng khi giới thiệu thiết bị/phần mềm.",
@@ -11,7 +11,10 @@
     "product_review"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -42,6 +45,10 @@
       "maxItems": 6,
       "itemMaxLength": 44,
       "description": "mỗi dòng dạng 'Nhãn: giá trị', vd. 'Pin: 6000mAh'"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "không cần",
@@ -56,7 +63,8 @@
         "Chip: Nova N1 3nm",
         "Camera: 200MP",
         "Pin: 6000mAh, sạc 90W"
-      ]
+      ],
+      "corner_icon": "magnifying-glass-tilted-left"
     }
   }
 }

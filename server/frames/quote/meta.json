@@ -1,6 +1,6 @@
 {
   "frame_id": "quote",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Trích dẫn",
   "description": "Một câu trích dẫn lớn kèm tên và chức danh người nói. Chỉ dùng khi kịch bản có lời nói của một người cụ thể.",
@@ -17,7 +17,10 @@
     "quote"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,
@@ -38,6 +41,10 @@
     "role": {
       "type": "string",
       "maxLength": 60
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "không cần",
@@ -46,7 +53,8 @@
     "inputs": {
       "quote": "Đây là chiếc iPhone tốt nhất mà chúng tôi từng làm ra.",
       "author": "Tim Cook",
-      "role": "CEO Apple"
+      "role": "CEO Apple",
+      "corner_icon": "speech-balloon"
     }
   }
 }

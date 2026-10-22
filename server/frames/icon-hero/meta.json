@@ -1,6 +1,6 @@
 {
   "frame_id": "icon-hero",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Minh hoạ lớn + ý chính",
   "description": "Một hình minh hoạ lớn nảy vào bên trái, tiêu đề và câu giải thích bên phải. Dùng cho một ý chính cần hình ảnh sinh động thay cho chữ thuần.",
@@ -11,7 +11,10 @@
     "explainer"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 3,

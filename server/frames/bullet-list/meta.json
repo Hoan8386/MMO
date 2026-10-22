@@ -1,6 +1,6 @@
 {
   "frame_id": "bullet-list",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Danh sách ý",
   "description": "Tiêu đề và 2–4 ý ngắn hiện lần lượt. Dùng khi lời thoại liệt kê tính năng, lý do, bước.",
@@ -12,7 +12,10 @@
     "list"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,
@@ -31,6 +34,10 @@
       "minItems": 2,
       "maxItems": 4,
       "itemMaxLength": 60
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "một từ khoá cho mỗi ý, theo đúng thứ tự: ý thứ i hiện ra khi từ khoá thứ i được đọc",
@@ -47,7 +54,8 @@
         "Camera 100MP",
         "Pin lớn hơn 20%",
         "Chip A20 tiến trình 2nm"
-      ]
+      ],
+      "corner_icon": "pushpin"
     }
   }
 }

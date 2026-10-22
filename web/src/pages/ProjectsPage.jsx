@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, PROJECT_BUSY } from "../api.js";
-import { ProjectStatusBadge, Progress, ErrorNote } from "../components.jsx";
+import { ProjectStatusBadge, Progress, ErrorNote, AspectPicker, AspectBadge } from "../components.jsx";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -50,6 +50,7 @@ export default function ProjectsPage() {
             <tr>
               <th>Dự án</th>
               <th>Chủ đề</th>
+              <th>Khung hình</th>
               <th>Trạng thái</th>
               <th>Cảnh</th>
               <th>Thời lượng</th>
@@ -65,6 +66,7 @@ export default function ProjectsPage() {
                   {p.current_version ? <div className="muted small">v{p.current_version}{p.manual_edit ? " · có sửa tay" : ""}</div> : null}
                 </td>
                 <td><TopicChip topic={topics.find((t) => t.topic_id === p.topic)} fallback={topicName(p.topic)} /></td>
+                <td><AspectBadge ratio={p.aspect_ratio} /></td>
                 <td>
                   <div className="status-cell">
                     <ProjectStatusBadge status={p.status} />
@@ -79,7 +81,7 @@ export default function ProjectsPage() {
             ))}
             {!projects.length && (
               <tr>
-                <td colSpan={7} className="empty">Chưa có dự án nào. Bấm “+ Dự án mới” để bắt đầu.</td>
+                <td colSpan={8} className="empty">Chưa có dự án nào. Bấm “+ Dự án mới” để bắt đầu.</td>
               </tr>
             )}
           </tbody>
@@ -104,7 +106,7 @@ export function TopicChip({ topic, fallback }) {
 function NewProjectModal({ topics, onClose }) {
   const navigate = useNavigate();
   const [voices, setVoices] = useState([]);
-  const [form, setForm] = useState({ title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90 });
+  const [form, setForm] = useState({ title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9" });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -155,6 +157,10 @@ function NewProjectModal({ topics, onClose }) {
               </button>
             ))}
           </div>
+        </div>
+        <div className="field">
+          <span className="field-label">Khung hình — chọn theo nền tảng đăng</span>
+          <AspectPicker value={form.aspect_ratio} onChange={(v) => setForm((f) => ({ ...f, aspect_ratio: v }))} />
         </div>
         <label>
           Tư liệu / kịch bản

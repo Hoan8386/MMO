@@ -14,6 +14,9 @@
         {{__r}} .text { flex: 1; display: flex; flex-direction: column; gap: 30px; }
         {{__r}} .title { font-size: 84px; line-height: 1.1; }
         {{__r}} .subtitle { font-size: 46px; line-height: 1.35; color: var(--muted); }
+        /* Tall formats: stack the visual above the text. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column; justify-content: center; gap: 60px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .text { flex: none; align-self: stretch; }
       </style>
       <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
         <div class="wrap">

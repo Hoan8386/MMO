@@ -1,6 +1,6 @@
 {
   "frame_id": "case-file",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Hồ sơ vụ án",
   "description": "Tập hồ sơ có nhãn, thời gian, địa điểm, 1–3 chi tiết được đánh máy và một con dấu trạng thái đóng xuống. Dùng cho vụ án, bí ẩn chưa có lời giải, câu chuyện có thật.",
@@ -13,7 +13,10 @@
     "history"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -45,6 +48,10 @@
       "type": "string",
       "maxLength": 22,
       "description": "chữ trên con dấu, ví dụ: CHƯA CÓ LỜI GIẢI"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "một từ khoá cho mỗi chi tiết, theo đúng thứ tự",
@@ -62,7 +69,8 @@
         "Cướp máy bay, đòi 200.000 USD",
         "Nhảy dù xuống rừng rồi biến mất"
       ],
-      "status": "Chưa có lời giải"
+      "status": "Chưa có lời giải",
+      "corner_icon": "locked"
     }
   }
 }

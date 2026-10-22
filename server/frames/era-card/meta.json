@@ -1,6 +1,6 @@
 {
   "frame_id": "era-card",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Thẻ niên đại",
   "description": "Niên đại khổng lồ chữ viền phía sau, huy hiệu minh hoạ, tên nền văn minh/sự kiện và 1–3 ý. Dùng khi giới thiệu một thời kỳ, nền văn minh, triều đại.",
@@ -12,7 +12,10 @@
     "culture"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,

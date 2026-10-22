@@ -15,6 +15,9 @@
         {{__r}} .row b { flex: none; width: 14px; height: 14px; border-radius: 50%; background: var(--muted); }
         {{__r}} .right .row b { background: var(--accent); }
         {{__r}} .vs { align-self: center; flex: none; width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--on-accent); font-size: 40px; }
+        /* Tall formats: one option above the other. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column; justify-content: center; gap: 30px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .col { flex: none; align-self: stretch; margin: 0; }
       </style>
       <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
         <div class="wrap">

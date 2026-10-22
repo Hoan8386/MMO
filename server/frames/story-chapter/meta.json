@@ -1,6 +1,6 @@
 {
   "frame_id": "story-chapter",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Chương truyện",
   "description": "Màn chuyển chương kiểu phim: dải đen trên dưới, số chương, tiêu đề lớn và thời gian/địa điểm. Dùng để mở một phần mới trong câu chuyện dài.",
@@ -14,7 +14,10 @@
     "ancient"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 2.5,

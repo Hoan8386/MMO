@@ -15,6 +15,9 @@
         {{__r}} .bar { width: 120px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
         {{__r}} .caption { font-size: 40px; line-height: 1.4; color: var(--muted); }
         {{__r}} .credit { font-size: 26px; color: var(--muted); opacity: 0.8; }
+        /* Narrower formats: picture on top, text below. */
+        {{__r}}:not([data-aspect="16x9"]) .wrap { flex-direction: column; justify-content: center; align-items: stretch; gap: 50px; }
+        {{__r}}:not([data-aspect="16x9"]) .frame { width: 100%; height: auto; aspect-ratio: 1040 / 680; }
       </style>
       <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
         <div class="wrap">

@@ -1,6 +1,6 @@
 {
   "frame_id": "compare-2col",
-  "version": 1,
+  "version": 3,
   "status": "active",
   "name": "So sánh hai bên",
   "description": "Hai cột đối chiếu (cũ/mới, A/B, ưu/nhược), mỗi cột 1–3 ý. Dùng khi lời thoại so sánh hai thứ.",
@@ -12,7 +12,10 @@
     "comparison"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -43,6 +46,10 @@
       "minItems": 1,
       "maxItems": 3,
       "itemMaxLength": 40
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "1 từ khoá: cột bên phải hiện ra khi từ này được đọc",
@@ -61,7 +68,8 @@
       "right_items": [
         "185 gram",
         "Sạc 60W"
-      ]
+      ],
+      "corner_icon": "thinking-face"
     }
   }
 }

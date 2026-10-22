@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, PROJECT_BUSY } from "../api.js";
-import { ProjectStatusBadge, Progress, ErrorNote } from "../components.jsx";
+import { ProjectStatusBadge, Progress, ErrorNote, AspectPicker, AspectBadge } from "../components.jsx";
 import PlanEditor from "../PlanEditor.jsx";
 import { TopicChip } from "./ProjectsPage.jsx";
 
@@ -294,7 +294,7 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
       <div className="card-head">
         <h2>Tư liệu & cài đặt</h2>
         {!editing ? (
-          <button className="btn small" disabled={disabled} onClick={() => setForm({ title: p.title, material: p.material, topic: p.topic, channel: p.channel || "", voice: p.voice, voice_rate: p.voice_rate, target_seconds: p.target_seconds })}>
+          <button className="btn small" disabled={disabled} onClick={() => setForm({ title: p.title, material: p.material, topic: p.topic, channel: p.channel || "", voice: p.voice, voice_rate: p.voice_rate, target_seconds: p.target_seconds, aspect_ratio: p.aspect_ratio })}>
             Sửa
           </button>
         ) : (
@@ -325,12 +325,16 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
             </label>
             <label>Tốc độ đọc<input value={f.voice_rate} onChange={set("voice_rate")} /></label>
           </div>
-          <small className="muted">Đổi chủ đề sẽ đổi bộ màu ở lần dựng sau và đổi bộ frame AI được chọn ở lần lập kế hoạch sau. Tư liệu mới chỉ có hiệu lực khi lập lại kế hoạch. Đổi giọng hoặc tốc độ sẽ tạo lại toàn bộ audio ở lần dựng sau.</small>
+          <div className="field">
+            <span className="field-label">Khung hình</span>
+            <AspectPicker value={f.aspect_ratio} onChange={(v) => setForm((x) => ({ ...x, aspect_ratio: v }))} />
+          </div>
+          <small className="muted">Đổi chủ đề sẽ đổi bộ màu ở lần dựng sau và đổi bộ frame AI được chọn ở lần lập kế hoạch sau. Tư liệu mới chỉ có hiệu lực khi lập lại kế hoạch. Đổi giọng hoặc tốc độ sẽ tạo lại toàn bộ audio ở lần dựng sau. Đổi khung hình có hiệu lực từ lần dựng sau.</small>
         </>
       ) : (
         <>
           <p className="muted small info-line">
-            <TopicChip topic={topic} fallback={p.topic} /> · Kênh: {p.channel || "—"} · Giọng: {p.voice} ({p.voice_rate}) · Mong muốn {p.target_seconds} giây
+            <TopicChip topic={topic} fallback={p.topic} /> <AspectBadge ratio={p.aspect_ratio} /> · Kênh: {p.channel || "—"} · Giọng: {p.voice} ({p.voice_rate}) · Mong muốn {p.target_seconds} giây
           </p>
           <p className="script clamp">{p.material}</p>
         </>

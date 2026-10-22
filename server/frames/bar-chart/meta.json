@@ -1,6 +1,6 @@
 {
   "frame_id": "bar-chart",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Biểu đồ cột",
   "description": "Biểu đồ cột 2–6 cột có nhãn và giá trị, cột lớn nhất được tô nổi. Dùng khi so sánh nhiều con số.",
@@ -11,7 +11,10 @@
     "comparison"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4.5,
@@ -45,6 +48,10 @@
     "source": {
       "type": "string",
       "maxLength": 50
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "same_length": [
@@ -74,7 +81,8 @@
         9
       ],
       "unit": "%",
-      "source": "Canalys"
+      "source": "Canalys",
+      "corner_icon": "bar-chart"
     }
   }
 }

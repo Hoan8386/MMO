@@ -1,6 +1,6 @@
 {
   "frame_id": "definition",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Định nghĩa thuật ngữ",
   "description": "Thẻ từ điển: thuật ngữ lớn, tên tiếng Anh/phiên âm, định nghĩa, ví dụ. Dùng khi giải thích một khái niệm.",
@@ -14,7 +14,10 @@
     "science"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -40,6 +43,10 @@
     "example": {
       "type": "string",
       "maxLength": 110
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "tuỳ chọn 1 từ khoá: phần ví dụ hiện ra khi từ này được đọc (vd. 'ví dụ')",
@@ -52,7 +59,8 @@
       "term": "Quán tính",
       "extra": "Inertia",
       "meaning": "Tính chất của mọi vật có xu hướng giữ nguyên vận tốc khi không có lực tác dụng.",
-      "example": "Xe phanh gấp, người ngồi trên xe chúi về phía trước."
+      "example": "Xe phanh gấp, người ngồi trên xe chúi về phía trước.",
+      "corner_icon": "books"
     }
   }
 }

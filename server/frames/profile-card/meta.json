@@ -1,6 +1,6 @@
 {
   "frame_id": "profile-card",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Giới thiệu nhân vật",
   "description": "Thẻ giới thiệu một người hoặc nhân vật: ảnh tròn (hoặc chữ viết tắt nếu không có ảnh), tên, vai trò, 1–3 thông tin nhanh.",
@@ -16,7 +16,10 @@
     "business"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,

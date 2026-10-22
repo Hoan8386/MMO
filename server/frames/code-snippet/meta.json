@@ -1,6 +1,6 @@
 {
   "frame_id": "code-snippet",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Khung code / terminal",
   "description": "Cửa sổ code tối màu, các dòng lần lượt được gõ ra, kèm chú thích. Dùng khi nói về lập trình, lệnh, cấu hình.",
@@ -11,7 +11,10 @@
     "code"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -41,6 +44,10 @@
     "caption": {
       "type": "string",
       "maxLength": 90
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "không cần",
@@ -58,7 +65,8 @@
         ")",
         "print(reply.content)"
       ],
-      "caption": "Chưa tới 10 dòng code"
+      "caption": "Chưa tới 10 dòng code",
+      "corner_icon": "gear"
     }
   }
 }

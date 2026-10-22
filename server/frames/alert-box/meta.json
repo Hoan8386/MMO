@@ -1,6 +1,6 @@
 {
   "frame_id": "alert-box",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Cảnh báo",
   "description": "Dải sọc cảnh báo vàng đen, biểu tượng nhấp nháy, mức cảnh báo, tiêu đề và 1–3 lưu ý an toàn. Dùng cho thiên tai, nguy cơ sức khỏe, cảnh báo lừa đảo.",
@@ -14,7 +14,10 @@
     "tips"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 4,

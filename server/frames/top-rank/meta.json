@@ -1,6 +1,6 @@
 {
   "frame_id": "top-rank",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Bảng xếp hạng",
   "description": "Danh sách top 3–5 có số hạng, hạng 1 được làm nổi bật. Các hạng hiện từ thấp lên cao như đếm ngược.",
@@ -14,7 +14,10 @@
     "nature"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -34,6 +37,10 @@
       "maxItems": 5,
       "itemMaxLength": 40,
       "description": "xếp từ hạng 1 xuống"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "keywords": "mỗi hạng một từ khoá, theo thứ tự đọc từ hạng thấp nhất lên hạng 1; hạng hiện ra khi từ khoá được đọc",
@@ -50,7 +57,8 @@
         "Địa Đạo",
         "Lật Mặt 8",
         "Mưa Đỏ"
-      ]
+      ],
+      "corner_icon": "trophy"
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "frame_id": "timeline-steps",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "name": "Dòng thời gian / các bước",
   "description": "3–5 mốc trên một đường ngang, mỗi mốc có nhãn (năm, bước) và mô tả ngắn. Dùng cho lịch sử, tiến trình, các bước làm.",
@@ -16,7 +16,10 @@
     "ancient"
   ],
   "aspect_ratios": [
-    "16:9"
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
   ],
   "duration": {
     "min": 5,
@@ -42,6 +45,10 @@
       "maxItems": 5,
       "itemMaxLength": 10,
       "description": "nhãn mỗi mốc, vd. năm; bỏ trống sẽ đánh số 01, 02…"
+    },
+    "corner_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon minh hoạ ở góc khung, đúng nội dung cảnh"
     }
   },
   "same_length": [
@@ -72,7 +79,8 @@
         "2010",
         "2015",
         "2024"
-      ]
+      ],
+      "corner_icon": "calendar"
     }
   }
 }

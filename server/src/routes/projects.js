@@ -9,6 +9,7 @@ import { projectDir, slugify, listImages, planErrors, hasManualEdits, readJson, 
 import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
 import { VOICES, voiceHash } from "../video/tts.js";
+import { ASPECTS, DEFAULT_ASPECT } from "../video/aspects.js";
 
 const router = Router();
 const upload = multer({ dest: path.join(STORAGE_DIR, "tmp"), limits: { fileSize: 15 * 1024 * 1024, files: 20 } });
@@ -16,10 +17,17 @@ const storageUrl = (p) => `/storage/${path.relative(STORAGE_DIR, p).replace(/\\/
 const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds"];
 
 router.get("/voices", (_req, res) => res.json(VOICES));
+router.get("/aspects", (_req, res) => res.json(Object.entries(ASPECTS).map(([id, a]) => ({ id, label: a.label, platforms: a.platforms, width: a.width, height: a.height }))));
+
+// Output size follows the chosen format.
+const aspectFields = (ratio) => {
+  const id = ASPECTS[ratio] ? ratio : DEFAULT_ASPECT;
+  return { aspect_ratio: id, width: ASPECTS[id].width, height: ASPECTS[id].height };
+};
 
 router.get("/", async (_req, res) => {
   const rows = await query(
-    `SELECT p.id, p.slug, p.title, p.topic, p.status, p.progress, p.message, p.duration, p.current_version, p.manual_edit,
+    `SELECT p.id, p.slug, p.title, p.topic, p.aspect_ratio, p.status, p.progress, p.message, p.duration, p.current_version, p.manual_edit,
        JSON_LENGTH(p.plan, '$.scenes') AS scene_count, p.created_at, p.updated_at,
        (SELECT v.file FROM project_versions v WHERE v.project_id=p.id ORDER BY v.version DESC LIMIT 1) AS latest_file,
        (SELECT COALESCE(SUM(a.input_tokens + a.output_tokens + a.cache_read_input_tokens), 0) FROM ai_calls a WHERE a.project_id=p.id) AS tokens
@@ -33,9 +41,10 @@ router.post("/", async (req, res) => {
   if (!title?.trim() || !material?.trim()) return res.status(400).json({ error: "Cần tên dự án và tư liệu / kịch bản" });
   let slug = slugify(title) || "video";
   if (await one("SELECT id FROM projects WHERE slug=?", [slug])) slug = `${slug}-${Date.now().toString(36)}`;
+  const size = aspectFields(req.body.aspect_ratio);
   const r = await query(
-    "INSERT INTO projects (slug, title, material, channel, topic, voice, voice_rate, target_seconds) VALUES (?,?,?,?,?,?,?,?)",
-    [slug, title.trim(), material, req.body.channel || null, loadTopics().has(req.body.topic) ? req.body.topic : "technology", req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90],
+    "INSERT INTO projects (slug, title, material, channel, topic, voice, voice_rate, target_seconds, aspect_ratio, width, height) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+    [slug, title.trim(), material, req.body.channel || null, loadTopics().has(req.body.topic) ? req.body.topic : "technology", req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height],
   );
   const dir = projectDir(slug);
   await fs.mkdir(path.join(dir, "assets", "img"), { recursive: true });
@@ -88,6 +97,7 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const fields = Object.fromEntries(FIELDS.filter((f) => req.body[f] !== undefined).map((f) => [f, req.body[f]]));
+  if (req.body.aspect_ratio !== undefined) Object.assign(fields, aspectFields(req.body.aspect_ratio));
   if (!Object.keys(fields).length) return res.status(400).json({ error: "Không có gì để cập nhật" });
   await query(`UPDATE projects SET ${Object.keys(fields).map((k) => `${k}=?`).join(", ")} WHERE id=?`, [...Object.values(fields), req.params.id]);
   if (fields.material !== undefined) {
