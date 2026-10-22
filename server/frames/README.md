@@ -17,7 +17,7 @@ Mỗi thư mục là một frame (template) dùng lại được cho mọi video
 | `status` | `active` mới được đưa cho AI chọn |
 | `scene_type`, `category`, `tags` | phục vụ lọc |
 | `duration` | `min` / `max` / `recommended` (giây) |
-| `inputs` | biến đầu vào: `type` là `string`, `number`, `list` (mảng chuỗi) hoặc `image` (tên file ảnh có sẵn); `required`, `maxLength`, `minItems`, `maxItems`, `itemMaxLength` |
+| `inputs` | biến đầu vào: `type` là `string`, `number`, `list` (mảng chuỗi), `image` (tên file ảnh có sẵn), `icon` / `icons` / `logo` (tên trong kho icon, logo) hoặc `cutout` (tên ảnh tách nền, template dùng `assets/cutouts/{{tên}}.png`); `required`, `maxLength`, `minItems`, `maxItems`, `itemMaxLength` |
 | `keywords` | hướng dẫn cho AI: từ khoá trong lời thoại dùng để canh chuyển động |
 | `sample` | dữ liệu mẫu để render thử |
 
@@ -54,6 +54,19 @@ nên không đụng tới `transform` mà template tự animate.
 Input tuỳ chọn `corner_icon` (`"type": "icon"`): khai báo trong meta.json là đủ, bộ biên dịch tự vẽ icon
 trong một đĩa sáng ở góc phải trên (khung 16:9, `.wrap` được thu hẹp 340px bên phải) hoặc giữa phía trên
 (khung dọc/vuông), bật vào và có vòng sáng nhịp. Chỉ thêm cho frame có `.wrap` và góc trên còn trống.
+
+## Kho ảnh PNG nền trong (`cutout`)
+
+PNG trong suốt của một vật thể, nằm ở `storage/library/cutouts/`, tải từ [PNGImages.com](https://pngimages.com)
+(dùng thương mại được, không cần ghi nguồn, không được phát tán lại nguyên bộ file). Không tự tách nền nữa.
+Danh sách nằm trong mục `cutouts` của `server/assets/library.json`: `tên: "png:<slug trang ảnh>"` để chọn đúng một ảnh,
+một mảng các lựa chọn thử lần lượt, hoặc từ khoá tiếng Anh khớp với tiêu đề ảnh trong sitemap của trang.
+Lệnh `npm --prefix server run assets:cutouts` tìm ảnh trong sitemap (lưu đệm 30 ngày, không gọi `/search` mà
+robots.txt cấm), bỏ qua file thực ra là JPEG, và tải tối đa 40 ảnh mỗi ngày (`--max-per-day`) vì trang chỉ cho
+"vài chục lượt tải mỗi ngày"; phần còn lại chạy lại hôm sau. `--dry-run` chỉ in ảnh sẽ chọn.
+Ảnh không ưng thì thêm link trang của nó vào `exclude_cutouts` rồi chạy lại; xoá một mục khỏi danh sách thì
+lần chạy sau ảnh đó cũng bị xoá khỏi kho.
+Frame dùng: `cutout-hero`, `cutout-pair`.
 
 ## Khung hình (16:9, 9:16, 1:1, 4:5)
 

@@ -202,8 +202,8 @@ function InputField({ name, spec, value, images, library, disabled, onChange }) 
       </label>
     );
   }
-  if (spec.type === "icon" || spec.type === "logo") {
-    const kind = spec.type === "icon" ? "illustration" : "logo";
+  if (spec.type === "icon" || spec.type === "logo" || spec.type === "cutout") {
+    const kind = { icon: "illustration", logo: "logo", cutout: "cutout" }[spec.type];
     return (
       <label>
         {label}

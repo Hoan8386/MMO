@@ -1,5 +1,5 @@
 {
-  "_comment": "Danh sách tài nguyên tải về bằng `npm run assets:download`. illustrations là tên trong bộ Iconify fluent-emoji, logos là tên trong bộ Iconify logos (hoặc `si:<tên>` của Simple Icons); photos là từ khoá tìm trên Wikimedia Commons. Nhóm \"common\" dùng được cho mọi chủ đề. exclude_photos: ảnh đã xem và loại (sai chủ đề, trùng, tranh vẽ); trình tải bỏ qua và xoá chúng.",
+  "_comment": "Danh sách tài nguyên tải về bằng `npm run assets:download`. illustrations là tên trong bộ Iconify fluent-emoji, logos là tên trong bộ Iconify logos (hoặc `si:<tên>` của Simple Icons); photos là từ khoá tìm trên Wikimedia Commons. Nhóm \"common\" dùng được cho mọi chủ đề. exclude_photos: ảnh đã xem và loại (sai chủ đề, trùng, tranh vẽ); trình tải bỏ qua và xoá chúng. cutouts: tên ảnh PNG nền trong → từ khoá tiếng Anh khớp với tiêu đề ảnh trên PNGImages.com (hoặc \"png:<slug trang>\" để chọn đúng một ảnh, hoặc một mảng các lựa chọn thử lần lượt). exclude_cutouts: link trang PNGImages của ảnh đã xem và loại; lần chạy sau lấy ảnh khớp kế tiếp.",
   "illustrations": {
     "common": ["light-bulb", "check-mark-button", "cross-mark", "warning", "red-question-mark", "red-exclamation-mark", "fire", "sparkles", "star", "glowing-star", "bullseye", "trophy", "1st-place-medal", "rocket", "chart-increasing", "chart-decreasing", "bar-chart", "calendar", "hourglass-done", "stopwatch", "magnifying-glass-tilted-left", "megaphone", "speech-balloon", "thought-balloon", "thinking-face", "exploding-head", "smiling-face-with-sunglasses", "face-screaming-in-fear", "red-heart", "thumbs-up", "thumbs-down", "money-bag", "globe-showing-americas", "house", "key", "locked", "gear", "puzzle-piece", "books", "pushpin", "person-raising-hand", "people-hugging", "high-voltage", "hundred-points", "party-popper", "gem-stone", "crown", "eyes", "brain", "world-map", "bell", "link", "paperclip", "scissors", "check-mark", "cross-mark-button", "prohibited", "no-entry", "stop-sign", "play-button", "counterclockwise-arrows-button", "exclamation-question-mark", "right-anger-bubble", "clapping-hands", "waving-hand", "folded-hands", "confetti-ball", "mantelpiece-clock", "flashlight", "sports-medal"],
     "psychology": ["brain", "anxious-face-with-sweat", "pensive-face", "grinning-face-with-big-eyes", "face-with-spiral-eyes", "sleeping-face", "mirror", "performing-arts", "anger-symbol", "zzz", "dizzy", "relieved-face", "nerd-face", "face-in-clouds", "heart-on-fire", "yawning-face"],
@@ -86,5 +86,89 @@
     "ancient-civilizations": ["pyramids giza", "colosseum rome", "machu picchu"],
     "little-known": ["old key lock", "secret door", "antique objects"]
   },
-  "exclude_photos": ["lib-ancient-civilizations-colosseum-in-rome-april-2007-1-copie-2b.jpg", "lib-ancient-civilizations-giza-pyramids-during-forever-is-now-exhi.jpg", "lib-animals-asclepias-syriaca-2021-07-04-bethel-park.jpg", "lib-animals-asclepias-syriaca-in-almaty-botanical-ga.jpg", "lib-animals-asclepias-syriaca.jpg", "lib-animals-felsgruppe-elefantenherde-in-schlag-lits.jpg", "lib-animals-octopus-40900344810.jpg", "lib-animals-pulpo-comun-octopus-vulgaris-parque-natu.jpg", "lib-business-logistics-warehouse-geograph-org-uk-4102.jpg", "lib-career-dean-rusk-lyndon-b-johnson-and-robert-mc.jpg", "lib-career-klyuchevskoe-shosse-one-of-the-coworking.jpg", "lib-career-meeting-with-mariam-karapetyan-at-wmam-o.jpg", "lib-career-president-trump-and-ukrainian-president.jpg", "lib-career-president-trump-clashes-with-ukrainian-p.jpg", "lib-career-woman-on-a-job-interview-23992122197.jpg", "lib-career-woman-on-a-job-interview-38826218972.jpg", "lib-crime-hexenbuche-mit-kreuzberg.jpg", "lib-culture-kaohsiung-music-center-and-lingyaliao-ra.jpg", "lib-entertainment-apollo-lunar-mapping-camera.jpg", "lib-entertainment-sunset-over-paljassaare-outdoor-concert.jpg", "lib-everyday-science-alisander-flower-smyrnium-olusatrum-with.jpg", "lib-everyday-science-cooking-in-camp-the-kitchen-of-the-fremo.jpg", "lib-everyday-science-fremantle-prison-1909-the-gaol-kitchen-s.jpg", "lib-everyday-science-mc-macau-cotai-jw-marriott-hotel-macao-u.jpg", "lib-everyday-science-water-dolphin.jpg", "lib-family-friends-friends-laughing-49485806987.jpg", "lib-family-friends-grandparents-day4.jpg", "lib-family-friends-smith-family-picnic-table-mckinney-falls.jpg", "lib-family-friends-stillstad-family-picnic-1894.jpg", "lib-finance-csa-t21-20-1862.jpg", "lib-finance-x11-qing-paper-currency.jpg", "lib-fun-facts-bees-with-honeycomb-met-dp-401-001.jpg", "lib-fun-facts-de-luiheid-james-ensor-msk-gent-1998-b-1.jpg", "lib-fun-facts-frans-post-gezicht-op-olinda-brazilie.jpg", "lib-fun-facts-octopus-as-food-at-noryangjin-fisheries.jpg", "lib-fun-facts-sloth-print-by-james-ensor-1904-prints-d.jpg", "lib-future-dfc-4527-a-modern-waterfront-hotel-with.jpg", "lib-future-seoul-city-hall-building-and-city-hall-p.jpg", "lib-future-the-line-city-location.jpg", "lib-gaming-coast-guard-gaming-shines-in-first-inter.jpg", "lib-gaming-legends-are-born-during-esports-tourname-2.jpg", "lib-gaming-legends-are-born-during-esports-tourname.jpg", "lib-general-knowledge-2020-01-11-ibu-world-cup-biathlon-oberho.jpg", "lib-general-knowledge-gapan-city-landmarks-31.jpg", "lib-general-knowledge-gapan-city-landmarks-32.jpg", "lib-general-knowledge-great-soviet-encyclopedia-1-st-edition-v.jpg", "lib-general-knowledge-insert-great-soviet-encyclopedia-2-st-ed.jpg", "lib-general-knowledge-seattle-wa-usa-p-i-globe-2022-1708.jpg", "lib-general-knowledge-tallinn-landmarks-103-cross-of-liberty-s.jpg", "lib-general-knowledge-view-from-a-yokohama-landmark-tower-yoko.jpg", "lib-general-knowledge-yokohama-cosmo-world-and-nippon-maru.jpg", "lib-habits-morning-coffee-with-msos-ctk.jpg", "lib-habits-state-yoga-championship-08.jpg", "lib-habits-yoga-imo-9790921-liverpool-2019.jpg", "lib-habits-yoga-practices.jpg", "lib-health-doctor-using-stethoscope-on-a-computer-h.jpg", "lib-health-spartan-running-girl.jpg", "lib-inventions-first-flight3.jpg", "lib-inventions-memorial-from-flight-path-wright-brother.jpg", "lib-inventions-statue-of-wright-brothers-flight-wright.jpg", "lib-life-skills-first-aid-3.jpg", "lib-life-skills-first-aid-4.jpg", "lib-life-skills-first-aid-building-at-glen-echo-park.jpg", "lib-life-skills-first-aid-kit-frankfurt-am-main-18-02-20.jpg", "lib-life-skills-solar-cooking-class-solarpunk-art-collab.jpg", "lib-life-skills-xii-manewry-ratownicze-first-aid-trainin.jpg", "lib-little-known-medieval-barrel-lock-key-findid-221216.jpg", "lib-little-known-nc-antique-tractor-wheel.jpg", "lib-love-beautiful-sunrise-from-taitung-beach.jpg", "lib-modern-society-ansan-construction-of-the-suin-line-02.jpg", "lib-modern-society-ansan-construction-of-the-suin-line-3.jpg", "lib-modern-society-knr-suin-line-wolsoch-on-bridge.jpg", "lib-news-events-dornbirn-orf-vorarlberg-television-studi.jpg", "lib-news-events-newspaper-stack-8582618448.jpg", "lib-news-events-showing-a-model-of-the-cegb-pump-storage-2.jpg", "lib-news-events-showing-a-model-of-the-cegb-pump-storage.jpg", "lib-nutrition-02022-0269-fruit-bowl-porcelein-1908-beu.jpg", "lib-nutrition-fruit-bowl-met-176253.jpg", "lib-nutrition-fruitbowlwithmelons.jpg", "lib-nutrition-kothapet-fruit-market.jpg", "lib-nutrition-salad-plate-met-dp258774.jpg", "lib-philosophy-stairs-ancient-greek-theatre-heraclea-mi.jpg", "lib-psychology-a-crowd-of-people-outside-in-the-street.jpg", "lib-psychology-crowd-of-people-witnessing-the-2026-sola.jpg", "lib-psychology-palestinian-girl-in-qalqiliya.jpg", "lib-psychology-paris-strassentheater-2a.jpg", "lib-psychology-tahira-allen-portrait-nhq202302080001.jpg", "lib-science-discovery-particles-accelerator-abstract-1996-2019.jpg", "lib-self-development-giant-tarpaulin-covering-a-road-under-co.jpg", "lib-self-development-reading-desk-in-st-barnabas-heaton-005.jpg", "lib-self-development-reading-desk-in-st-barnabas-heaton-008.jpg", "lib-self-development-reading-desk-in-st-barnabas-heaton-009.jpg", "lib-self-development-reading-desk-in-st-barnabas-heaton-013.jpg", "lib-social-psychology-audience-members-festghana-day-1-01.jpg", "lib-social-psychology-honore-daumier-theater-audience-google-a.jpg", "lib-social-psychology-levegot-protest-01-the-crowd-gathering.jpg", "lib-social-psychology-levegot-protest-03-the-crowd-gathering.jpg", "lib-social-psychology-levegot-protest-37-crowd-with-european-f.jpg", "lib-social-psychology-ottoman-sultan-selim-iii-1789.jpg", "lib-social-psychology-pygargue-a-queue-blanche-haliaeetus-albi.jpg", "lib-social-psychology-wadopana-celebration-audience-2023.jpg", "lib-technology-le-torrette-con-i-bocchettoni-per-il-raf.jpg", "lib-true-stories-ch-sz-stoos-fronalpstock-sequence-rescue.jpg", "lib-true-stories-lochau-gigersacker-altreute-no-1-mountai.jpg", "lib-true-stories-old-muscat-city-view-muscat-oman3.jpg", "lib-true-stories-old-woman-of-bhaktapur-kathmandu.jpg", "lib-true-stories-six-weeks-old-cat-aka.jpg", "lib-true-stories-the-old-fortress-and-the-old-town-of-cor.jpg", "lib-true-stories-the-owner-of-a-old-book-selling-store-at.jpg", "lib-true-stories-yellowstone-national-park-wy-usa-old-fai.jpg", "lib-what-if-infographic-showing-the-effect-of-dart-s.jpg", "lib-wildlife-caged-african-savanna-lion-in-jos-wildli.jpg", "lib-world-history-battleofmonmouth.jpg", "lib-world-history-close-up-of-chrysomya-old-world-blow-fly.jpg", "lib-world-history-historical-painting-of-a-coastal-battle.jpg", "lib-world-history-old-world-swallowtail-papilio-machaon-go.jpg"]
+  "cutouts": {
+    "common": {
+      "alarm-clock": "png:vintage-alarm-clock-75y496fpp22qzrif",
+      "light-bulb-photo": "png:incandescent-light-bulb-i2xj3i4t0wbh7l35",
+      "smartphone": "png:modern-smartphone-display-6fcgu5md8t9ikn3k",
+      "laptop": "png:laptop-owll1sriqnznblzr",
+      "stack-of-books": "png:stack-of-books-png-eec79-cmsdncx9zc64hew7",
+      "wristwatch": "png:elegant-silver-dial-leather-strap-watch-kejflcaoh7dhh9j7",
+      "padlock": "png:sesamee-combination-padlock-tyhs4oot57pto0hp",
+      "coffee-cup": "png:parisian-confectionery-coffee-cup-xe304jd2rzcf8nny",
+      "dice": "png:colorful3-d-dice-711d07ipam1tqvbn",
+      "calculator": "png:black-desktop-calculator-o2f0fnpbgkmwpspy",
+      "headphones": "png:black-marshall-headphones-ka7chj96mgc49rwy"
+    },
+    "nutrition": {
+      "red-apple-photo": "png:ripe-red-apple-isolated-h0jupcnyekss35ri",
+      "banana-photo": "png:banana-s75pk4jrjr45r79m",
+      "broccoli-photo": "png:fresh-broccoli-isolated-evndb1cfk98oap1a",
+      "carrots": "png:fresh-bunchof-carrots-z3p1unv7wv203wl1",
+      "orange-fruit": "png:sour-orange-fruit-png-06252024-lr0ueiet392o7cm0",
+      "egg-photo": "png:three-fresh-eggs-isolated-s5ndhmn9bv00cyfa",
+      "bread-loaf": ["png:fresh-whole-wheat-bread-loaf-qe0jwwhhcl3gnog5", "png:fresh-whole-wheat-bread-loaf-7x3vlyk4smf5wuj7", "png:fresh-baked-whole-wheat-bread-loaf-zeg9iawxf6nxx2r3", "png:fresh-white-bread-loaf-4v7guyfdba7la71w"]
+    },
+    "health": {
+      "pills": "png:capsule-pills-pharmaceuticals-4xv59r3bkmbifgf4",
+      "stethoscope": ["png:professional-black-stethoscope-hxi1zv534lytikp9", "png:heart-shaped-stethoscope-ub3dwp64yg734457", "png:sphygmomanometerand-stethoscope-n0m330z55ya7mls3"]
+    },
+    "animals": {
+      "dog-photo": "png:dog-9t6pkp7av4pr582f",
+      "butterfly-photo": ["png:vibrant-monarch-butterfly-1te2mmkkjlwuj7vx", "png:blue-butterfly-rq9v6b08igxpmzq7", "png:blue-butterfly-32mdvle426zrarho"],
+      "parrot-photo": "png:colorful-parrot-profile-f14qn6j0kbjad2tc"
+    },
+    "wildlife": {
+      "lion-photo": "png:lion-roaring-png-06112024-9ro8nqkpu0uxenbu",
+      "tiger-photo": "png:tiger-ki7oge8p8qhykjwt"
+    },
+    "technology": {
+      "keyboard-photo": "png:computer-keyboard-silhouette-s2iecz9m9caky90p",
+      "computer-mouse-photo": "png:modern-wired-computer-mouse-bv35nzzcjy0f616z",
+      "game-controller": ["png:nyko-game-controller-black-y8y82gvxtakf0qoz", "png:violet-game-controller-y6th6zhza8mmncz9", "png:retro-game-controller-c3e9w61sr3xupohv"]
+    },
+    "space": {
+      "astronaut": "png:astronaut-7jq80hcys2w2udsu",
+      "full-moon": "png:full-moon-night-sky-98a931eagiu7w6hg",
+      "earth-planet": "png:colorful-geometric-earth-globe-jo6gtdpk7mjvidu1",
+      "mars-planet": "png:red-planet-mars-closeup-0yiq80deschk2ckj"
+    },
+    "world-history": {
+      "sword": "png:antique-rapier-sword-66imcpo2zontkipa",
+      "ancient-coin": "png:ancient-athenian-owl-coin-6uy7fg3sn8ga186g"
+    },
+    "ancient-civilizations": {
+      "tutankhamun-mask": ["png:ancient-egyptian-golden-mask-9lul149ck773rp8x", "png:golden-pharaoh-mask-vector-pg33mxp0vvs5fja2"],
+      "amphora": "png:greek-amphora-vase-png-dbi75-prs0wqsnsyhfkhlx",
+      "knight-helmet": "png:medieval-knight-helmet-1ve0sujgdzf6s03j"
+    },
+    "finance": {
+      "gold-bars": ["png:gold-bullion-bars-display-dl43hggt68j42vi0", "png:gold-bars-inside-open-vault-door-tvzl68m8oelcaiau"],
+      "coins-pile": "png:stacked-coins-tower-cnzpigbhxtbxguc8",
+      "briefcase": "png:vintage-brown-leather-briefcase-d9qyms7l7rx8vowu"
+    },
+    "travel": {
+      "suitcase": "png:black-hardshell-suitcase-h0gfkmpj27kqvkva",
+      "airliner": "png:airliner-icon-over-black-background-0s1iahnmuz31j4pm"
+    },
+    "crime": {
+      "handcuffs": "png:handcuff-chain-png-14-1gfkdyqn7py3kuop"
+    },
+    "entertainment": {
+      "electric-guitar": "png:sunburst-electric-guitar-b6nou4ima0dpahw0",
+      "microphone-photo": "png:vintage-style-microphone-gyurz28m4izfitw0",
+      "popcorn-photo": "png:freshly-popped-popcorn-bucket-htjjc7wqmuquzar8"
+    },
+    "inventions": {
+      "vintage-telephone": "png:vintage-candlestick-telephone-snnb7t5th072o9qa"
+    },
+    "environment": {
+      "potted-plant": "png:potted-fresh-basil-plant-10mrqneq2u197h6f",
+      "lone-tree": "png:oak-tree-root-png-06252024-nh57ogx4czh3j7nk"
+    },
+    "education": {
+      "microscope-photo": "png:modern-laboratory-microscope-je4r6jnww9rl8rll"
+    }
+  },
+  "exclude_cutouts": ["https://pngimages.com/png/robot-grf9vxew9d4h79r6.html"]
 }

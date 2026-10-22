@@ -1,4 +1,4 @@
-import { findAsset } from "./library.js";
+import { findAsset, KIND_OF_INPUT } from "./library.js";
 
 // Checks a plan against the frame library. Returns a list of human-readable errors;
 // an empty list means the plan can be compiled. Never trusts the AI output.
@@ -54,8 +54,8 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
         }
       } else if (spec.type === "image") {
         if (!images.includes(v) && !findAsset("photo", v)) errors.push(`${p}: ảnh "${v}" không có trong ảnh của dự án hay thư viện ảnh`);
-      } else if (spec.type === "icon" || spec.type === "logo") {
-        const kind = spec.type === "icon" ? "illustration" : "logo";
+      } else if (spec.type === "icon" || spec.type === "logo" || spec.type === "cutout") {
+        const kind = KIND_OF_INPUT[spec.type];
         if (typeof v !== "string" || !findAsset(kind, v)) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
       } else if (spec.type === "icons") {
         if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên icon`);

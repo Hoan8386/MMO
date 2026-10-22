@@ -1,4 +1,5 @@
-// Shared asset library: illustrations (Fluent Emoji), brand logos and stock photos in storage/library/.
+// Shared asset library: illustrations (Fluent Emoji), brand logos, stock photos and cutouts
+// (transparent PNG objects) in storage/library/.
 // scripts/download-assets.js fills the folder and manifest.json; the server mirrors it into MySQL
 // (assets + topic_assets) and keeps the rows in memory. Scripts without a database read the manifest.
 import fs from "node:fs";
@@ -11,8 +12,8 @@ export const LIBRARY_DIR = path.join(STORAGE_DIR, "library");
 const MANIFEST = path.join(LIBRARY_DIR, "manifest.json");
 
 // Where each kind lands inside a compiled project, and the input types that use it.
-export const PROJECT_DIR_OF = { illustration: "assets/icons", logo: "assets/logos", photo: "assets/img" };
-export const KIND_OF_INPUT = { icon: "illustration", icons: "illustration", logo: "logo" };
+export const PROJECT_DIR_OF = { illustration: "assets/icons", logo: "assets/logos", photo: "assets/img", cutout: "assets/cutouts" };
+export const KIND_OF_INPUT = { icon: "illustration", icons: "illustration", logo: "logo", cutout: "cutout" };
 
 let cache = null;
 

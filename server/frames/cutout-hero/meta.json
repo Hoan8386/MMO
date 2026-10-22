@@ -1,0 +1,71 @@
+{
+  "frame_id": "cutout-hero",
+  "version": 1,
+  "status": "active",
+  "name": "Ảnh vật thể tách nền + ý chính",
+  "description": "Ảnh chụp thật của một vật thể đã tách nền bật vào giữa vầng sáng xoay, kèm tiêu đề và tối đa 3 ý. Dùng khi cảnh nói về một đồ vật, con vật hay sản phẩm cụ thể có trong kho ảnh tách nền.",
+  "category": "media",
+  "scene_type": "cutout",
+  "tags": [
+    "common",
+    "explainer",
+    "product"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 14,
+    "recommended": 7
+  },
+  "inputs": {
+    "cutout": {
+      "type": "cutout",
+      "required": true,
+      "description": "ảnh tách nền đúng vật thể mà lời thoại nói tới"
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 20,
+      "description": "nhãn nhỏ phía trên, vd. BẠN CÓ BIẾT"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50
+    },
+    "points": {
+      "type": "list",
+      "maxItems": 3,
+      "itemMaxLength": 45,
+      "description": "tuỳ chọn: 1–3 ý ngắn"
+    },
+    "credit": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "nguồn ảnh nếu cần ghi"
+    }
+  },
+  "keywords": "tuỳ chọn 1 từ khoá cho mỗi ý: ý hiện ra khi từ đó được đọc",
+  "sample": {
+    "voice_text": "Chiếc máy tính xách tay đầu tiên nặng hơn mười một ký và có màn hình chỉ năm inch.",
+    "keywords": [
+      "mười một ký",
+      "năm inch"
+    ],
+    "inputs": {
+      "cutout": "laptop",
+      "label": "Bạn có biết",
+      "title": "Laptop đời đầu",
+      "points": [
+        "Nặng hơn 11 kg",
+        "Màn hình chỉ 5 inch"
+      ],
+      "credit": "Ảnh: Wikimedia Commons"
+    }
+  }
+}

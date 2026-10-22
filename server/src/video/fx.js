@@ -1,6 +1,6 @@
 // Shared motion layer the compiler adds to every scene, on top of the frame's own animation:
 //   - drifting sparkles behind the content (shape follows the topic's background style)
-//   - library icons bob gently while the scene holds
+//   - library icons and cutouts bob gently while the scene holds
 //   - a slow push-in of the whole scene, like a camera easing forward
 //   - the optional `corner_icon` input: a library icon in a glowing disc that pops in and keeps pulsing
 // Motion uses CSS custom properties (--fy, --fr, --push) applied through the independent
@@ -30,7 +30,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
         ${r} .fx-spark.orb { border-radius: 50%; background: radial-gradient(circle, var(--accent2), transparent 70%); }
         ${r} .fx-spark.star { background: var(--accent); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); filter: drop-shadow(0 0 6px var(--accent)); }
         ${r} .fx-spark:nth-child(3n) { background-color: var(--accent2); }
-        ${r} img[src^="assets/icons/"] { translate: 0 var(--fy, 0px); rotate: var(--fr, 0deg); }${
+        ${r} :is(img[src^="assets/icons/"], img[src^="assets/cutouts/"]) { translate: 0 var(--fy, 0px); rotate: var(--fr, 0deg); }${
           badge
             ? `
         ${r} .fx-badge { position: absolute; z-index: 5; width: ${BADGE}px; height: ${BADGE}px; ${wide ? "top: 70px; right: 110px;" : `top: 70px; left: 50%; margin-left: -${BADGE / 2}px;`} }
@@ -66,7 +66,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
             if (yoyos(tw, 0.9) > 0) tl.to(el, { opacity: 0.15, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: yoyos(tw, 0.9) }, tw);
             tl.to(el, { opacity: 0, duration: 0.35 }, D - 0.45);
           });
-          R.querySelectorAll('img[src^="assets/icons/"]').forEach((el, i) => {
+          R.querySelectorAll('img[src^="assets/icons/"], img[src^="assets/cutouts/"]').forEach((el, i) => {
             const at = 1.1 + (i % 4) * 0.25;
             const n = yoyos(at, 1.6);
             if (n < 1) return;

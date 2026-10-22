@@ -132,6 +132,8 @@ export function describeFrames(list) {
                 ? "icon name"
               : i.type === "logo"
                 ? "logo name"
+              : i.type === "cutout"
+                ? "cutout name (transparent PNG object)"
               : i.type === "string"
                 ? `≤${i.maxLength ?? 80} chars`
                 : i.type;

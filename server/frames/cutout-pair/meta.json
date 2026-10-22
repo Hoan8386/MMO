@@ -1,0 +1,79 @@
+{
+  "frame_id": "cutout-pair",
+  "version": 1,
+  "status": "active",
+  "name": "Hai vật thể tách nền đối chiếu",
+  "description": "Hai ảnh vật thể tách nền rơi xuống hai bệ sáng, mỗi bên có tên và một dòng ghi chú, ở giữa là huy hiệu VS (hoặc chữ ngắn tuỳ chọn). Dùng để so sánh hai đồ vật, con vật hay sản phẩm có trong kho ảnh tách nền.",
+  "category": "media",
+  "scene_type": "cutoutpair",
+  "tags": [
+    "common",
+    "compare",
+    "product"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 4,
+    "max": 12,
+    "recommended": 7
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "left_cutout": {
+      "type": "cutout",
+      "required": true
+    },
+    "left_label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 22
+    },
+    "left_note": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "right_cutout": {
+      "type": "cutout",
+      "required": true
+    },
+    "right_label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 22
+    },
+    "right_note": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "middle": {
+      "type": "string",
+      "maxLength": 4,
+      "description": "chữ trong huy hiệu giữa, mặc định VS (vd. =, >, →)"
+    }
+  },
+  "keywords": "tuỳ chọn 1 từ khoá: vật bên phải xuất hiện khi từ này được đọc",
+  "sample": {
+    "voice_text": "Điện thoại ngày nay mạnh hơn cả chiếc laptop của hai mươi năm trước.",
+    "keywords": [
+      "laptop"
+    ],
+    "inputs": {
+      "title": "Ai mạnh hơn?",
+      "left_cutout": "smartphone",
+      "left_label": "Điện thoại 2026",
+      "left_note": "Chip 3nm, 12 GB RAM",
+      "right_cutout": "laptop",
+      "right_label": "Laptop 2006",
+      "right_note": "Chip 65nm, 1 GB RAM",
+      "middle": ">"
+    }
+  }
+}

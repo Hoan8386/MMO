@@ -3,7 +3,7 @@ import { api } from "../api.js";
 import { ErrorNote, AspectIcon, useAspects } from "../components.jsx";
 import { TopicChip } from "./ProjectsPage.jsx";
 
-const TYPE_LABEL = { string: "chữ", number: "số", list: "danh sách", numbers: "dãy số", image: "ảnh", icon: "icon", icons: "danh sách icon", logo: "logo" };
+const TYPE_LABEL = { string: "chữ", number: "số", list: "danh sách", numbers: "dãy số", image: "ảnh", icon: "icon", icons: "danh sách icon", logo: "logo", cutout: "ảnh tách nền" };
 const CATEGORY_LABEL = { intro: "Mở đầu", title: "Tiêu đề", content: "Nội dung", data: "Số liệu", media: "Hình ảnh", outro: "Kết thúc" };
 const categoryLabel = (c) => CATEGORY_LABEL[c] || c;
 
@@ -23,12 +23,14 @@ export default function FramesPage() {
   const [open, setOpen] = useState(null);
   const [view, setView] = useState("frames");
   const [icons, setIcons] = useState([]);
+  const [cutouts, setCutouts] = useState([]);
   const [error, setError] = useState("");
   const aspects = useAspects();
   useEffect(() => {
     api.get("/frames").then(setFrames).catch((e) => setError(e.message));
     api.get("/topics").then(setTopics).catch((e) => setError(e.message));
     api.get("/library?kind=illustration").then(setIcons).catch((e) => setError(e.message));
+    api.get("/library?kind=cutout").then(setCutouts).catch((e) => setError(e.message));
   }, []);
 
   const current = topics.find((t) => t.topic_id === topicId);
@@ -63,6 +65,7 @@ export default function FramesPage() {
           <div><strong>{frames.length}</strong><span>frame</span></div>
           <div><strong>{topics.length}</strong><span>chủ đề</span></div>
           <div><strong>{icons.length}</strong><span>icon</span></div>
+          <div><strong>{cutouts.length}</strong><span>ảnh tách nền</span></div>
           <div><strong>{aspects.length || "—"}</strong><span>khung hình</span></div>
         </div>
       </header>
@@ -74,12 +77,15 @@ export default function FramesPage() {
         <button role="tab" aria-selected={view === "icons"} className={view === "icons" ? "active" : ""} onClick={() => setView("icons")}>
           Kho icon <span className="chip-count">{icons.length}</span>
         </button>
+        <button role="tab" aria-selected={view === "cutouts"} className={view === "cutouts" ? "active" : ""} onClick={() => setView("cutouts")}>
+          Ảnh tách nền <span className="chip-count">{cutouts.length}</span>
+        </button>
       </div>
 
       <div className="lib-toolbar">
         <div className="lib-search">
           <span aria-hidden>⌕</span>
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={view === "icons" ? "Tìm icon theo tên tiếng Anh, vd. rocket…" : "Tìm theo tên, mô tả, tag…"} />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={view === "frames" ? "Tìm theo tên, mô tả, tag…" : "Tìm theo tên tiếng Anh, vd. rocket…"} />
         </div>
         <select className="lib-select" value={topicId} onChange={(e) => setTopicId(e.target.value)}>
           <option value="">Mọi chủ đề</option>
@@ -113,8 +119,8 @@ export default function FramesPage() {
         </div>
       )}
 
-      {view === "icons" ? (
-        <IconLibrary icons={icons} topic={current} search={search} />
+      {view !== "frames" ? (
+        <AssetLibrary kind={view} assets={view === "icons" ? icons : cutouts} topic={current} search={search} />
       ) : (
         <>
           <p className="muted small result-count">{shown.length} frame</p>
@@ -157,10 +163,12 @@ function Preview({ frame, topic, ratio }) {
   );
 }
 
-// Library illustrations (Fluent Emoji) that frames can show; click copies the name for the plan editor.
-function IconLibrary({ icons, topic, search }) {
+// Library icons (Fluent Emoji) or cutouts (transparent PNG photos) that frames can show;
+// click copies the name for the plan editor.
+function AssetLibrary({ kind, assets, topic, search }) {
   const [copied, setCopied] = useState("");
-  const list = icons.filter((a) => (!topic || a.common || a.topics.includes(topic.topic_id)) && (!search || fold(`${a.name} ${a.label}`).includes(fold(search))));
+  const noun = kind === "icons" ? "icon" : "ảnh tách nền";
+  const list = assets.filter((a) => (!topic || a.common || a.topics.includes(topic.topic_id)) && (!search || fold(`${a.name} ${a.label}`).includes(fold(search))));
   async function copy(name) {
     try {
       await navigator.clipboard.writeText(name);
@@ -173,17 +181,21 @@ function IconLibrary({ icons, topic, search }) {
   return (
     <>
       <p className="muted small result-count">
-        {list.length} icon{topic ? ` dùng được cho chủ đề ${topic.name}` : ""} · bấm để chép tên icon
+        {list.length} {noun}{topic ? ` dùng được cho chủ đề ${topic.name}` : ""} · bấm để chép tên
       </p>
-      <div className="icon-grid">
+      <div className={kind === "icons" ? "icon-grid" : "icon-grid cutout-grid"}>
         {list.map((a, i) => (
-          <button key={a.name} className="icon-tile" style={{ "--i": Math.min(i, 40) }} onClick={() => copy(a.name)} title={a.name}>
+          <button key={a.name} className="icon-tile" style={{ "--i": Math.min(i, 40) }} onClick={() => copy(a.name)} title={a.credit ? `${a.name} — ${a.credit}` : a.name}>
             <img src={a.url} alt="" loading="lazy" />
             <span>{a.label}</span>
             {a.common && <small className="icon-common">chung</small>}
           </button>
         ))}
-        {!list.length && <div className="empty-state">Không có icon nào khớp.</div>}
+        {!list.length && (
+          <div className="empty-state">
+            {assets.length ? `Không có ${noun} nào khớp.` : kind === "cutouts" ? <>Kho trống — chạy <code>npm --prefix server run assets:cutouts</code></> : "Kho trống."}
+          </div>
+        )}
       </div>
       {copied && <div className="toast">Đã chép <code>{copied}</code></div>}
     </>

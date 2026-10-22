@@ -6,6 +6,7 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "setup:tts": "python -m venv .venv && .venv\\Scripts\\python -m pip install edge-tts",
+    "assets:cutouts": "node scripts/download-assets.js --only cutouts",
     "test:ai": "node scripts/test-ai.js",
     "make:video": "node scripts/make-video.js",
     "preview:frames": "node scripts/preview-frames.js"

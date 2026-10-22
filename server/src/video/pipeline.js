@@ -63,12 +63,13 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   return { plan, calls: stamped };
 }
 
-// Names of the library icons, logos and photos that suit a topic (what the planner may pick from).
+// Names of the library icons, logos, photos and cutouts that suit a topic (what the planner may pick from).
 export function topicLibrary(topicId) {
   return {
     icons: topicAssets(topicId, "illustration").map((a) => a.name),
     logos: topicAssets(topicId, "logo").map((a) => a.name),
     photos: topicAssets(topicId, "photo").map(({ name, label, credit }) => ({ name, label, credit })),
+    cutouts: topicAssets(topicId, "cutout").map((a) => a.name),
   };
 }
 

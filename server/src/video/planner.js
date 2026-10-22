@@ -15,7 +15,7 @@ Rules:
 - On-screen text (inputs) is short and punchy, NOT a copy of the narration. Respect every character limit. Write numbers in inputs with digits.
 - keywords: exact phrases copied verbatim from the same scene's voice_text, in spoken order, used to time the animation as described for each frame. Use [] when the frame needs none.
 - transition_out: "wipe" when the next scene starts a new topic, otherwise "fade".
-- Icons and logos: pick the icon that literally shows the scene's subject (a planet for space, a pill for medicine); the same icon at most twice per video. Use a brand logo only for a brand the material names.
+- Icons and logos: pick the icon that literally shows the scene's subject (a planet for space, a pill for medicine); the same icon at most twice per video. Use a brand logo only for a brand the material names. Pick a cutout only when it shows the very object the scene talks about.
 - Image frames may use project images or library photos. Use a library photo only when its description matches what the scene says, and copy its credit into the credit input.
 - Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state. The only exception: wrong answer options in a quiz, which must be plausible but clearly wrong.`;
 
@@ -56,7 +56,7 @@ export async function planVideo({ material, title, channel, topic, frames, allow
   }
 }
 
-const EMPTY_LIBRARY = { icons: [], logos: [], photos: [] };
+const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [] };
 
 // The planning request (system prompt, first user message, output schema), without calling the API.
 // Library lists only reach the prompt when an allowed frame can use them.
@@ -66,6 +66,7 @@ export function planRequest({ material, title, channel, topic, allowed, images =
     icons: uses("icon", "icons") ? library.icons : [],
     logos: uses("logo") ? library.logos : [],
     photos: uses("image") ? library.photos : [],
+    cutouts: uses("cutout") ? library.cutouts || [] : [],
   };
   const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], lib);
   const words = Math.round(targetSeconds * 2.6);
@@ -73,7 +74,7 @@ export function planRequest({ material, title, channel, topic, allowed, images =
 ${describeFrames(allowed)}
 
 Project images: ${images.length ? images.join(", ") : lib.photos.length ? "(none)" : "(none — do not use image frames)"}
-${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
+${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}${lib.cutouts.length ? `Cutouts (photo of one object, background removed): ${lib.cutouts.join(", ")}\n` : ""}Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
 Narration tone: ${topic?.tone || "clear and natural"}
 Target length: about ${targetSeconds}s of narration (~${words} Vietnamese words in total).
 ${title ? `Video title: ${title}\n` : ""}Channel name: ${channel || "(none — leave every channel input empty)"}
@@ -128,6 +129,7 @@ function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
   const $defs = {};
   if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
   if (lib.logos.length) $defs.logo = { type: "string", enum: lib.logos };
+  if (lib.cutouts?.length) $defs.cutout = { type: "string", enum: lib.cutouts };
   const ref = (name) => ($defs[name] ? { $ref: `#/$defs/${name}` } : { type: "string" });
   const branch = (f) => {
     const props = {};
@@ -138,7 +140,7 @@ function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
       else if (i.type === "list")
         props[k] = { type: "array", items: { type: "string", description: `at most ${i.itemMaxLength ?? 60} characters` }, description: `${i.minItems ?? 1}-${i.maxItems ?? 5} items` };
       else if (i.type === "image") props[k] = images.length ? { type: "string", enum: images } : { type: "string" };
-      else if (i.type === "icon" || i.type === "logo") props[k] = ref(i.type);
+      else if (i.type === "icon" || i.type === "logo" || i.type === "cutout") props[k] = ref(i.type);
       else if (i.type === "icons") props[k] = { type: "array", items: ref("icon"), description: `${i.minItems ?? 1}-${i.maxItems ?? 4} icon names` };
       else props[k] = { type: "string", description: `at most ${i.maxLength ?? 80} characters` };
       if (i.required) required.push(k);
@@ -180,6 +182,7 @@ function fillText(frame, text, cut, library = EMPTY_LIBRARY) {
     else if (i.type === "number") inputs[k] = 1;
     else if (i.type === "icon" && library.icons.length) inputs[k] = library.icons[0];
     else if (i.type === "logo" && library.logos.length) inputs[k] = library.logos[0];
+    else if (i.type === "cutout" && library.cutouts?.length) inputs[k] = library.cutouts[0];
   }
   return inputs;
 }

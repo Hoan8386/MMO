@@ -23,6 +23,7 @@ export const libraryUrl = {
   illustration: (name) => `/storage/library/illustrations/${name}.svg`,
   logo: (name) => `/storage/library/logos/${name}.svg`,
   photo: (name) => `/storage/library/photos/${name}`,
+  cutout: (name) => `/storage/library/cutouts/${name}.png`,
 };
 
 export const PROJECT_STATUS = {

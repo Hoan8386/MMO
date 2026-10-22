@@ -90,10 +90,11 @@ CREATE TABLE IF NOT EXISTS topics (
 );
 
 -- Shared asset library (storage/library/, downloaded by scripts/download-assets.js).
+-- cutout = transparent PNG of one object (background removed by scripts/cutout.py).
 -- `common` assets suit every topic; the others are linked to topics in topic_assets.
 CREATE TABLE IF NOT EXISTS assets (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  kind ENUM('illustration','logo','photo') NOT NULL,
+  kind ENUM('illustration','logo','photo','cutout') NOT NULL,
   name VARCHAR(120) NOT NULL,
   file VARCHAR(255) NOT NULL,
   label VARCHAR(255) NULL,

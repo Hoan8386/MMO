@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 120px; right: 120px; top: 80px; bottom: 270px; display: flex; flex-direction: column; align-items: center; gap: 30px; }
+        {{__r}} .title { font-size: 66px; line-height: 1.15; text-align: center; }
+        {{__r}} .row { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; gap: 40px; }
+        {{__r}} .side { flex: 1; max-width: 640px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        {{__r}} .pedestal { position: relative; width: 100%; height: 470px; display: flex; align-items: flex-end; justify-content: center; }
+        {{__r}} .glow { position: absolute; left: 50%; bottom: 20px; width: 440px; height: 440px; margin-left: -220px; border-radius: 50%; background: radial-gradient(circle, var(--glow), transparent 68%); }
+        {{__r}} .disc { position: absolute; left: 50%; bottom: 0; width: 380px; height: 70px; margin-left: -190px; border-radius: 50%; background: radial-gradient(ellipse, var(--panel), transparent 70%); border: 3px solid var(--line); }
+        {{__r}} .right .disc { border-color: var(--accent); }
+        {{__r}} .obj { position: relative; max-width: 440px; max-height: 420px; margin-bottom: 30px; object-fit: contain; filter: drop-shadow(0 26px 30px rgba(0, 0, 0, 0.35)); }
+        {{__r}} .name { font-size: 48px; text-align: center; }
+        {{__r}} .right .name { color: var(--accent); }
+        {{__r}} .note { font-size: 34px; line-height: 1.3; color: var(--muted); text-align: center; max-width: 560px; }
+        {{__r}} .mid { flex: none; width: 130px; height: 130px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--on-accent); font-size: 52px; box-shadow: 0 0 60px var(--glow); text-align: center; line-height: 1; }
+        /* Tall formats: one object above the other. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .row { flex-direction: column; gap: 10px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .side { flex: none; gap: 10px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .pedestal { height: 430px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .obj { max-height: 390px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .mid { width: 110px; height: 110px; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+          {{#title}}<div class="title">{{title}}</div>{{/title}}
+          <div class="row">
+            <div class="side left">
+              <div class="pedestal"><div class="glow"></div><div class="disc"></div><img class="obj" src="assets/cutouts/{{left_cutout}}.png" alt="" /></div>
+              <div class="name">{{left_label}}</div>
+              {{#left_note}}<div class="note">{{left_note}}</div>{{/left_note}}
+            </div>
+            <div class="mid">{{#middle}}{{middle}}{{/middle}}{{^middle}}VS{{/middle}}</div>
+            <div class="side right">
+              <div class="pedestal"><div class="glow"></div><div class="disc"></div><img class="obj" src="assets/cutouts/{{right_cutout}}.png" alt="" /></div>
+              <div class="name">{{right_label}}</div>
+              {{#right_note}}<div class="note">{{right_note}}</div>{{/right_note}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const tl = gsap.timeline({ paused: true });
+          // The right side waits for its keyword (or the middle of the narration).
+          const rightAt = Math.min(P.D - 1.4, Math.max(1, P.marks[0] ?? P.vo + Math.max(1, P.voEnd - P.vo) * 0.45));
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.1);
+          const enter = (side, t, dir) => {
+            const S = R.querySelector(`.side.${side}`);
+            tl.fromTo(S.querySelector(".disc"), { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: "power2.out" }, t);
+            tl.fromTo(S.querySelector(".glow"), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "power2.out" }, t);
+            tl.fromTo(S.querySelector(".obj"), { y: -260, x: dir * 80, rotation: dir * 14, opacity: 0 }, { y: 0, x: 0, rotation: 0, opacity: 1, duration: 0.8, ease: "bounce.out" }, t + 0.05);
+            tl.fromTo(S.querySelector(".name"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, t + 0.45);
+            const note = S.querySelector(".note");
+            if (note) tl.fromTo(note, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, t + 0.6);
+          };
+          enter("left", 0.3, -1);
+          tl.fromTo($(".mid"), { scale: 0, rotation: -180 }, { scale: 1, rotation: 0, duration: 0.6, ease: "back.out(2)" }, rightAt - 0.25);
+          enter("right", rightAt, 1);
+          // Hold: the middle badge pulses.
+          const pulses = Math.max(0, Math.floor((P.D - 0.6 - (rightAt + 0.6)) / 1.6));
+          if (pulses) tl.to($(".mid"), { scale: 1.1, duration: 0.8, yoyo: true, repeat: pulses * 2 - 1, ease: "sine.inOut" }, rightAt + 0.6);
+          tl.to($(".wrap"), { opacity: 0, y: -24, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
