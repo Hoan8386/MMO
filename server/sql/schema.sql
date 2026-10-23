@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS ai_calls (
   project_id INT NOT NULL,
   step VARCHAR(30) NOT NULL,
   model VARCHAR(100) NULL,
+  billing ENUM('token','request') NOT NULL DEFAULT 'token',
   input_tokens INT NOT NULL DEFAULT 0,
   output_tokens INT NOT NULL DEFAULT 0,
   cache_read_input_tokens INT NOT NULL DEFAULT 0,
@@ -115,4 +116,11 @@ CREATE TABLE IF NOT EXISTS topic_assets (
   asset_id INT NOT NULL,
   PRIMARY KEY (topic_id, asset_id),
   CONSTRAINT fk_topic_assets_asset FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
+);
+
+-- App settings edited in the web UI (key "ai": model presets, see src/settings.js).
+CREATE TABLE IF NOT EXISTS settings (
+  `key` VARCHAR(50) PRIMARY KEY,
+  value JSON NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

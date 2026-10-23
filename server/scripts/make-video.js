@@ -1,6 +1,6 @@
 // Command-line pipeline: script → plan (AI) → validate → TTS → timeline → compile → render → QC.
 //
-//   node scripts/make-video.js <script.txt> [--mode explainer|animation] [--slug ten-video] [--title "..."] [--channel "..."] [--topic technology|entertainment|education] [--images thu-muc-anh]
+//   node scripts/make-video.js <script.txt> [--mode explainer|animation] [--preset opus-unlimited] [--slug ten-video] [--title "..."] [--channel "..."] [--topic technology|entertainment|education] [--images thu-muc-anh]
 //                              [--seconds 90] [--voice vi-VN-HoaiMyNeural] [--rate +6%]
 //                              [--mock] [--replan] [--no-render]
 //
@@ -10,6 +10,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { projectDir, slugify, makePlan, buildProject, renderAndCheck, readJson } from "../src/video/pipeline.js";
+import { loadSettings, useActivePreset } from "../src/settings.js";
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
@@ -23,6 +24,9 @@ if (!scriptFile) {
   process.exit(1);
 }
 
+// AI preset from the "Cấu hình AI" page (MySQL); --preset picks another one for this run.
+await loadSettings();
+if (opt("preset")) useActivePreset(opt("preset"));
 const log = (msg) => console.log(`[${new Date().toLocaleTimeString("vi-VN")}] ${msg}`);
 const material = await fs.readFile(scriptFile, "utf8");
 const slug = opt("slug", slugify(path.basename(scriptFile, path.extname(scriptFile))));

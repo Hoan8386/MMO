@@ -41,11 +41,19 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
     const tpl = await fs.readFile(templatePath(sc.frame_id), "utf8");
     // Animation scenes get their stage (setting + characters) and the shot engine.
     const anim = sc.frame.engine === "animation";
+    // AI-written scenes: markup, CSS (nested under the scene root) and script go in raw; the
+    // code itself stays out of the props JSON.
+    const custom = sc.frame.engine === "custom";
     const layout = anim ? shotLayout(sc.inputs.cast || [], L.scene) : null;
-    const props = anim ? { ...sc.props, ...shotProps(sc, timeline.scenes[i - 1], layout), ...(sc.frame.group_action ? { group: true, action: sc.frame.group_action } : {}) } : sc.props;
+    let props = anim ? { ...sc.props, ...shotProps(sc, timeline.scenes[i - 1], layout), ...(sc.frame.group_action ? { group: true, action: sc.frame.group_action } : {}) } : sc.props;
+    if (custom) {
+      const { html, css, script, ...rest } = props;
+      props = rest;
+    }
     let html = fill(tpl, {
       ...sc.inputs,
       ...(anim ? { __stage: stageHtml(sc, layout), __engine: ENGINE_JS } : {}),
+      ...(custom ? { __html: sc.inputs.html, __css: sc.inputs.css, __script: sc.inputs.script } : {}),
       __id: sc.id,
       __r: `#${sc.id}-root`,
       __w: L.scene.w,

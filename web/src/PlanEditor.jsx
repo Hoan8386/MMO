@@ -175,6 +175,16 @@ function InputField({ name, spec, value, images, library, enumLabels = {}, disab
       </div>
     );
   }
+  if (spec.type === "code") {
+    const code = value ?? "";
+    return (
+      <label className="code-field">
+        {label}
+        <textarea className="code" rows={Math.min(14, Math.max(4, code.split("\n").length + 1))} spellCheck={false} value={code} disabled={disabled} onChange={(e) => onChange(e.target.value)} />
+        <small className={spec.maxLength && code.length > spec.maxLength ? "count over" : "count"}>{code.length}/{spec.maxLength}</small>
+      </label>
+    );
+  }
   if (spec.type === "number") {
     return (
       <label>

@@ -70,8 +70,8 @@ export function planJob(id, { mock = false } = {}) {
     const { plan, calls } = await makePlan(projectDir(p.slug), pipelineProject(p), p.material, { mock, onLog: log });
     for (const c of calls) {
       await query(
-        "INSERT INTO ai_calls (project_id, step, model, input_tokens, output_tokens, cache_read_input_tokens, frames_sent) VALUES (?,?,?,?,?,?,?)",
-        [id, c.step, c.model, c.input_tokens, c.output_tokens, c.cache_read_input_tokens, c.frames_sent],
+        "INSERT INTO ai_calls (project_id, step, model, billing, input_tokens, output_tokens, cache_read_input_tokens, frames_sent) VALUES (?,?,?,?,?,?,?,?)",
+        [id, c.step, c.model, c.billing || "token", c.input_tokens, c.output_tokens, c.cache_read_input_tokens, c.frames_sent],
       );
     }
     const tokens = calls.reduce((a, c) => a + c.input_tokens + c.cache_read_input_tokens + c.output_tokens, 0);
@@ -79,7 +79,9 @@ export function planJob(id, { mock = false } = {}) {
       plan: JSON.stringify(plan),
       status: "awaiting_approval",
       progress: 100,
-      message: `Đã lập kế hoạch ${plan.scenes.length} cảnh${calls.length ? ` (${tokens} token)` : " (mock)"} — hãy xem lại rồi duyệt`,
+      message: `Đã lập kế hoạch ${plan.scenes.length} cảnh${
+        !calls.length ? " (mock)" : calls[0].billing === "request" ? ` (${calls.length} lượt gọi ${calls[0].model}, không tính token)` : ` (${tokens} token)`
+      } — hãy xem lại rồi duyệt`,
     });
   });
 }

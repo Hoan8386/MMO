@@ -44,6 +44,9 @@ export function shotProps(sc, prev, layout) {
     speaker,
     actor,
     action: inp.action || (speaker >= 0 ? "talk" : "idle"),
+    // A second character reacting at the same time (e.g. one talks, the other laughs).
+    reactor: inp.reactor && inp.reaction ? idx(inp.reactor) : -1,
+    reaction: inp.reaction || null,
     emotion: inp.emotion || "neutral",
     camera: inp.camera || "wide",
     continued,

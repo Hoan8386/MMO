@@ -154,6 +154,10 @@ export function describeFrames(list) {
                 ? "character name"
               : i.type === "characters"
                 ? `character names ${i.minItems ?? 1}-${i.maxItems ?? 5}`
+              : i.enum
+                ? `one of: ${i.enum.join("|")}`
+              : i.type === "code"
+                ? `code ≤${i.maxLength} chars`
               : i.type === "string"
                 ? `≤${i.maxLength ?? 80} chars`
                 : i.type;

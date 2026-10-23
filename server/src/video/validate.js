@@ -1,5 +1,38 @@
 import { findAsset, KIND_OF_INPUT } from "./library.js";
 
+// AI-written scenes (frame engine "custom") run inside the render browser, so they may only
+// animate their own markup: no network, no timers or randomness (renders must repeat exactly),
+// no navigation, and assets only from the project's assets/ folder.
+const BAD_HTML = /<\s*(script|style|iframe|object|embed|link|meta|base|form)\b|javascript:|\son[a-z]+\s*=/i;
+const BAD_CSS = /@import|url\(\s*['"]?\s*(https?:|\/\/|data:text)|expression\(|<\/style/i;
+const BAD_JS = /\b(fetch|XMLHttpRequest|WebSocket|EventSource|importScripts|eval|Function|localStorage|sessionStorage|indexedDB|setTimeout|setInterval|requestAnimationFrame|navigator|location|cookie|postMessage|Worker)\b|\bimport\s*\(|Math\.random|Date\.now|new\s+Date|<\/script/;
+
+function customSceneErrors(at, inputs) {
+  const errors = [];
+  const { html = "", css = "", script = "" } = inputs;
+  if (BAD_HTML.test(html)) errors.push(`${at}.inputs.html: không được dùng <script>, <style>, <iframe>, <link>, <form>, javascript: hay thuộc tính on…=`);
+  if (BAD_CSS.test(css)) errors.push(`${at}.inputs.css: không được dùng @import hay url() trỏ ra ngoài`);
+  // Case-sensitive on purpose: `Function` is blocked, the `function` keyword is fine.
+  const bad = script.match(BAD_JS) || script.match(/<\/script/i);
+  if (bad) errors.push(`${at}.inputs.script: không được dùng "${bad[0]}" (cảnh phải chạy giống hệt mỗi lần render, không mạng, không hẹn giờ, không ngẫu nhiên)`);
+  if (!/\btl\.(to|from|fromTo|set|add)\(/.test(script)) errors.push(`${at}.inputs.script: phải thêm chuyển động vào timeline tl (tl.to / tl.fromTo …)`);
+  try {
+    new Function("P", "R", "$", "$$", "tl", "at", "gsap", script); // parse only, never run
+  } catch (e) {
+    errors.push(`${at}.inputs.script: lỗi cú pháp JavaScript — ${e.message}`);
+  }
+  for (const m of `${html} ${css}`.matchAll(/(?:src|href)\s*=\s*["']([^"']*)["']|url\(\s*["']?([^"')]+)/gi)) {
+    const ref = (m[1] ?? m[2] ?? "").trim();
+    if (!ref || ref.startsWith("#")) continue;
+    const icon = ref.match(/^assets\/icons\/([\w-]+)\.svg$/);
+    const char = ref.match(/^assets\/characters\/([\w-]+)\.svg$/);
+    if (icon && !(inputs.icons || []).includes(icon[1])) errors.push(`${at}.inputs.html: dùng icon "${icon[1]}" thì phải liệt kê nó trong icons`);
+    else if (char && !(inputs.characters || []).includes(char[1])) errors.push(`${at}.inputs.html: dùng nhân vật "${char[1]}" thì phải liệt kê nó trong characters`);
+    else if (!icon && !char) errors.push(`${at}.inputs.html: chỉ được dùng ảnh assets/icons/<tên>.svg hoặc assets/characters/<tên>.svg (gặp "${ref.slice(0, 60)}")`);
+  }
+  return errors;
+}
+
 // Checks a plan against the frame library. Returns a list of human-readable errors;
 // an empty list means the plan can be compiled. Never trusts the AI output.
 export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}) {
@@ -34,7 +67,7 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
         const bad = [v].flat().filter((x) => !spec.enum.includes(x));
         if (bad.length) errors.push(`${p}: "${bad.join('", "')}" không hợp lệ — chọn một trong: ${spec.enum.join(", ")}`);
       }
-      if (spec.type === "string") {
+      if (spec.type === "string" || spec.type === "code") {
         if (typeof v !== "string") errors.push(`${p}: phải là chuỗi`);
         else if (spec.maxLength && v.length > spec.maxLength)
           errors.push(`${p}: "${v}" dài ${v.length} ký tự, tối đa ${spec.maxLength} — viết lại ngắn hơn`);
@@ -76,6 +109,7 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
       if (inputs[k] != null && (!Number.isInteger(inputs[k]) || inputs[k] < 1 || inputs[k] > n))
         errors.push(`${at}.inputs.${k}: phải là số thứ tự từ 1 đến ${n} trong ${list}`);
     }
+    if (frame.engine === "custom") errors.push(...customSceneErrors(at, inputs));
     // e.g. the speaker of an animation shot must be one of the characters in that shot.
     for (const [k, list] of Object.entries(frame.member_of || {})) {
       const v = inputs[k];

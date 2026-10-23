@@ -77,6 +77,7 @@ function animShot(R, P, tl) {
   actors.forEach((A) => {
     let emo = "neutral", eyes = "open";
     if ((P.group || A.i === P.actor) && ACTION_FACE[P.action]) [emo, eyes] = ACTION_FACE[P.action];
+    if (A.i === P.reactor && ACTION_FACE[P.reaction]) [emo, eyes] = ACTION_FACE[P.reaction];
     const emoFor = P.speaker >= 0 ? P.speaker : P.actor;
     if (A.i === emoFor && P.emotion && P.emotion !== "neutral") {
       emo = P.emotion;
@@ -88,7 +89,8 @@ function animShot(R, P, tl) {
   // ---------------------------------------------------------------- idle life for everyone
   // A character performing an action owns its arms and head for the whole shot; idle sway on
   // them would take over again as soon as the action's own tween ends.
-  const acting = (i) => (P.group || i === P.actor) && P.action && P.action !== "talk" && P.action !== "idle";
+  const acting = (i) =>
+    ((P.group || i === P.actor) && P.action && P.action !== "talk" && P.action !== "idle") || (i === P.reactor && P.reaction && P.reaction !== "talk" && P.reaction !== "idle");
   const HEAD_ACTIONS = ["cry", "think", "sleep", "laugh", "nod", "shake_head"];
   actors.forEach((A, i) => {
     tl.set(A.el, { x: 0, y: 0 }, 0);
@@ -130,8 +132,9 @@ function animShot(R, P, tl) {
   // ---------------------------------------------------------------- the action
   // One actor, or the whole cast for title and end cards (P.group).
   const targets = P.group ? actors : [actors[P.actor]].filter(Boolean);
-  targets.forEach((A, k) => act(A, 0.25 + (P.group ? k * 0.15 : 0)));
-  function act(A, t0) {
+  targets.forEach((A, k) => act(A, 0.25 + (P.group ? k * 0.15 : 0), P.action));
+  if (actors[P.reactor] && P.reaction && actors[P.reactor] !== targets[0]) act(actors[P.reactor], Math.max(0.4, P.vo + 0.3), P.reaction);
+  function act(A, t0, action) {
   function walk(Ac, from, dur, step) {
     const n = Math.max(1, Math.round(dur / step));
     ft(Ac.legL, { rotation: -24 }, { rotation: 24, duration: step, yoyo: true, repeat: n - 1, ease: "sine.inOut" }, from);
@@ -144,10 +147,10 @@ function animShot(R, P, tl) {
   // World x → offset of the mover in local units.
   const dx = (Ac, worldX) => (worldX - Ac.x) / Ac.s;
   const edgeL = -260, edgeR = 2180;
-  switch (P.action) {
+  switch (action) {
     case "walk_in":
     case "run_in": {
-      const run = P.action === "run_in";
+      const run = action === "run_in";
       const dur = Math.min(run ? 1.2 : 2.2, D * 0.6);
       ft(A.el, { x: dx(A, edgeL), opacity: 1 }, { x: 0, duration: dur, ease: "power1.out" }, 0);
       walk(A, 0, dur, run ? 0.18 : 0.32);
@@ -155,7 +158,7 @@ function animShot(R, P, tl) {
     }
     case "walk_out":
     case "run_out": {
-      const run = P.action === "run_out";
+      const run = action === "run_out";
       const start = Math.min(run ? 0.4 : 0.6, D * 0.3);
       const dur = Math.max(0.6, D - start - 0.1);
       ft(A.el, { x: 0 }, { x: dx(A, edgeR), duration: dur, ease: "power1.in" }, start);
@@ -169,7 +172,7 @@ function animShot(R, P, tl) {
     }
     case "jump":
     case "dance": {
-      const dance = P.action === "dance";
+      const dance = action === "dance";
       const n = reps(dance ? 0.5 : 0.7, t0, D - 0.3);
       ft(A.armL, { rotation: 0 }, { rotation: 150, duration: 0.25 }, t0);
       ft(A.armR, { rotation: 0 }, { rotation: -150, duration: 0.25 }, t0);

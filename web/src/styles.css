@@ -166,6 +166,26 @@ legend { font-weight: 600; padding: 0 6px; }
 /* Topics */
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .field-label { font-size: 14px; font-weight: 500; }
+textarea.code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; line-height: 1.45; white-space: pre; }
+.code-field { grid-column: 1 / -1; }
+.preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; margin-bottom: 18px; }
+.preset-card { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border: 2px solid var(--border); border-radius: 14px; background: var(--surface); }
+.preset-card.active { border-color: var(--primary); box-shadow: 0 0 0 4px #dbeafe; }
+.preset-head { display: flex; justify-content: space-between; align-items: center; }
+.preset-radio { display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; }
+.preset-radio input { width: auto; }
+.preset-name { font-size: 17px; font-weight: 700; }
+.preset-flags { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 10px; background: #f0fdf4; }
+.check { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.check input { width: auto; margin-top: 3px; }
+.check span { display: flex; flex-direction: column; gap: 2px; }
+.check small { color: var(--muted); font-size: 12px; }
+.preset-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.preset-foot .push { margin-left: auto; }
+.ok-text { color: var(--ok); } .error-text { color: var(--danger); }
+.fallbacks { margin: 4px 0 8px; }
+.sidebar-foot .pill { display: inline-flex; flex-direction: column; text-decoration: none; white-space: normal; }
+.pill-sub { font-weight: 500; opacity: 0.8; }
 .anim-gallery h3 { margin: 22px 0 10px; font-size: 16px; }
 .rig-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
 .rig-card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }

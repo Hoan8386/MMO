@@ -23,7 +23,7 @@ export const voiceHash = (text, voice, rate, pitch) =>
 // (plan.cast); narration and every other video use the project voice.
 export function voiceFor(scene, project, plan) {
   const speaker = scene.inputs?.speaker;
-  if (plan?.mode === "animation" && speaker && speaker !== "narrator") {
+  if (scene.frame_id?.startsWith("anim-") && speaker && speaker !== "narrator") {
     const member = (plan.cast || []).find((c) => c.rig === speaker);
     const style = VOICE_STYLES[member?.voice] || VOICE_STYLES[rigById(speaker)?.voice];
     if (style) return { voice: style.voice, rate: style.rate, pitch: style.pitch };

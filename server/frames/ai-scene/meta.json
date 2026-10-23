@@ -1,0 +1,31 @@
+{
+  "frame_id": "ai-scene",
+  "version": 1,
+  "status": "active",
+  "engine": "custom",
+  "name": "Cảnh do AI tự thiết kế",
+  "description": "A one-off scene you design yourself (HTML + CSS + GSAP) when no library frame fits: a custom diagram, an animated comparison, a playful visual metaphor, a kinetic-typography moment. Write it like a motion designer. Rules are in the CUSTOM SCENES section.",
+  "category": "custom",
+  "scene_type": "custom",
+  "tags": ["custom"],
+  "aspect_ratios": ["16:9", "9:16", "1:1", "4:5"],
+  "duration": { "min": 2.5, "max": 16, "recommended": 6 },
+  "inputs": {
+    "html": { "type": "code", "required": true, "maxLength": 7000, "description": "markup inside the scene, no <script>/<style>" },
+    "css": { "type": "code", "required": true, "maxLength": 7000, "description": "CSS rules, scoped to this scene automatically" },
+    "script": { "type": "code", "required": true, "maxLength": 9000, "description": "GSAP code: add every tween to tl at absolute times" },
+    "icons": { "type": "icons", "minItems": 0, "maxItems": 8, "description": "library icons the markup uses as assets/icons/NAME.svg" },
+    "characters": { "type": "characters", "minItems": 0, "maxItems": 4, "description": "characters the markup uses as assets/characters/NAME.svg" }
+  },
+  "keywords": "tuỳ chọn, mỗi từ khoá là một mốc P.marks[i] mà script dùng",
+  "sample": {
+    "voice_text": "Mỗi ngày, trái tim bạn đập khoảng một trăm nghìn lần.",
+    "keywords": ["một trăm nghìn"],
+    "inputs": {
+      "html": "<div class=\"wrap\"><img class=\"heart\" src=\"assets/icons/anatomical-heart.svg\" alt=\"\"><div class=\"num\">0</div><div class=\"lab\">nhịp tim mỗi ngày</div></div>",
+      "css": ".wrap { position: absolute; inset: 120px 160px 280px; display: flex; align-items: center; justify-content: center; gap: 80px; } .heart { width: 380px; } .num { font-size: 170px; color: var(--accent); } .lab { position: absolute; bottom: 0; font-size: 52px; color: var(--muted); }",
+      "script": "const n = $('.num'); const c = { v: 0 }; tl.fromTo($('.heart'), { scale: 0 }, { scale: 1, duration: 0.6, ease: 'back.out(2)' }, 0.1); tl.to($('.heart'), { scale: 1.12, duration: 0.25, yoyo: true, repeat: Math.max(1, Math.floor(P.D / 0.5)) * 2 - 1 }, 0.8); tl.fromTo(c, { v: 0 }, { v: 100000, duration: 1.6, ease: 'power2.out', onUpdate: () => (n.textContent = Math.round(c.v).toLocaleString('vi-VN')) }, at(0, 1)); tl.fromTo($('.lab'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.6);",
+      "icons": ["anatomical-heart"]
+    }
+  }
+}

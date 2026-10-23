@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
+import { activePreset, getSettings } from "../settings.js";
 import { describeFrames } from "./catalog.js";
 import { validatePlan } from "./validate.js";
 
@@ -24,7 +25,8 @@ let client;
 // Asks the AI for a plan, validates it, and gives the AI one chance to repair errors.
 // Returns { plan, calls } where calls records token usage for cost tracking.
 // library: { icons: [name], logos: [name], photos: [{ name, label, credit }] } that suit the topic.
-export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, mock = false, onLog = () => {} }) {
+// extra: additional prompt sections (rich mode, cartoon shots, custom scenes) for unlimited presets.
+export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", mock = false, onLog = () => {} }) {
   const allowedIds = allowed.map((f) => f.frame_id);
   if (mock || config.ai.mode === "mock") {
     const plan = mockPlan({ material, title, allowed, images, library, topic });
@@ -35,7 +37,7 @@ export async function planVideo({ material, title, channel, topic, frames, allow
 
   // Extra retries ride out brief network/DNS drops on the way to the API or gateway.
   client ??= new Anthropic({ maxRetries: 4 });
-  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, library, targetSeconds });
+  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, library, targetSeconds, extra });
   const calls = [];
   for (let attempt = 1; attempt <= 3; attempt++) {
     onLog(`AI lập kế hoạch (lần ${attempt})`);
@@ -60,7 +62,7 @@ const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [], character
 
 // The planning request (system prompt, first user message, output schema), without calling the API.
 // Library lists only reach the prompt when an allowed frame can use them.
-export function planRequest({ material, title, channel, topic, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90 }) {
+export function planRequest({ material, title, channel, topic, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "" }) {
   const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
   const lib = {
     icons: uses("icon", "icons") ? library.icons : [],
@@ -83,6 +85,7 @@ ${lib.photos.length ? `Library photos (name — what it shows — credit):\n${li
 Narration tone: ${topic?.tone || "clear and natural"}
 Target length: about ${targetSeconds}s of narration (~${words} Vietnamese words in total).
 ${title ? `Video title: ${title}\n` : ""}Channel name: ${channel || "(none — leave every channel input empty)"}
+${extra}
 
 User material:
 """
@@ -92,18 +95,20 @@ ${material.trim()}
 }
 
 
-export async function callModel(messages, schema, system = SYSTEM) {
+// Model, effort and output length come from the active preset (Cấu hình AI page).
+// Streaming keeps long "unlimited" answers within the SDK's request time limit.
+export async function callModel(messages, schema, system = SYSTEM, preset = activePreset()) {
   client ??= new Anthropic({ maxRetries: 4 });
   const body = {
-    model: config.ai.planModel,
-    max_tokens: 16000,
+    model: preset.model,
+    max_tokens: preset.max_tokens,
     system,
     messages,
-    output_config: { effort: config.ai.planEffort, format: { type: "json_schema", schema } },
+    output_config: { effort: preset.effort, format: { type: "json_schema", schema } },
   };
-  const response = config.ai.fallbacks
-    ? await client.messages.create({ ...body, fallbacks: "default" }, { headers: { "anthropic-beta": "server-side-fallback-2026-07-01" } })
-    : await client.messages.create(body);
+  const response = getSettings().fallbacks
+    ? await client.messages.stream({ ...body, fallbacks: "default" }, { headers: { "anthropic-beta": "server-side-fallback-2026-07-01" } }).finalMessage()
+    : await client.messages.stream(body).finalMessage();
   if (response.stop_reason === "refusal") throw new Error("AI từ chối lập kế hoạch cho nội dung này");
   if (response.stop_reason === "max_tokens") {
     const raw = response.content.map((b) => b.text ?? `[${b.type}]`).join("");
@@ -119,7 +124,8 @@ export async function callModel(messages, schema, system = SYSTEM) {
   }
   // `model` is what actually answered (a fallback or gateway may differ from the request).
   const usage = {
-    model: response.model || config.ai.planModel,
+    model: response.model || preset.model,
+    billing: preset.billing,
     input_tokens: response.usage?.input_tokens ?? 0,
     output_tokens: response.usage?.output_tokens ?? 0,
     cache_read_input_tokens: response.usage?.cache_read_input_tokens ?? 0,
@@ -148,6 +154,7 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
       else if (i.type === "list")
         props[k] = { type: "array", items: { type: "string", description: `at most ${i.itemMaxLength ?? 60} characters` }, description: `${i.minItems ?? 1}-${i.maxItems ?? 5} items` };
       else if (i.type === "string" && i.enum) props[k] = { type: "string", enum: i.enum };
+      else if (i.type === "code") props[k] = { type: "string", description: `${i.description || "code"}, at most ${i.maxLength} characters` };
       else if (i.type === "image") props[k] = images.length ? { type: "string", enum: images } : { type: "string" };
       else if (["icon", "logo", "cutout", "character"].includes(i.type)) props[k] = ref(i.type);
       else if (i.type === "characters") props[k] = { type: "array", items: ref("character"), description: `${i.minItems ?? 1}-${i.maxItems ?? 5} character names` };

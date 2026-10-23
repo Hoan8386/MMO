@@ -1,6 +1,6 @@
 {
   "frame_id": "anim-shot",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "engine": "animation",
   "name": "Cảnh hoạt hình",
@@ -62,6 +62,16 @@
       "enum": "@emotions",
       "description": "cảm xúc của người nói"
     },
+    "reactor": {
+      "type": "string",
+      "enum": "@rigs",
+      "description": "nhân vật thứ hai phản ứng cùng lúc (tuỳ chọn)"
+    },
+    "reaction": {
+      "type": "string",
+      "enum": "@actions",
+      "description": "phản ứng của nhân vật đó: laugh, shock, nod, cry…"
+    },
     "camera": {
       "type": "string",
       "enum": [
@@ -74,7 +84,8 @@
   },
   "member_of": {
     "speaker": "cast",
-    "actor": "cast"
+    "actor": "cast",
+    "reactor": "cast"
   },
   "keywords": "không cần",
   "sample": {

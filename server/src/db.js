@@ -27,6 +27,11 @@ export async function initDb({ resetJobs = true } = {}) {
     "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='projects' AND COLUMN_NAME='mode'",
     [database],
   );
+  const [hasBilling] = await admin.query(
+    "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='ai_calls' AND COLUMN_NAME='billing'",
+    [database],
+  );
+  if (!hasBilling.length) await admin.query("ALTER TABLE ai_calls ADD COLUMN billing ENUM('token','request') NOT NULL DEFAULT 'token' AFTER model");
   if (!hasMode.length) await admin.query("ALTER TABLE projects ADD COLUMN mode ENUM('explainer','animation') NOT NULL DEFAULT 'explainer' AFTER slug");
   const [kind] = await admin.query(
     "SELECT COLUMN_TYPE AS t FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='assets' AND COLUMN_NAME='kind'",
