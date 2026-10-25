@@ -2,6 +2,8 @@ import path from "node:path";
 import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
 import { projectDir, makePlan, buildProject, renderAndCheck, hasManualEdits, backupSources, planErrors } from "./pipeline.js";
+import { fetchProjectImages } from "./auto-images.js";
+import { getTopic } from "./catalog.js";
 
 // Two lanes: AI planning is quick and must not wait behind a multi-minute render.
 const lanes = { ai: Promise.resolve(), media: Promise.resolve() };
@@ -26,6 +28,7 @@ export const pipelineProject = (p) => ({
   voice: p.voice,
   rate: p.voice_rate,
   targetSeconds: p.target_seconds,
+  autoImages: p.auto_images,
   aspectRatio: p.aspect_ratio,
   width: p.width,
   height: p.height,
@@ -63,17 +66,31 @@ function enqueue(projectId, type, lane, task) {
     .finally(() => running.delete(projectId));
 }
 
+async function recordCalls(id, calls) {
+  for (const c of calls) {
+    await query(
+      "INSERT INTO ai_calls (project_id, step, model, billing, input_tokens, output_tokens, cache_read_input_tokens, frames_sent) VALUES (?,?,?,?,?,?,?,?)",
+      [id, c.step, c.model, c.billing || "token", c.input_tokens, c.output_tokens, c.cache_read_input_tokens, c.frames_sent ?? null],
+    );
+  }
+}
+
+// The "Tự tìm ảnh" button (auto-images.js). A failure is logged, never fatal.
+async function fetchImages(id, p, count, { mock, log }) {
+  try {
+    const { calls } = await fetchProjectImages(projectDir(p.slug), pipelineProject(p), p.material, { topic: getTopic(p.topic), count, mock, onLog: log });
+    await recordCalls(id, calls);
+  } catch (err) {
+    log(`Không tự tìm được ảnh: ${err.message}`);
+  }
+}
+
 export function planJob(id, { mock = false } = {}) {
   enqueue(id, "plan", "ai", async ({ log }) => {
     const p = await loadProject(id);
     await setProject(id, { status: "planning", progress: 0, plan_approved: 0 });
     const { plan, calls } = await makePlan(projectDir(p.slug), pipelineProject(p), p.material, { mock, onLog: log });
-    for (const c of calls) {
-      await query(
-        "INSERT INTO ai_calls (project_id, step, model, billing, input_tokens, output_tokens, cache_read_input_tokens, frames_sent) VALUES (?,?,?,?,?,?,?,?)",
-        [id, c.step, c.model, c.billing || "token", c.input_tokens, c.output_tokens, c.cache_read_input_tokens, c.frames_sent],
-      );
-    }
+    await recordCalls(id, calls);
     const tokens = calls.reduce((a, c) => a + c.input_tokens + c.cache_read_input_tokens + c.output_tokens, 0);
     await setProject(id, {
       plan: JSON.stringify(plan),
@@ -83,6 +100,14 @@ export function planJob(id, { mock = false } = {}) {
         !calls.length ? " (mock)" : calls[0].billing === "request" ? ` (${calls.length} lượt gọi ${calls[0].model}, không tính token)` : ` (${tokens} token)`
       } — hãy xem lại rồi duyệt`,
     });
+  });
+}
+
+// Fetches more images on request; the project's status is left as it was.
+export function imagesJob(id, { count = 8 } = {}) {
+  enqueue(id, "images", "ai", async ({ log }) => {
+    const p = await loadProject(id);
+    await fetchImages(id, p, Math.min(10, Math.max(1, Number(count) || 8)), { mock: false, log });
   });
 }
 

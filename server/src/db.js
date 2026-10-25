@@ -39,6 +39,16 @@ export async function initDb({ resetJobs = true } = {}) {
   );
   if (kind.length && !kind[0].t.includes("'character'"))
     await admin.query("ALTER TABLE assets MODIFY kind ENUM('illustration','logo','photo','cutout','character') NOT NULL");
+  const [hasAutoImages] = await admin.query(
+    "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='projects' AND COLUMN_NAME='auto_images'",
+    [database],
+  );
+  if (!hasAutoImages.length) await admin.query("ALTER TABLE projects ADD COLUMN auto_images INT NOT NULL DEFAULT 8 AFTER height");
+  const [jobType] = await admin.query(
+    "SELECT COLUMN_TYPE AS t FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='jobs' AND COLUMN_NAME='type'",
+    [database],
+  );
+  if (jobType.length && !jobType[0].t.includes("'images'")) await admin.query("ALTER TABLE jobs MODIFY type ENUM('plan','build','render','images') NOT NULL");
   await admin.end();
 
   pool = mysql.createPool({ ...config.db, charset: "utf8mb4", connectionLimit: 10 });

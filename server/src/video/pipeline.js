@@ -8,8 +8,8 @@ import { planVideo } from "./planner.js";
 import { planAnimation } from "../animation/planner.js";
 import { rigById } from "../animation/rigs.js";
 import { activePreset } from "../settings.js";
-import { richGuide } from "./guides.js";
 import { topicAssets, findAsset } from "./library.js";
+import { downloadImages } from "./auto-images.js";
 import { validatePlan } from "./validate.js";
 import { voiceScenes, voiceFor } from "./tts.js";
 import { buildTimeline } from "./timeline.js";
@@ -36,23 +36,47 @@ export async function listImages(dir) {
   return (await fs.readdir(imgDir)).filter((f) => IMAGE_RE.test(f));
 }
 
-// project: { title, channel, topic, voice, rate, targetSeconds, aspectRatio, width, height }
+// The project's own cutouts (auto-images.js): PNGs in assets/cutouts that are not library copies.
+export async function listCutouts(dir) {
+  const files = await fs.readdir(path.join(dir, "assets", "cutouts")).catch(() => []);
+  return files.filter((f) => f.endsWith(".png")).map((f) => f.slice(0, -4)).filter((n) => !findAsset("cutout", n));
+}
+
+// Record of the images fetched for this video: { items: [{ name, kind, file, label, credit, … }] }.
+export const fetchedFile = (dir) => path.join(dir, "assets", "fetched.json");
+
+// The project's own images and cutouts, with what each shows (labels, by image file or cutout name)
+// and the credit of each fetched photo (credits, by image file).
+export async function projectMedia(dir) {
+  const [images, cutouts, { items }] = await Promise.all([listImages(dir), listCutouts(dir), readJson(fetchedFile(dir), { items: [] })]);
+  const byName = new Map(items.map((e) => [e.kind === "photo" ? path.basename(e.file) : e.name, e]));
+  const labels = {};
+  const credits = {};
+  for (const n of [...images, ...cutouts]) {
+    const e = byName.get(n);
+    if (e?.label) labels[n] = e.label;
+    if (e?.credit && images.includes(n)) credits[n] = e.credit;
+  }
+  return { images, cutouts, labels, credits };
+}
+
+// project: { title, channel, topic, voice, rate, targetSeconds, aspectRatio, width, height, autoImages }
 export async function makePlan(dir, project, material, { mock = false, onLog = () => {} } = {}) {
   const frames = loadFrames();
   if (project.mode === "animation") return makeAnimationPlan(dir, project, material, frames, { mock, onLog });
-  const images = await listImages(dir);
+  const { images, cutouts, labels } = await projectMedia(dir);
   const topic = getTopic(project.topic);
-  // Unlimited presets (billed per request) get the whole matching library and story motion
-  // (animation layered on the frames they pick, motion.js) instead of new frames; token presets stay lean.
+  // Billing only changes how calls are counted; every preset plans the same way.
   const preset = activePreset();
-  const unlimited = preset.billing === "request";
-  const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images, ...(unlimited ? { perType: 99, maxContent: 99 } : {}) });
-  let extra = "";
-  if (unlimited && preset.density === "rich") extra += richGuide(project.targetSeconds || 90);
-  const motion = unlimited && preset.story_motion;
+  // The first plan also picks the video's pictures (auto-images.js), in the same AI call.
+  const illustrate = project.autoImages > 0 && !(await fs.stat(fetchedFile(dir)).catch(() => null)) ? project.autoImages : 0;
+  // A planned picture counts as a cutout, so the cutout frames are offered.
+  const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images, cutouts: illustrate ? [...cutouts, "new:1"] : cutouts });
   const library = topicLibrary(topic.topic_id);
-  onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited" : "theo token"})`);
-  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon${motion ? ", AI thêm hoạt ảnh theo câu chuyện vào từng cảnh" : ""}`);
+  // The cutouts fetched for this video come first: they show what this material is about.
+  library.cutouts = [...cutouts, ...library.cutouts];
+  onLog(`Model ${preset.model} (${preset.billing === "request" ? "theo lượt" : "theo token"})`);
+  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${cutouts.length} ảnh tách nền của dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon`);
   const { plan, calls } = await planVideo({
     material,
     title: project.title,
@@ -61,20 +85,28 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     frames,
     allowed,
     images,
+    labels,
     library,
     targetSeconds: project.targetSeconds,
-    extra,
-    motion,
+    illustrate,
+    // Downloads the pictures the plan uses first, then the others up to the wanted number.
+    fetchImages: async (items, used) => {
+      onLog(`Tải ảnh minh hoạ AI đã chọn: ${items.map((it) => it.queries[0]).join(", ")}`);
+      const order = [...used.map((n) => n - 1).filter((i) => items[i]), ...items.keys()].filter((i, k, a) => a.indexOf(i) === k);
+      const added = await downloadImages(dir, order.map((i) => items[i]), { count: illustrate, onLog });
+      return Object.fromEntries(added.filter((e) => e.kind === "cutout").map((e) => [`new:${order[e.index] + 1}`, e.name]));
+    },
     mock,
     onLog,
   });
+  const { credits } = await projectMedia(dir);
   const stamped = calls.map((c) => ({ ...c, at: new Date().toISOString(), frames_sent: allowed.length }));
   if (stamped.length) {
     const logFile = path.join(dir, "ai_calls.json");
     const prev = await readJson(logFile, []);
     await fs.writeFile(logFile, JSON.stringify([...prev, ...stamped], null, 2));
   }
-  finalizePlan(plan, project, frames);
+  finalizePlan(plan, project, frames, credits);
   return { plan, calls: stamped };
 }
 
@@ -94,17 +126,8 @@ export function topicLibrary(topicId) {
 async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }) {
   onLog("Phim hoạt hình: AI viết kịch bản, chọn nhân vật, bối cảnh và hành động");
   const preset = activePreset();
-  const unlimited = preset.billing === "request";
-  onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited" : "theo token"})`);
-  const options = unlimited
-    ? {
-        rich: preset.density === "rich",
-        mix: preset.mix_templates,
-        motion: preset.story_motion,
-        library: topicLibrary(project.topic || "storytelling"),
-      }
-    : {};
-  const { plan, calls } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options });
+  onLog(`Model ${preset.model} (${preset.billing === "request" ? "theo lượt" : "theo token"})`);
+  const { plan, calls } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options: {} });
   const stamped = calls.map((c) => ({ ...c, at: new Date().toISOString(), frames_sent: 3 }));
   if (stamped.length) {
     const logFile = path.join(dir, "ai_calls.json");
@@ -116,7 +139,8 @@ async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }
 }
 
 // Numbers scenes s01… in order and applies project-level values the AI must not decide.
-export function finalizePlan(plan, project, frames = loadFrames()) {
+// credits: { image file: credit } for the project's fetched photos.
+export function finalizePlan(plan, project, frames = loadFrames(), credits = {}) {
   if (plan.scenes.some((s) => s.frame_id?.startsWith("anim-"))) {
     plan.cast ||= [];
     for (const id of new Set(plan.scenes.flatMap((s) => s.inputs?.cast || []))) {
@@ -132,8 +156,8 @@ export function finalizePlan(plan, project, frames = loadFrames()) {
     const frame = frames.get(s.frame_id);
     if (project.channel && frame?.inputs.channel) s.inputs.channel = project.channel;
     // A library photo always carries its licence credit.
-    const photo = typeof s.inputs.image === "string" && findAsset("photo", s.inputs.image);
-    if (photo?.credit && frame?.inputs.credit && !s.inputs.credit) s.inputs.credit = shortCredit(photo.credit, frame.inputs.credit.maxLength ?? 40);
+    const credit = typeof s.inputs.image === "string" && (credits[s.inputs.image] || findAsset("photo", s.inputs.image)?.credit);
+    if (credit && frame?.inputs.credit && !s.inputs.credit) s.inputs.credit = shortCredit(credit, frame.inputs.credit.maxLength ?? 40);
   });
   return plan;
 }
@@ -147,16 +171,18 @@ function shortCredit(credit, max) {
 
 export async function planErrors(dir, plan) {
   if (!plan) return ["chưa có kế hoạch"];
-  return validatePlan(plan, loadFrames(), { images: await listImages(dir) });
+  const { images, cutouts } = await projectMedia(dir);
+  return validatePlan(plan, loadFrames(), { images, cutouts });
 }
 
 // Voice → timeline → compile → lint. Writes plan.json, timeline.json and the HyperFrames
 // project, and records a hash of the generated HTML so later hand edits can be detected.
 export async function buildProject(dir, project, plan, { onLog = () => {} } = {}) {
   const frames = loadFrames();
-  const errors = validatePlan(plan, frames, { images: await listImages(dir) });
+  const { images, cutouts, credits } = await projectMedia(dir);
+  const errors = validatePlan(plan, frames, { images, cutouts });
   if (errors.length) throw new Error(`Kế hoạch chưa hợp lệ:\n- ${errors.join("\n- ")}`);
-  finalizePlan(plan, project, frames);
+  finalizePlan(plan, project, frames, credits);
   await fs.writeFile(path.join(dir, "plan.json"), JSON.stringify(plan, null, 2));
   await fs.writeFile(path.join(dir, "project.json"), JSON.stringify(project, null, 2));
 

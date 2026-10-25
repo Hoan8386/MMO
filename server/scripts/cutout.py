@@ -1,6 +1,6 @@
-"""Background removal for the cutout library (called by download-assets.js).
+"""Background removal for cutouts (called by src/video/auto-images.js).
 
-Reads a JSON list of [input, output] pairs on stdin, writes each subject as a transparent PNG
+Reads a JSON list of [input, output] pairs from the file named as the first argument (or stdin), writes each subject as a transparent PNG
 trimmed to its outline (plus a small margin) and at most MAX px on its long side, and prints one
 JSON line per image: {"out", "width", "height", "coverage"} or {"out", "error"}.
 coverage = share of the trimmed image that is opaque; very low or very high values usually mean
@@ -19,7 +19,9 @@ MARGIN = 0.03
 
 session = new_session("isnet-general-use")
 
-for src, out in json.load(sys.stdin):
+pairs = json.load(open(sys.argv[1], encoding="utf-8")) if len(sys.argv) > 1 else json.load(sys.stdin)
+
+for src, out in pairs:
     try:
         img = remove(Image.open(src).convert("RGB"), session=session).convert("RGBA")
         alpha = img.getchannel("A").point(lambda a: 255 if a > 24 else 0)

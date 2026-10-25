@@ -113,7 +113,7 @@ const MODES = [
 function NewProjectModal({ topics, onClose }) {
   const navigate = useNavigate();
   const [voices, setVoices] = useState([]);
-  const [form, setForm] = useState({ mode: "explainer", title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9" });
+  const [form, setForm] = useState({ mode: "explainer", title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9", auto_images: 8 });
   const anim = form.mode === "animation";
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -257,6 +257,20 @@ function NewProjectModal({ topics, onClose }) {
             <input value={form.voice_rate} onChange={set("voice_rate")} placeholder="+6%" />
           </label>
         </div>
+        {!anim && (
+          <div className="auto-images">
+            <label className="check">
+              <input type="checkbox" checked={form.auto_images > 0} onChange={(e) => setForm((f) => ({ ...f, auto_images: e.target.checked ? 8 : 0 }))} />
+              Tự tìm ảnh minh hoạ theo nội dung, ưu tiên ảnh PNG tách nền
+            </label>
+            {form.auto_images > 0 && (
+              <select value={form.auto_images} onChange={(e) => setForm((f) => ({ ...f, auto_images: Number(e.target.value) }))}>
+                {[5, 6, 7, 8, 9, 10].map((n) => <option key={n} value={n}>{n} ảnh</option>)}
+              </select>
+            )}
+            <small className="muted">Tải khi lập kế hoạch lần đầu: AI chọn những thứ cần minh hoạ, lấy PNG nền trong từ PNGImages.com, thiếu thì lấy ảnh Wikimedia rồi tự tách nền.</small>
+          </div>
+        )}
         <div className="modal-actions">
           <button type="button" className="btn" onClick={onClose}>Huỷ</button>
           <button className="btn primary" disabled={saving}>{saving ? "Đang tạo…" : "Tạo dự án"}</button>

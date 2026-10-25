@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS projects (
   aspect_ratio VARCHAR(10) NOT NULL DEFAULT '16:9',
   width INT NOT NULL DEFAULT 1920,
   height INT NOT NULL DEFAULT 1080,
+  -- How many images to fetch for the video before the first plan (auto-images.js); 0 = none.
+  auto_images INT NOT NULL DEFAULT 8,
   plan JSON NULL,
   plan_approved TINYINT(1) NOT NULL DEFAULT 0,
   status ENUM('draft','planning','awaiting_approval','building','built','rendering','completed','failed') NOT NULL DEFAULT 'draft',
@@ -62,7 +64,7 @@ CREATE TABLE IF NOT EXISTS ai_calls (
 CREATE TABLE IF NOT EXISTS jobs (
   id INT AUTO_INCREMENT PRIMARY KEY,
   project_id INT NOT NULL,
-  type ENUM('plan','build','render') NOT NULL,
+  type ENUM('plan','build','render','images') NOT NULL,
   status ENUM('queued','running','done','failed') NOT NULL DEFAULT 'queued',
   log MEDIUMTEXT NULL,
   error TEXT NULL,

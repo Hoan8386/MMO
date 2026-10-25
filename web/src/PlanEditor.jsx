@@ -290,7 +290,7 @@ function AssetSelect({ kind, list, value, placeholder, disabled, onChange }) {
   const known = !value || list.some((a) => a.name === value);
   return (
     <span className="asset-pick">
-      {value ? <img className="asset-thumb" src={libraryUrl[kind](value)} alt="" /> : <span className="asset-thumb empty" />}
+      {value ? <img className="asset-thumb" src={list.find((a) => a.name === value)?.url || libraryUrl[kind](value)} alt="" /> : <span className="asset-thumb empty" />}
       <select value={value ?? ""} disabled={disabled} onChange={(e) => onChange(e.target.value || undefined)}>
         <option value="">{placeholder || (list.length ? "Chọn…" : "Thư viện trống — chạy npm run assets:download")}</option>
         {!known && <option value={value}>{value}</option>}

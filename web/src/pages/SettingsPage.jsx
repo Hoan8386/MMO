@@ -5,7 +5,7 @@ import { ErrorNote } from "../components.jsx";
 const EFFORT_LABEL = { low: "Thấp — nhanh, ít suy nghĩ", medium: "Vừa", high: "Cao — kỹ hơn", max: "Tối đa" };
 const BILLING = {
   token: { label: "Tính theo token", tone: "warn", note: "Mỗi video gửi ít frame, effort thấp để tiết kiệm token." },
-  request: { label: "Theo lượt — unlimited", tone: "ok", note: "Giá mỗi lượt gọi như nhau nên gửi toàn bộ thư viện, nhiều cảnh hơn, cho AI tự thiết kế cảnh." },
+  request: { label: "Theo lượt — unlimited", tone: "ok", note: "Giá mỗi lượt gọi như nhau; lập kế hoạch giống hệt chế độ theo token." },
 };
 
 // "Cấu hình AI": model presets for planning, which one is active, and what each has been used for.
@@ -36,7 +36,7 @@ export default function SettingsPage({ onSaved }) {
   const setPreset = (id, patch) => setDraft((d) => ({ ...d, presets: d.presets.map((p) => (p.id === id ? { ...p, ...patch } : p)) }));
   const addPreset = () => {
     const id = `preset-${Date.now().toString(36)}`;
-    setDraft((d) => ({ ...d, presets: [...d.presets, { id, label: "Cấu hình mới", model: "req/claude-opus-5-5", billing: "request", effort: "high", max_tokens: 32000, story_motion: true, mix_templates: true, density: "rich" }] }));
+    setDraft((d) => ({ ...d, presets: [...d.presets, { id, label: "Cấu hình mới", model: "req/claude-opus-5-5", billing: "request", effort: "high", max_tokens: 32000 }] }));
   };
   const removePreset = (id) => setDraft((d) => ({ ...d, presets: d.presets.filter((p) => p.id !== id), active: d.active === id ? d.presets.find((p) => p.id !== id)?.id : d.active }));
 
@@ -117,22 +117,6 @@ export default function SettingsPage({ onSaved }) {
                 </label>
               </div>
               <p className="muted small">{b.note}</p>
-              {p.billing === "request" && (
-                <div className="preset-flags">
-                  <label className="check">
-                    <input type="checkbox" checked={p.density === "rich"} onChange={(e) => setPreset(p.id, { density: e.target.checked ? "rich" : "normal" })} />
-                    <span><strong>Nhiều cảnh hơn</strong><small>Cảnh ngắn 3–6 giây, đổi frame liên tục, mở đầu có hook</small></span>
-                  </label>
-                  <label className="check">
-                    <input type="checkbox" checked={p.story_motion} onChange={(e) => setPreset(p.id, { story_motion: e.target.checked })} />
-                    <span><strong>Hoạt ảnh theo câu chuyện</strong><small>Không thêm frame mới: AI thêm hiệu ứng (mưa, pháo hoa, sao…), chuyển động máy quay và nhân vật/icon diễn trên chính frame đã chọn, canh theo lời đọc</small></span>
-                  </label>
-                  <label className="check">
-                    <input type="checkbox" checked={p.mix_templates} onChange={(e) => setPreset(p.id, { mix_templates: e.target.checked })} />
-                    <span><strong>Thẻ xen giữa phim hoạt hình</strong><small>Phim hoạt hình chen thẻ chương, sự thật, trích dẫn… lấy từ frame có sẵn</small></span>
-                  </label>
-                </div>
-              )}
               <div className="preset-foot">
                 <button className="btn small" onClick={() => test(p)} disabled={t?.running}>{t?.running ? "Đang thử…" : "Thử kết nối"}</button>
                 {t && !t.running && (

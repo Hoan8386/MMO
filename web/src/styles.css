@@ -366,3 +366,7 @@ textarea.code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12
 .news-tab { font: inherit; font-size: 14px; background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; margin-bottom: -1px; cursor: pointer; color: var(--muted); }
 .news-tab.active { color: var(--text); border-bottom-color: var(--primary); font-weight: 600; }
 .news-tab small { font-weight: 400; color: var(--muted); }
+.cutout-grid img { object-fit: contain; padding: 8px; box-sizing: border-box; background: repeating-conic-gradient(#e5e7eb 0% 25%, #f8fafc 0% 50%) 50% / 16px 16px; }
+.auto-images { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.auto-images select { width: auto; }
+.auto-images small { flex-basis: 100%; }

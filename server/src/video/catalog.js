@@ -102,7 +102,7 @@ export async function refreshCatalog() {
 // the topic (or tagged "common"), at most `perType` per scene type and `maxContent` frames
 // besides intros and outros, best tag match first. Animation projects (engine "animation")
 // get exactly the animation frames; other projects never see them.
-export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [], perType = 4, maxContent = 20, engine = null } = {}) {
+export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [], cutouts = [], perType = 4, maxContent = 20, engine = null } = {}) {
   const usable = [...frames.values()].filter(
     (f) =>
       f.status === "active" &&
@@ -110,12 +110,14 @@ export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [],
       f.aspect_ratios.includes(aspectRatio) &&
       // A frame that needs an image (or a library icon/logo) is useless when there is none.
       (images.length > 0 || !Object.values(f.inputs).some((i) => i.type === "image" && i.required)) &&
-      Object.values(f.inputs).every((i) => !i.required || !KIND_OF_INPUT[i.type] || hasKind(KIND_OF_INPUT[i.type])),
+      Object.values(f.inputs).every((i) => !i.required || !KIND_OF_INPUT[i.type] || hasKind(KIND_OF_INPUT[i.type]) || (i.type === "cutout" && cutouts.length > 0)),
   );
   if (!topic || engine) return usable;
 
   const weight = (t) => (topic.default_tags.includes(t) ? 3 : topic.related_tags.includes(t) ? 1 : t === "common" ? 1 : 0);
-  const score = (f) => f.tags.reduce((s, t) => s + weight(t), 0);
+  // Images and cutouts fetched or uploaded for this video should reach it: the frames that show them rank higher.
+  const own = (f) => Object.values(f.inputs).some((i) => (i.type === "cutout" && cutouts.length) || (i.type === "image" && images.length));
+  const score = (f) => f.tags.reduce((s, t) => s + weight(t), 0) + (own(f) ? 3 : 0);
   const picked = usable.filter((f) => score(f) > 0);
   // Every video needs an intro and an outro, even if none is tagged for this topic.
   for (const type of ["intro", "outro"]) {

@@ -5,8 +5,8 @@ import multer from "multer";
 import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
 import { loadTopics } from "../video/catalog.js";
-import { projectDir, slugify, listImages, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
-import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
+import { projectDir, slugify, listImages, projectMedia, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
+import { planJob, buildJob, renderJob, imagesJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
 import { VOICES, voiceHash, voiceFor } from "../video/tts.js";
 import { ASPECTS, DEFAULT_ASPECT } from "../video/aspects.js";
@@ -15,7 +15,9 @@ import { downloadImage } from "../news.js";
 const router = Router();
 const upload = multer({ dest: path.join(STORAGE_DIR, "tmp"), limits: { fileSize: 15 * 1024 * 1024, files: 20 } });
 const storageUrl = (p) => `/storage/${path.relative(STORAGE_DIR, p).replace(/\\/g, "/")}`;
-const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds"];
+const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds", "auto_images"];
+// Images fetched for a new video: 0 (off) or 5–10.
+const autoImages = (v) => (v === undefined ? 8 : Number(v) > 0 ? Math.min(10, Math.max(5, Math.round(Number(v)))) : 0);
 
 router.get("/voices", (_req, res) => res.json(VOICES));
 router.get("/aspects", (_req, res) => res.json(Object.entries(ASPECTS).map(([id, a]) => ({ id, label: a.label, platforms: a.platforms, width: a.width, height: a.height }))));
@@ -47,8 +49,8 @@ router.post("/", async (req, res) => {
   const mode = req.body.mode === "animation" ? "animation" : "explainer";
   const topic = loadTopics().has(req.body.topic) ? req.body.topic : mode === "animation" && loadTopics().has("storytelling") ? "storytelling" : "technology";
   const r = await query(
-    "INSERT INTO projects (slug, mode, title, material, channel, topic, voice, voice_rate, target_seconds, aspect_ratio, width, height) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-    [slug, mode, title.trim(), material, req.body.channel || null, topic, req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height],
+    "INSERT INTO projects (slug, mode, title, material, channel, topic, voice, voice_rate, target_seconds, aspect_ratio, width, height, auto_images) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+    [slug, mode, title.trim(), material, req.body.channel || null, topic, req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height, autoImages(req.body.auto_images)],
   );
   const dir = projectDir(slug);
   await fs.mkdir(path.join(dir, "assets", "img"), { recursive: true });
@@ -70,6 +72,7 @@ router.get("/:id", async (req, res) => {
     const meta = await readJson(path.join(voDir, f));
     if (meta?.hash) byHash.set(meta.hash, { id, ...meta });
   }
+  const media = await projectMedia(dir);
   const sceneDur = Object.fromEntries((timeline?.scenes ?? []).map((s) => [s.id, s.duration]));
   const audio = {};
   for (const s of p.plan?.scenes ?? []) {
@@ -92,7 +95,8 @@ router.get("/:id", async (req, res) => {
     warnings: timeline?.warnings ?? [],
     has_manual_edits: timeline ? await hasManualEdits(dir) : false,
     audio,
-    images: (await listImages(dir)).map((name) => ({ name, url: storageUrl(path.join(dir, "assets", "img", name)) })),
+    images: media.images.map((name) => ({ name, label: media.labels[name], credit: media.credits[name], url: storageUrl(path.join(dir, "assets", "img", name)) })),
+    cutouts: media.cutouts.map((name) => ({ name, label: media.labels[name], url: storageUrl(path.join(dir, "assets", "cutouts", `${name}.png`)) })),
     versions: versions.map((v) => ({ ...v, url: `/storage/${v.file}` })),
     usage,
     jobs,
@@ -102,6 +106,7 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const fields = Object.fromEntries(FIELDS.filter((f) => req.body[f] !== undefined).map((f) => [f, req.body[f]]));
+  if (fields.auto_images !== undefined) fields.auto_images = autoImages(fields.auto_images);
   if (req.body.aspect_ratio !== undefined) Object.assign(fields, aspectFields(req.body.aspect_ratio));
   if (!Object.keys(fields).length) return res.status(400).json({ error: "Không có gì để cập nhật" });
   await query(`UPDATE projects SET ${Object.keys(fields).map((k) => `${k}=?`).join(", ")} WHERE id=?`, [...Object.values(fields), req.params.id]);
@@ -138,6 +143,8 @@ function action(fn) {
 router.post("/:id/plan", action((id, b) => planJob(id, { mock: !!b.mock })));
 router.post("/:id/build", action((id, b) => buildJob(id, { render: b.render !== false, force: !!b.force })));
 router.post("/:id/render", action((id) => renderJob(id)));
+// Finds more images for the video's material (PNG cutouts first), see auto-images.js.
+router.post("/:id/images/auto", action((id, b) => imagesJob(id, { count: b.count })));
 
 router.post("/:id/studio", async (req, res) => {
   const p = await loadProject(req.params.id);
@@ -195,6 +202,12 @@ router.post("/:id/images/from-url", async (req, res) => {
 router.delete("/:id/images/:name", async (req, res) => {
   const p = await loadProject(req.params.id);
   await fs.rm(path.join(projectDir(p.slug), "assets", "img", path.basename(req.params.name)), { force: true });
+  res.status(204).end();
+});
+
+router.delete("/:id/cutouts/:name", async (req, res) => {
+  const p = await loadProject(req.params.id);
+  await fs.rm(path.join(projectDir(p.slug), "assets", "cutouts", `${path.basename(req.params.name)}.png`), { force: true });
   res.status(204).end();
 });
 

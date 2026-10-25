@@ -18,6 +18,7 @@ Rules:
 - keywords: exact phrases copied verbatim from the same scene's voice_text, in spoken order, used to time the animation as described for each frame. Use [] when the frame needs none.
 - transition_out: "wipe" when the next scene starts a new topic, otherwise "fade".
 - Icons and logos: pick the icon that literally shows the scene's subject (a planet for space, a pill for medicine); the same icon at most twice per video. Use a brand logo only for a brand the material names. Pick a cutout only when it shows the very object the scene talks about.
+- Images and cutouts found for this video (the ones listed with a description) were picked for this material: show most of them, each in the scene that talks about what it shows.
 - Image frames may use project images or library photos. Use a library photo only when its description matches what the scene says, and copy its credit into the credit input.
 - Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state. The only exception: wrong answer options in a quiz, which must be plausible but clearly wrong.`;
 
@@ -36,18 +37,25 @@ const since = (t) => duration(Date.now() - t);
 // library: { icons: [name], logos: [name], photos: [{ name, label, credit }] } that suit the topic.
 // extra: additional prompt sections (rich mode) for unlimited presets; motion: each scene also gets
 // a story motion (motion.js) layered on its frame.
-export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, mock = false, onLog = () => {} }) {
+// illustrate: the AI also lists that many things to picture ("illustrations") and may put "new:<n>"
+// in cutout inputs; once the plan is valid, fetchImages(items) downloads them (in the same planning
+// call, no extra request) and returns { "new:<n>": cutout name } for the ones found. A placeholder left
+// unresolved goes back to the AI as an ordinary plan error.
+export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, illustrate = 0, fetchImages = null, mock = false, onLog = () => {} }) {
   const allowedIds = allowed.map((f) => f.frame_id);
   if (mock || config.ai.mode === "mock") {
     const plan = mockPlan({ material, title, allowed, images, library, topic });
-    const errors = validatePlan(plan, frames, { allowedFrameIds: allowedIds, images });
+    const errors = validatePlan(plan, frames, { allowedFrameIds: allowedIds, images, cutouts: library.cutouts });
     if (errors.length) throw new Error(`Plan mẫu không hợp lệ:\n- ${errors.join("\n- ")}`);
     return { plan, calls: [] };
   }
 
   // Extra retries ride out brief network/DNS drops on the way to the API or gateway.
   client ??= new Anthropic({ maxRetries: 4 });
-  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, library, targetSeconds, extra, motion });
+  const req = planRequest({ material, title, channel, topic, allowed, images, labels, library, targetSeconds, extra, motion, illustrate: fetchImages ? illustrate : 0 });
+  const { messages, schema } = req;
+  let pending = req.illustrate > 0; // illustrations not fetched yet
+  let cutouts = library.cutouts;
   const calls = [];
   for (let attempt = 1; attempt <= 3; attempt++) {
     onLog(`AI lập kế hoạch (lần ${attempt})`);
@@ -59,7 +67,30 @@ export async function planVideo({ material, title, channel, topic, frames, allow
       throw err;
     });
     calls.push({ step: "plan", attempt, ...usage });
-    const errors = json ? validatePlan(json, frames, { allowedFrameIds: allowedIds, images }) : ["không đọc được JSON"];
+    const items = pending ? illustrationItems(json) : [];
+    const placeholders = items.map((_, i) => `new:${i + 1}`);
+    let errors = json ? validatePlan(json, frames, { allowedFrameIds: allowedIds, images, cutouts: [...cutouts, ...placeholders] }) : ["không đọc được JSON"];
+    if (pending && json && !items.length) errors.push("illustrations: cần liệt kê những thứ cần minh hoạ (queries tiếng Anh + label)");
+    if (!errors.length && pending) {
+      // The plan is sound: fetch the pictures it asked for and put their names in place of new:<n>.
+      pending = false;
+      delete json.illustrations;
+      const found = await fetchImages(items, usedPlaceholders(json)).catch((err) => (onLog(`Không tải được ảnh minh hoạ: ${err.message}`), {}));
+      cutouts = [...new Set([...Object.values(found), ...cutouts])];
+      for (const sc of json.scenes) for (const [k, v] of Object.entries(sc.inputs || {})) if (found[v]) sc.inputs[k] = found[v];
+      errors = validatePlan(json, frames, { allowedFrameIds: allowedIds, images, cutouts });
+      if (errors.length) {
+        // Only the scenes whose picture was not found need changing; tell the AI what it has now.
+        if (attempt === 3) throw new Error(`AI trả về plan không hợp lệ:\n- ${errors.join("\n- ")}`);
+        onLog(`Không tìm được ảnh cho ${errors.length} chỗ trong kế hoạch, yêu cầu AI đổi cảnh đó`);
+        messages.push({ role: "assistant", content: text });
+        messages.push({
+          role: "user",
+          content: `No picture could be found for some new:<n> placeholders. Return the complete plan again without "illustrations" and without any "new:" value: in those scenes use one of these cutouts — ${cutouts.join(", ")} — or switch to a frame that needs no cutout.\n- ${errors.join("\n- ")}`,
+        });
+        continue;
+      }
+    }
     if (!errors.length) return { plan: json, calls };
     onLog(`Plan có ${errors.length} lỗi, yêu cầu AI sửa: ${errors.join("; ").slice(0, 300)}`);
     onLog(`AI đã trả về (đoạn đầu): ${text.slice(0, 300)}`);
@@ -71,9 +102,25 @@ export async function planVideo({ material, title, channel, topic, frames, allow
 
 const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [], characters: [] };
 
+// AI-written picture items cleaned into what the image sites understand: [{ queries: [english], label }].
+export const cleanItems = (list) =>
+  (Array.isArray(list) ? list : [])
+    .map((it) => ({ label: String(it?.label || "").slice(0, 60), queries: (Array.isArray(it?.queries) ? it.queries : []).map((q) => String(q).toLowerCase().replace(/[^a-z0-9 -]+/g, " ").trim()).filter(Boolean).slice(0, 2) }))
+    .filter((it) => it.queries.length);
+const illustrationItems = (json) => cleanItems(json?.illustrations);
+
+// Which illustrations the scenes use (1-based numbers), in order of first use.
+const usedPlaceholders = (plan) => [...new Set(plan.scenes.flatMap((s) => Object.values(s.inputs || {})).filter((v) => typeof v === "string" && /^new:\d+$/.test(v)).map((v) => Number(v.slice(4))))];
+
+const illustrateGuide = (n) => `
+Pictures for this video: in "illustrations" list ${n}–${n + 3} concrete things from the material that can be shown as a photo of ONE object (animals, foods, products, devices, vehicles, plants, landmarks, tools; not abstract ideas, people, numbers or events), most important first. For each: queries = 1–2 English stock-image search phrases, most specific first, then a more generic one (e.g. ["golden retriever", "dog"], ["iphone 15", "smartphone"]), 1–3 lowercase words, nouns only, no words like "photo", "png", "transparent"; label = short Vietnamese name as said in the video.
+These are downloaded as transparent cutout photos after you plan. A cutout input may use "new:<n>" (n = position in illustrations, from 1) to show item n: use most of the first ${n} items this way, each in the scene that talks about it, rather than the library cutouts.`;
+
 // The planning request (system prompt, first user message, output schema), without calling the API.
 // Library lists only reach the prompt when an allowed frame can use them.
-export function planRequest({ material, title, channel, topic, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false }) {
+// labels: what the project's own images and cutouts show ({ image file or cutout name: label }).
+// illustrate: how many things the AI should list in "illustrations" (see planVideo); only when a frame takes a cutout.
+export function planRequest({ material, title, channel, topic, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, illustrate = 0 }) {
   // Story motion casts icons and characters as actors, so their lists go in even when no frame uses them.
   const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
   const lib = {
@@ -84,15 +131,20 @@ export function planRequest({ material, title, channel, topic, allowed, images =
     characters: motion || uses("character", "characters") ? library.characters || [] : [],
   };
   if (motion) extra += motionGuide;
+  if (!uses("cutout")) illustrate = 0;
+  if (illustrate) extra += illustrateGuide(illustrate);
   const groups = {};
   for (const c of lib.characters) (groups[c.group] ||= []).push(c.name);
-  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], lib, { motion });
+  // Placeholders new:<n> are valid cutout names only in the schema; the prompt lists the real ones.
+  const placeholders = Array.from({ length: illustrate ? illustrate + 3 : 0 }, (_, i) => `new:${i + 1}`);
+  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], { ...lib, cutouts: [...lib.cutouts, ...placeholders] }, { motion, illustrate });
   const words = Math.round(targetSeconds * 2.6);
+  const described = (n) => (labels[n] ? `${n} (${labels[n]})` : n);
   const prompt = `Available frames (* = required input):
 ${describeFrames(allowed)}
 
-Project images: ${images.length ? images.join(", ") : lib.photos.length ? "(none)" : "(none — do not use image frames)"}
-${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}${lib.cutouts.length ? `Cutouts (photo of one object, background removed): ${lib.cutouts.join(", ")}\n` : ""}${Object.entries(groups)
+Project images: ${images.length ? images.map(described).join(", ") : lib.photos.length ? "(none)" : "(none — do not use image frames)"}
+${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}${lib.cutouts.length ? `Cutouts (photo of one object, background removed${lib.cutouts.some((n) => labels[n]) ? "; those with a description were found for this video's material, prefer them" : ""}): ${lib.cutouts.map(described).join(", ")}\n` : ""}${Object.entries(groups)
     .map(([g, names]) => `Characters — ${g}: ${names.join(", ")}\n`)
     .join("")}Topic: ${topic ? `${topic.name} — ${topic.description}` : "general"}
 Narration tone: ${topic?.tone || "clear and natural"}
@@ -104,7 +156,7 @@ User material:
 """
 ${material.trim()}
 """`;
-  return { system: SYSTEM, messages: [{ role: "user", content: prompt }], schema };
+  return { system: SYSTEM, messages: [{ role: "user", content: prompt }], schema, illustrate };
 }
 
 
@@ -212,7 +264,7 @@ async function streamOnce(body, onLog) {
 
 // One schema branch per allowed frame, so the model can only emit inputs that frame accepts.
 // Length limits live in the prompt and the validator: structured outputs ignore maxLength.
-export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false } = {}) {
+export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false, illustrate = 0 } = {}) {
   // Shared enums live in $defs so a long icon list is sent once, not once per frame.
   const $defs = motion ? { motion: motionSchema } : {};
   if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
@@ -256,9 +308,18 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
     type: "object",
     properties: {
       title: { type: "string" },
+      ...(illustrate
+        ? {
+            illustrations: {
+              type: "array",
+              description: `${illustrate}-${illustrate + 3} things to picture`,
+              items: { type: "object", properties: { queries: { type: "array", items: { type: "string" } }, label: { type: "string" } }, required: ["queries", "label"], additionalProperties: false },
+            },
+          }
+        : {}),
       scenes: { type: "array", items: { anyOf: allowed.map(branch) } },
     },
-    required: ["title", "scenes"],
+    required: illustrate ? ["title", "illustrations", "scenes"] : ["title", "scenes"],
     additionalProperties: false,
     ...(Object.keys($defs).length ? { $defs } : {}),
   };

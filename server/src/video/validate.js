@@ -36,7 +36,7 @@ function customSceneErrors(at, inputs) {
 
 // Checks a plan against the frame library. Returns a list of human-readable errors;
 // an empty list means the plan can be compiled. Never trusts the AI output.
-export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}) {
+export function validatePlan(plan, frames, { allowedFrameIds, images = [], cutouts = [] } = {}) {
   const errors = [];
   if (!plan || typeof plan !== "object") return ["plan không phải object"];
   if (typeof plan.title !== "string" || !plan.title.trim()) errors.push("thiếu title");
@@ -95,7 +95,7 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
         if (!images.includes(v) && !findAsset("photo", v)) errors.push(`${p}: ảnh "${v}" không có trong ảnh của dự án hay thư viện ảnh`);
       } else if (["icon", "logo", "cutout", "character"].includes(spec.type)) {
         const kind = KIND_OF_INPUT[spec.type];
-        if (typeof v !== "string" || !findAsset(kind, v)) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
+        if (typeof v !== "string" || (!findAsset(kind, v) && !(spec.type === "cutout" && cutouts.includes(v)))) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
       } else if (spec.type === "icons" || spec.type === "characters") {
         const noun = spec.type === "icons" ? "icon" : "nhân vật";
         if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên ${noun}`);

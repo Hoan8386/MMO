@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, PROJECT_BUSY } from "../api.js";
 import { ProjectStatusBadge, Progress, ErrorNote, AspectPicker, AspectBadge } from "../components.jsx";
@@ -46,6 +46,11 @@ export default function ProjectDetail() {
       .catch(() => {});
   }, [p?.topic]);
 
+  // The project's own cutouts (fetched for this video) are offered first, with their own URLs.
+  const projectLibrary = useMemo(
+    () => (p?.cutouts?.length ? { ...library, cutout: [...p.cutouts.map((c) => ({ ...c, label: c.label ? `★ ${c.label}` : c.name })), ...(library.cutout || [])] } : library),
+    [library, p?.cutouts],
+  );
   const busy = !!p && (p.busy || PROJECT_BUSY.includes(p.status));
   // Poll fast while a job runs; slowly while Studio is open, which also keeps it alive.
   useEffect(() => {
@@ -233,7 +238,7 @@ export default function ProjectDetail() {
             frames={frames.filter((f) => (f.engine || null) === (p.mode === "animation" ? "animation" : null))}
             enumLabels={animationLabels(animation)}
             images={p.images}
-            library={library}
+            library={projectLibrary}
             errors={errors}
             audio={draft ? {} : p.audio}
             disabled={busy}
@@ -359,20 +364,54 @@ function ImagesCard({ p, disabled, onChanged, onError }) {
       onError(e.message);
     }
   }
+  async function autoFetch() {
+    try {
+      await api.post(`/projects/${p.id}/images/auto`, { count: p.auto_images || 8 });
+      onChanged();
+    } catch (e) {
+      onError(e.message);
+    }
+  }
+  const remove = (path) => api.del(`/projects/${p.id}/${path}`).then(onChanged, (e) => onError(e.message));
+  const cutouts = p.cutouts || [];
   return (
     <section className="card">
       <div className="card-head">
         <h2>Ảnh của dự án</h2>
-        <button className="btn small" disabled={disabled} onClick={() => input.current.click()}>Tải ảnh lên</button>
+        <div className="actions">
+          {p.mode !== "animation" && (
+            <button className="btn small" disabled={disabled} onClick={autoFetch} title="AI chọn những thứ cần minh hoạ trong tư liệu rồi tải ảnh PNG tách nền (thiếu thì lấy ảnh Wikimedia và tự tách nền)">
+              Tự tìm ảnh theo nội dung
+            </button>
+          )}
+          <button className="btn small" disabled={disabled} onClick={() => input.current.click()}>Tải ảnh lên</button>
+        </div>
         <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onChange={(e) => upload(e.target.files)} />
       </div>
+      {cutouts.length > 0 && (
+        <>
+          <h3 className="small">Ảnh PNG tách nền ({cutouts.length}) — dùng cho frame “Ảnh vật thể tách nền”</h3>
+          <div className="image-grid cutout-grid">
+            {cutouts.map((c) => (
+              <figure key={c.name}>
+                <img src={c.url} alt={c.label || c.name} />
+                <figcaption>
+                  <span title={c.name}>{c.label || c.name}</span>
+                  <button className="btn small danger" disabled={disabled} onClick={() => remove(`cutouts/${encodeURIComponent(c.name)}`)}>✕</button>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <h3 className="small">Ảnh chụp</h3>
+        </>
+      )}
       {p.images.length ? (
         <div className="image-grid">
           {p.images.map((img) => (
             <figure key={img.name}>
               <img src={img.url} alt={img.name} />
               <figcaption>
-                <span>{img.name}</span>
+                <span title={img.credit || img.name}>{img.label || img.name}</span>
                 <button className="btn small danger" disabled={disabled} onClick={() => api.del(`/projects/${p.id}/images/${encodeURIComponent(img.name)}`).then(onChanged, (e) => onError(e.message))}>
                   ✕
                 </button>
