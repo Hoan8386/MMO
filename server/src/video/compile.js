@@ -92,14 +92,30 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
 // root's first children (so the frame's content paints over them) and its script.
 function withFx(html, sc, { L, wide }) {
   const badge = sc.frame.inputs.corner_icon && sc.inputs.corner_icon ? sc.inputs.corner_icon : null;
-  const fx = sceneFx({ id: sc.id, duration: sc.duration, width: L.scene.w, height: L.scene.h, wide, background: BACKGROUND, badge, motion: sc.motion, marks: sc.props.marks });
+  // The scene's photos go behind the frame, except one the frame already shows itself.
+  const shown = new Set(Object.entries(sc.frame.inputs).filter(([, i]) => i.type === "image").map(([k]) => sc.inputs[k]));
+  const keep = (sc.visuals || []).map((v, i) => ({ image: v.image, at: sc.props.visualAt?.[i] ?? 0 })).filter((v) => !shown.has(v.image));
+  const fx = sceneFx({
+    id: sc.id,
+    duration: sc.duration,
+    width: L.scene.w,
+    height: L.scene.h,
+    wide,
+    background: BACKGROUND,
+    badge,
+    motion: sc.motion,
+    marks: sc.props.marks,
+    photos: keep.map((v) => v.image),
+    photoAt: keep.map((v, i) => (i ? v.at : 0)),
+    icons: sc.icons || [],
+  });
   return html
     .replace("</style>", () => `${fx.css}\n      </style>`)
     .replace(new RegExp(`(<div id="${sc.id}-root")([^>]*>)`), (_, open, rest) => `${open}${badge ? ' class="has-badge"' : ""}${rest}\n        ${fx.html}`)
     .replace("</template>", () => `  <script>${fx.script}\n      </script>\n    </template>`);
 }
 
-// Copies the library icons, logos and photos the scenes use (inputs and motion actors) into the project's assets/.
+// Copies the library icons, logos and photos the scenes use (inputs, scene icons and motion actors) into the project's assets/.
 async function copyLibraryAssets(dir, scenes) {
   const wanted = new Map();
   for (const sc of scenes) {
@@ -112,6 +128,14 @@ async function copyLibraryAssets(dir, scenes) {
         const a = findAsset(kind, name);
         if (a) wanted.set(`${kind}:${name}`, a);
       }
+    }
+    for (const name of sc.icons || []) {
+      const a = findAsset("illustration", name);
+      if (a) wanted.set(`illustration:${name}`, a);
+    }
+    for (const { image } of sc.visuals || []) {
+      const a = findAsset("photo", image);
+      if (a) wanted.set(`photo:${image}`, a);
     }
     for (const [kind, name] of motionAssets(sc.motion)) {
       const a = findAsset(kind, name);

@@ -254,6 +254,7 @@ export default function ProjectDetail() {
         </section>
       )}
 
+      <PublishCard p={p} disabled={busy} onChanged={load} onError={setError} />
       <ProjectInfo p={p} disabled={busy} onSaved={load} onError={setError} />
       <ImagesCard p={p} disabled={busy} onChanged={load} onError={setError} />
 
@@ -352,6 +353,70 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
   );
 }
 
+// What goes with the video when it is posted: the thumbnail and the curiosity question.
+function PublishCard({ p, disabled, onChanged, onError }) {
+  const input = useRef(null);
+  const [text, setText] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const description = text ?? p.description ?? "";
+  const run = (fn) => fn().then(onChanged, (e) => onError(e.message));
+  function upload(files) {
+    if (!files?.length) return;
+    const form = new FormData();
+    form.append("image", files[0]);
+    run(() => api.post(`/projects/${p.id}/thumbnail`, form));
+  }
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(description);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {
+      onError(`Không sao chép được: ${e.message}`);
+    }
+  }
+  return (
+    <section className="card">
+      <h2>Thumbnail & mô tả</h2>
+      <div className="publish">
+        <div className="publish-thumb">
+          {p.thumbnail ? <img src={p.thumbnail} alt="Thumbnail" /> : <div className="thumb-empty muted small">Chưa có thumbnail</div>}
+          <div className="actions">
+            <button className="btn small" disabled={disabled} onClick={() => input.current.click()}>Tải ảnh lên</button>
+            {p.images.length > 0 && (
+              <select value="" disabled={disabled} onChange={(e) => e.target.value && run(() => api.post(`/projects/${p.id}/thumbnail`, { image: e.target.value }))}>
+                <option value="">Chọn từ ảnh dự án…</option>
+                {p.images.map((img) => <option key={img.name} value={img.name}>{img.label || img.name}</option>)}
+              </select>
+            )}
+            {p.thumbnail && (
+              <>
+                <a className="btn small" href={p.thumbnail} download>Tải về</a>
+                <button className="btn small danger" disabled={disabled} onClick={() => run(() => api.del(`/projects/${p.id}/thumbnail`))}>Xoá</button>
+              </>
+            )}
+          </div>
+          <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => upload(e.target.files)} />
+        </div>
+        <div className="publish-text">
+          <label>
+            Mô tả video (câu hỏi gây tò mò)
+            <textarea rows={3} maxLength={500} value={description} disabled={disabled} placeholder="AI sẽ viết khi lập kế hoạch" onChange={(e) => setText(e.target.value)} />
+          </label>
+          <div className="actions">
+            {text != null && text !== (p.description ?? "") && (
+              <button className="btn small primary" disabled={disabled} onClick={() => run(async () => { await api.put(`/projects/${p.id}`, { description: text }); setText(null); })}>
+                Lưu
+              </button>
+            )}
+            <button className="btn small" disabled={!description} onClick={copy}>{copied ? "Đã chép ✓" : "Sao chép"}</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ImagesCard({ p, disabled, onChanged, onError }) {
   const input = useRef(null);
   async function upload(files) {
@@ -364,14 +429,6 @@ function ImagesCard({ p, disabled, onChanged, onError }) {
       onError(e.message);
     }
   }
-  async function autoFetch() {
-    try {
-      await api.post(`/projects/${p.id}/images/auto`, { count: p.auto_images || 8 });
-      onChanged();
-    } catch (e) {
-      onError(e.message);
-    }
-  }
   const remove = (path) => api.del(`/projects/${p.id}/${path}`).then(onChanged, (e) => onError(e.message));
   const cutouts = p.cutouts || [];
   return (
@@ -379,11 +436,6 @@ function ImagesCard({ p, disabled, onChanged, onError }) {
       <div className="card-head">
         <h2>Ảnh của dự án</h2>
         <div className="actions">
-          {p.mode !== "animation" && (
-            <button className="btn small" disabled={disabled} onClick={autoFetch} title="AI chọn những thứ cần minh hoạ trong tư liệu rồi tải ảnh PNG tách nền (thiếu thì lấy ảnh Wikimedia và tự tách nền)">
-              Tự tìm ảnh theo nội dung
-            </button>
-          )}
           <button className="btn small" disabled={disabled} onClick={() => input.current.click()}>Tải ảnh lên</button>
         </div>
         <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onChange={(e) => upload(e.target.files)} />

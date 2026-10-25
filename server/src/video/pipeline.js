@@ -68,16 +68,16 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   const topic = getTopic(project.topic);
   // Billing only changes how calls are counted; every preset plans the same way.
   const preset = activePreset();
-  // The first plan also picks the video's pictures (auto-images.js), in the same AI call.
-  const illustrate = project.autoImages > 0 && !(await fs.stat(fetchedFile(dir)).catch(() => null)) ? project.autoImages : 0;
-  // A planned picture counts as a cutout, so the cutout frames are offered.
-  const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images, cutouts: illustrate ? [...cutouts, "new:1"] : cutouts });
+  // Each scene also lists the photos its sentence calls for (auto-images.js), in the same AI call.
+  const visuals = project.autoImages > 0;
+  // A scene's own photo counts as a project image, so the image frames are offered.
+  const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images: visuals ? [...images, "visual:1"] : images, cutouts });
   const library = topicLibrary(topic.topic_id);
   // The cutouts fetched for this video come first: they show what this material is about.
   library.cutouts = [...cutouts, ...library.cutouts];
   onLog(`Model ${preset.model} (${preset.billing === "request" ? "theo lượt" : "theo token"})`);
   onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${cutouts.length} ảnh tách nền của dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon`);
-  const { plan, calls } = await planVideo({
+  const { plan, calls, errors } = await planVideo({
     material,
     title: project.title,
     channel: project.channel,
@@ -88,14 +88,8 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     labels,
     library,
     targetSeconds: project.targetSeconds,
-    illustrate,
-    // Downloads the pictures the plan uses first, then the others up to the wanted number.
-    fetchImages: async (items, used) => {
-      onLog(`Tải ảnh minh hoạ AI đã chọn: ${items.map((it) => it.queries[0]).join(", ")}`);
-      const order = [...used.map((n) => n - 1).filter((i) => items[i]), ...items.keys()].filter((i, k, a) => a.indexOf(i) === k);
-      const added = await downloadImages(dir, order.map((i) => items[i]), { count: illustrate, onLog });
-      return Object.fromEntries(added.filter((e) => e.kind === "cutout").map((e) => [`new:${order[e.index] + 1}`, e.name]));
-    },
+    visuals,
+    fetchImages: (items) => downloadImages(dir, items, { onLog }),
     mock,
     onLog,
   });
@@ -107,7 +101,7 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     await fs.writeFile(logFile, JSON.stringify([...prev, ...stamped], null, 2));
   }
   finalizePlan(plan, project, frames, credits);
-  return { plan, calls: stamped };
+  return { plan, calls: stamped, errors: errors || [] };
 }
 
 // Names of the library icons, logos, photos, cutouts and characters that suit a topic (what the planner may pick from).
@@ -152,6 +146,8 @@ export function finalizePlan(plan, project, frames = loadFrames(), credits = {})
     s.id = `s${String(i + 1).padStart(2, "0")}`;
     s.inputs ||= {};
     s.keywords ||= [];
+    s.visuals ||= [];
+    s.icons ||= [];
     s.transition_out ||= "fade";
     const frame = frames.get(s.frame_id);
     if (project.channel && frame?.inputs.channel) s.inputs.channel = project.channel;

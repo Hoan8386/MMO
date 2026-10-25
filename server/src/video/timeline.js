@@ -72,6 +72,12 @@ export function buildTimeline(plan, vo, frames) {
     const D = r3(Math.max(frame.duration.min, natural));
     if (D > frame.duration.max) warnings.push(`${sc.id}: lời thoại dài ${D}s, vượt mức tối đa ${frame.duration.max}s của ${sc.frame_id}`);
     const marks = keywordTimes(sc.keywords, audio.words);
+    // When each scene photo comes in: at its keyword, else spread evenly over the narration (fx.js).
+    const shown = sc.visuals || [];
+    const spoken = keywordTimes(shown.map((v) => v.keyword || ""), audio.words);
+    const visualAt = shown.map((v, i) => (i === 0 ? 0 : spoken[i] ?? r3(LEAD + (audio.duration * i) / shown.length)));
+    // Each photo stays at least a second, and none comes in during the scene's last second.
+    for (let i = 1; i < visualAt.length; i++) visualAt[i] = r3(Math.min(Math.max(visualAt[i], visualAt[i - 1] + 1), D - 1));
     marks.forEach((m, i) => m == null && warnings.push(`${sc.id}: không tìm thấy từ khoá "${sc.keywords[i]}" trong lời đọc`));
     const start = r3(t);
     t += D;
@@ -87,6 +93,7 @@ export function buildTimeline(plan, vo, frames) {
         vo: LEAD,
         voEnd: r3(LEAD + audio.duration),
         marks,
+        visualAt,
         // Animation shots flap the speaker's mouth on every spoken word.
         ...(frame.engine === "animation" ? { words: audio.words.map((w) => ({ t: r3(LEAD + w.t), d: r3(w.d) })) } : {}),
       },

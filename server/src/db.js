@@ -43,7 +43,12 @@ export async function initDb({ resetJobs = true } = {}) {
     "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='projects' AND COLUMN_NAME='auto_images'",
     [database],
   );
-  if (!hasAutoImages.length) await admin.query("ALTER TABLE projects ADD COLUMN auto_images INT NOT NULL DEFAULT 8 AFTER height");
+  if (!hasAutoImages.length) await admin.query("ALTER TABLE projects ADD COLUMN auto_images INT NOT NULL DEFAULT 1 AFTER height");
+  const [hasDescription] = await admin.query(
+    "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='projects' AND COLUMN_NAME='description'",
+    [database],
+  );
+  if (!hasDescription.length) await admin.query("ALTER TABLE projects ADD COLUMN description VARCHAR(500) NULL AFTER auto_images");
   const [jobType] = await admin.query(
     "SELECT COLUMN_TYPE AS t FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='jobs' AND COLUMN_NAME='type'",
     [database],

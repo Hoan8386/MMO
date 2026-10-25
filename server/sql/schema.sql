@@ -16,8 +16,10 @@ CREATE TABLE IF NOT EXISTS projects (
   aspect_ratio VARCHAR(10) NOT NULL DEFAULT '16:9',
   width INT NOT NULL DEFAULT 1920,
   height INT NOT NULL DEFAULT 1080,
-  -- How many images to fetch for the video before the first plan (auto-images.js); 0 = none.
-  auto_images INT NOT NULL DEFAULT 8,
+  -- 1 = the first plan also fetches photos of every place and scene in the material (auto-images.js); 0 = off.
+  auto_images INT NOT NULL DEFAULT 1,
+  -- Short curiosity question for the video's post, written by the planner; editable.
+  description VARCHAR(500) NULL,
   plan JSON NULL,
   plan_approved TINYINT(1) NOT NULL DEFAULT 0,
   status ENUM('draft','planning','awaiting_approval','building','built','rendering','completed','failed') NOT NULL DEFAULT 'draft',

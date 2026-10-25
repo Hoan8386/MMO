@@ -53,6 +53,14 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [], cutou
     if (sc.keywords != null && !Array.isArray(sc.keywords)) errors.push(`${at}: keywords phải là mảng`);
     if (sc.transition_out != null && !["fade", "wipe"].includes(sc.transition_out)) errors.push(`${at}: transition_out phải là fade hoặc wipe`);
     errors.push(...motionErrors(at, sc.motion, Array.isArray(sc.keywords) ? sc.keywords.length : 0));
+    // Scene-level photos shown behind the frame and icons popping in at its edge (fx.js).
+    if (sc.visuals != null && !Array.isArray(sc.visuals)) errors.push(`${at}.visuals: phải là mảng`);
+    else
+      (sc.visuals || []).forEach((v, j) => {
+        if (typeof v?.image !== "string" || (!images.includes(v.image) && !findAsset("photo", v.image))) errors.push(`${at}.visuals[${j}]: ảnh "${v?.image}" không có trong ảnh của dự án`);
+      });
+    if (sc.icons != null && !Array.isArray(sc.icons)) errors.push(`${at}.icons: phải là mảng`);
+    else (sc.icons || []).filter((x) => !findAsset("illustration", x)).forEach((x) => errors.push(`${at}.icons: icon "${x}" không có trong thư viện`));
 
     const inputs = sc.inputs || {};
     for (const key of Object.keys(inputs)) {

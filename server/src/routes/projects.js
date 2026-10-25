@@ -6,7 +6,7 @@ import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
 import { loadTopics } from "../video/catalog.js";
 import { projectDir, slugify, listImages, projectMedia, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
-import { planJob, buildJob, renderJob, imagesJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
+import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
 import { VOICES, voiceHash, voiceFor } from "../video/tts.js";
 import { ASPECTS, DEFAULT_ASPECT } from "../video/aspects.js";
@@ -15,9 +15,15 @@ import { downloadImage } from "../news.js";
 const router = Router();
 const upload = multer({ dest: path.join(STORAGE_DIR, "tmp"), limits: { fileSize: 15 * 1024 * 1024, files: 20 } });
 const storageUrl = (p) => `/storage/${path.relative(STORAGE_DIR, p).replace(/\\/g, "/")}`;
-const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds", "auto_images"];
-// Images fetched for a new video: 0 (off) or 5–10.
-const autoImages = (v) => (v === undefined ? 8 : Number(v) > 0 ? Math.min(10, Math.max(5, Math.round(Number(v)))) : 0);
+const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds", "auto_images", "description"];
+// Fetch photos of the places and scenes with the first plan: on (1) unless turned off.
+const autoImages = (v) => (v === undefined || v === true || Number(v) > 0 ? 1 : 0);
+const THUMB_RE = /^thumbnail\.(jpe?g|png|webp)$/i;
+// The project's thumbnail file name (thumbnail.jpg/png/webp in the project folder), or null.
+const thumbnailFile = async (dir) => (await fs.readdir(dir).catch(() => [])).find((f) => THUMB_RE.test(f)) || null;
+const removeThumbnail = async (dir) => {
+  for (const f of await fs.readdir(dir).catch(() => [])) if (THUMB_RE.test(f)) await fs.rm(path.join(dir, f), { force: true });
+};
 
 router.get("/voices", (_req, res) => res.json(VOICES));
 router.get("/aspects", (_req, res) => res.json(Object.entries(ASPECTS).map(([id, a]) => ({ id, label: a.label, platforms: a.platforms, width: a.width, height: a.height }))));
@@ -73,6 +79,7 @@ router.get("/:id", async (req, res) => {
     if (meta?.hash) byHash.set(meta.hash, { id, ...meta });
   }
   const media = await projectMedia(dir);
+  const thumb = await thumbnailFile(dir);
   const sceneDur = Object.fromEntries((timeline?.scenes ?? []).map((s) => [s.id, s.duration]));
   const audio = {};
   for (const s of p.plan?.scenes ?? []) {
@@ -96,6 +103,8 @@ router.get("/:id", async (req, res) => {
     has_manual_edits: timeline ? await hasManualEdits(dir) : false,
     audio,
     images: media.images.map((name) => ({ name, label: media.labels[name], credit: media.credits[name], url: storageUrl(path.join(dir, "assets", "img", name)) })),
+    // ?t= changes when the file is replaced, so the browser shows the new one.
+    thumbnail: thumb ? `${storageUrl(path.join(dir, thumb))}?t=${Math.round((await fs.stat(path.join(dir, thumb))).mtimeMs)}` : null,
     cutouts: media.cutouts.map((name) => ({ name, label: media.labels[name], url: storageUrl(path.join(dir, "assets", "cutouts", `${name}.png`)) })),
     versions: versions.map((v) => ({ ...v, url: `/storage/${v.file}` })),
     usage,
@@ -143,8 +152,44 @@ function action(fn) {
 router.post("/:id/plan", action((id, b) => planJob(id, { mock: !!b.mock })));
 router.post("/:id/build", action((id, b) => buildJob(id, { render: b.render !== false, force: !!b.force })));
 router.post("/:id/render", action((id) => renderJob(id)));
-// Finds more images for the video's material (PNG cutouts first), see auto-images.js.
-router.post("/:id/images/auto", action((id, b) => imagesJob(id, { count: b.count })));
+
+// Sets the thumbnail from an uploaded file (field "image"), an image URL ({ url }, e.g. the news
+// article's photo) or one of the project's images ({ image }).
+router.post("/:id/thumbnail", upload.single("image"), async (req, res) => {
+  const p = await loadProject(req.params.id);
+  const dir = projectDir(p.slug);
+  const file = req.file;
+  try {
+    if (file) {
+      const ext = path.extname(file.originalname).toLowerCase();
+      if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) throw new Error("Chỉ nhận ảnh JPEG, PNG hoặc WebP");
+      await removeThumbnail(dir);
+      await fs.rename(file.path, path.join(dir, `thumbnail${ext}`));
+    } else if (req.body.url) {
+      // Downloaded next to the old one first, so a failed download keeps it.
+      const tmp = path.join(STORAGE_DIR, "tmp");
+      const name = await downloadImage(String(req.body.url), tmp, `thumb-${p.id}-${Date.now()}`);
+      await removeThumbnail(dir);
+      await fs.rename(path.join(tmp, name), path.join(dir, `thumbnail${path.extname(name)}`));
+    } else if (req.body.image) {
+      const name = path.basename(String(req.body.image));
+      if (!(await listImages(dir)).includes(name)) throw new Error("Không có ảnh này trong dự án");
+      await removeThumbnail(dir);
+      await fs.copyFile(path.join(dir, "assets", "img", name), path.join(dir, `thumbnail${path.extname(name).toLowerCase()}`));
+    } else throw new Error("Cần ảnh tải lên, url hoặc tên ảnh dự án");
+  } catch (err) {
+    if (file) await fs.rm(file.path, { force: true });
+    return res.status(400).json({ error: `Không đặt được thumbnail: ${err.cause?.code || err.message}` });
+  }
+  const thumb = await thumbnailFile(dir);
+  res.json({ thumbnail: `${storageUrl(path.join(dir, thumb))}?t=${Date.now()}` });
+});
+
+router.delete("/:id/thumbnail", async (req, res) => {
+  const p = await loadProject(req.params.id);
+  await removeThumbnail(projectDir(p.slug));
+  res.status(204).end();
+});
 
 router.post("/:id/studio", async (req, res) => {
   const p = await loadProject(req.params.id);
@@ -216,7 +261,9 @@ router.delete("/:id", async (req, res) => {
   const p = await loadProject(req.params.id);
   await stopStudio(p.id, projectDir(p.slug)).catch(() => {});
   await query("DELETE FROM projects WHERE id=?", [p.id]);
-  await fs.rm(projectDir(p.slug), { recursive: true, force: true });
+  // Windows briefly locks a folder another program is watching or scanning (EBUSY): retry, and never
+  // report a failure for a project that is already gone from the list.
+  await fs.rm(projectDir(p.slug), { recursive: true, force: true, maxRetries: 10, retryDelay: 300 }).catch((err) => console.warn(`Chưa xoá được thư mục ${p.slug}: ${err.message}`));
   res.status(204).end();
 });
 

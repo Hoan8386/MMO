@@ -2,8 +2,6 @@ import path from "node:path";
 import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
 import { projectDir, makePlan, buildProject, renderAndCheck, hasManualEdits, backupSources, planErrors } from "./pipeline.js";
-import { fetchProjectImages } from "./auto-images.js";
-import { getTopic } from "./catalog.js";
 
 // Two lanes: AI planning is quick and must not wait behind a multi-minute render.
 const lanes = { ai: Promise.resolve(), media: Promise.resolve() };
@@ -75,39 +73,25 @@ async function recordCalls(id, calls) {
   }
 }
 
-// The "Tự tìm ảnh" button (auto-images.js). A failure is logged, never fatal.
-async function fetchImages(id, p, count, { mock, log }) {
-  try {
-    const { calls } = await fetchProjectImages(projectDir(p.slug), pipelineProject(p), p.material, { topic: getTopic(p.topic), count, mock, onLog: log });
-    await recordCalls(id, calls);
-  } catch (err) {
-    log(`Không tự tìm được ảnh: ${err.message}`);
-  }
-}
-
 export function planJob(id, { mock = false } = {}) {
   enqueue(id, "plan", "ai", async ({ log }) => {
     const p = await loadProject(id);
     await setProject(id, { status: "planning", progress: 0, plan_approved: 0 });
-    const { plan, calls } = await makePlan(projectDir(p.slug), pipelineProject(p), p.material, { mock, onLog: log });
+    const { plan, calls, errors } = await makePlan(projectDir(p.slug), pipelineProject(p), p.material, { mock, onLog: log });
     await recordCalls(id, calls);
     const tokens = calls.reduce((a, c) => a + c.input_tokens + c.cache_read_input_tokens + c.output_tokens, 0);
+    // The click-bait question lives on the project (editable there), not in the plan.
+    const description = typeof plan.description === "string" ? plan.description.trim().slice(0, 500) : "";
+    delete plan.description;
     await setProject(id, {
+      ...(description ? { description } : {}),
       plan: JSON.stringify(plan),
       status: "awaiting_approval",
       progress: 100,
       message: `Đã lập kế hoạch ${plan.scenes.length} cảnh${
         !calls.length ? " (mock)" : calls[0].billing === "request" ? ` (${calls.length} lượt gọi ${calls[0].model}, không tính token)` : ` (${tokens} token)`
-      } — hãy xem lại rồi duyệt`,
+      }${errors.length ? ` — còn ${errors.length} lỗi cần sửa tay trước khi dựng` : " — hãy xem lại rồi duyệt"}`,
     });
-  });
-}
-
-// Fetches more images on request; the project's status is left as it was.
-export function imagesJob(id, { count = 8 } = {}) {
-  enqueue(id, "images", "ai", async ({ log }) => {
-    const p = await loadProject(id);
-    await fetchImages(id, p, Math.min(10, Math.max(1, Number(count) || 8)), { mock: false, log });
   });
 }
 

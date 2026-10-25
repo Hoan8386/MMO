@@ -132,8 +132,53 @@ function SceneEditor({ index, scene, frame, frames, images, library, enumLabels,
           )}
         </div>
       </div>
+      <SceneMedia scene={scene} images={images} library={library} disabled={disabled} onChange={onChange} />
       {errors.map((e) => <div key={e} className="note error">{e}</div>)}
     </article>
+  );
+}
+
+// The scene's own photos (shown one after another behind the frame) and icons (popping in at its edge).
+function SceneMedia({ scene, images, library, disabled, onChange }) {
+  const visuals = scene.visuals || [];
+  const icons = scene.icons || [];
+  const urlOf = (name) => images.find((img) => img.name === name)?.url || libraryUrl.photo(name);
+  const setVisual = (i, patch) => onChange({ visuals: visuals.map((v, j) => (j === i ? { ...v, ...patch } : v)) });
+  return (
+    <div className="scene-media">
+      <div>
+        <span className="field-label">Ảnh của cảnh ({visuals.length}) — hiện phía sau, lần lượt theo lời đọc</span>
+        <div className="scene-photos">
+          {visuals.map((v, i) => (
+            <figure key={i}>
+              <img src={urlOf(v.image)} alt={v.label || v.image} />
+              <figcaption>
+                <span title={v.image}>{v.label || v.image}</span>
+                <button type="button" className="btn small danger" disabled={disabled} onClick={() => onChange({ visuals: visuals.filter((_, j) => j !== i) })}>✕</button>
+              </figcaption>
+              <input value={v.keyword || ""} disabled={disabled} placeholder="hiện khi đọc tới…" onChange={(e) => setVisual(i, { keyword: e.target.value })} />
+            </figure>
+          ))}
+          {images.length > 0 && (
+            <select value="" disabled={disabled} onChange={(e) => e.target.value && onChange({ visuals: [...visuals, { image: e.target.value, label: images.find((img) => img.name === e.target.value)?.label || "", keyword: "" }] })}>
+              <option value="">+ Thêm ảnh dự án…</option>
+              {images.map((img) => <option key={img.name} value={img.name}>{img.label || img.name}</option>)}
+            </select>
+          )}
+        </div>
+      </div>
+      <div>
+        <span className="field-label">Icon của cảnh</span>
+        <div className="scene-icons">
+          {icons.map((n, i) => (
+            <span key={i} className="scene-icon">
+              <AssetSelect kind="illustration" list={library.illustration || []} value={n} disabled={disabled} onChange={(v) => onChange({ icons: v ? icons.map((x, j) => (j === i ? v : x)) : icons.filter((_, j) => j !== i) })} />
+            </span>
+          ))}
+          {icons.length < 3 && <AssetSelect kind="illustration" list={library.illustration || []} value="" placeholder="+ Thêm icon…" disabled={disabled} onChange={(v) => v && onChange({ icons: [...icons, v] })} />}
+        </div>
+      </div>
+    </div>
   );
 }
 

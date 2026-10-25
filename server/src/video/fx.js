@@ -3,6 +3,9 @@
 //   - library icons and cutouts bob gently while the scene holds
 //   - a slow push-in of the whole scene, like a camera easing forward
 //   - the optional `corner_icon` input: a library icon in a glowing disc that pops in and keeps pulsing
+//   - the scene's own photos (scene.visuals): full-bleed behind the content under a dark scrim, each
+//     coming in at its keyword with a slow zoom (Ken Burns)
+//   - the scene's icons (scene.icons): small glowing discs popping in one by one at the edge
 // Motion uses CSS custom properties (--fy, --fr, --push) applied through the independent
 // `translate` / `rotate` / `scale` properties, so it never fights a template's own transforms.
 // Positions come from fixed lists, never Math.random, so every render is identical.
@@ -18,8 +21,9 @@ const SPARKS = [
 const SPARK_SHAPE = { stars: "star", burst: "star", bokeh: "orb", waves: "orb" };
 
 const BADGE = 180;
+const ICON = 104;
 
-export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks }) {
+export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks, photos = [], photoAt = [], icons = [] }) {
   const mo = motionLayer({ id, D, W, H, marks, motion });
   const r = `#${id}-root`;
   const shape = SPARK_SHAPE[background] || "dot";
@@ -46,12 +50,30 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
             : ""
         }`
             : ""
+        }${
+          photos.length
+            ? `
+        ${r} .fx-photos { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+        ${r} .fx-photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+        ${r} .fx-photos .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 58%, transparent), color-mix(in srgb, var(--bg) 84%, transparent)); }`
+            : ""
+        }${
+          icons.length
+            ? `
+        ${r} .fx-icons { position: absolute; z-index: 4; display: flex; gap: 22px; pointer-events: none; ${
+          wide ? `left: 44px; top: 50%; flex-direction: column; translate: 0 -50%;` : `left: 50%; top: ${badge ? 270 : 60}px; translate: -50% 0;`
+        } }
+        ${r} .fx-icon { position: relative; width: ${ICON}px; height: ${ICON}px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--bg2), var(--bg) 75%); border: 3px solid var(--line); box-shadow: 0 0 40px var(--glow); opacity: 0; }
+        ${r} .fx-icon img { position: absolute; left: 50%; top: 50%; width: 66px; height: 66px; margin: -33px 0 0 -33px; }`
+            : ""
         }${mo ? mo.css : ""}`;
 
   const html =
+    (photos.length ? `<div class="fx-photos">${photos.map((p) => `<img src="assets/img/${p}" alt="" />`).join("")}<div class="scrim"></div></div>` : "") +
     (mo?.back || "") +
     `<div class="fx-layer">${sparks.map((p) => `<i class="fx-spark ${shape}" style="left:${p.x}px;top:${p.y}px;width:${p.s}px;height:${p.s}px"></i>`).join("")}</div>` +
     (badge ? `<div class="fx-badge"><div class="ring"></div><div class="disc"></div><img src="assets/icons/${badge}.svg" alt="" /></div>` : "") +
+    (icons.length ? `<div class="fx-icons">${icons.map((n) => `<div class="fx-icon"><img src="assets/icons/${n}.svg" alt="" /></div>`).join("")}</div>` : "") +
     (mo?.front || "");
 
   const script = `
@@ -84,6 +106,27 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           const ring = B.querySelector(".ring");
           for (let t = 1.1; t < D - 1.2; t += 1.8) tl.fromTo(ring, { opacity: 0.7, scale: 1 }, { opacity: 0, scale: 1.4, duration: 1.2, ease: "power1.out" }, t);
           tl.to(B, { opacity: 0, scale: 0.6, duration: 0.4, ease: "power2.in" }, D - 0.45);`
+              : ""
+          }${
+            photos.length
+              ? `
+          // Scene photos: each fades in over the previous one at its time and zooms slowly until the end.
+          const AT = ${JSON.stringify(photoAt)};
+          R.querySelectorAll(".fx-photos img").forEach((el, i) => {
+            const at = Math.max(0.05, AT[i] ?? 0);
+            tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: i ? 0.7 : 0.5, ease: "power1.inOut" }, at);
+            tl.fromTo(el, { scale: 1.02, xPercent: i % 2 ? 1.5 : -1.5 }, { scale: 1.14, xPercent: i % 2 ? -1.5 : 1.5, duration: Math.max(1, D - at), ease: "none" }, at);
+          });`
+              : ""
+          }${
+            icons.length
+              ? `
+          // Scene icons pop in one by one over the first part of the narration.
+          const step = Math.min(0.8, Math.max(0.3, (D - 2) / ${icons.length}));
+          R.querySelectorAll(".fx-icon").forEach((el, i) => {
+            tl.fromTo(el, { opacity: 0, scale: 0.3, rotation: -20 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.6 + i * step);
+            tl.to(el, { opacity: 0, scale: 0.6, duration: 0.35, ease: "power2.in" }, D - 0.45);
+          });`
               : ""
           }${mo ? mo.script : ""}
         })();`;

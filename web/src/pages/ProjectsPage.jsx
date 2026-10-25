@@ -113,7 +113,7 @@ const MODES = [
 function NewProjectModal({ topics, onClose }) {
   const navigate = useNavigate();
   const [voices, setVoices] = useState([]);
-  const [form, setForm] = useState({ mode: "explainer", title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9", auto_images: 8 });
+  const [form, setForm] = useState({ mode: "explainer", title: "", material: "", topic: "technology", channel: "", voice: "vi-VN-HoaiMyNeural", voice_rate: "+6%", target_seconds: 90, aspect_ratio: "16:9", auto_images: 1 });
   const anim = form.mode === "animation";
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -121,6 +121,7 @@ function NewProjectModal({ topics, onClose }) {
   const [showNews, setShowNews] = useState(false);
   const [article, setArticle] = useState(null);
   const [useImage, setUseImage] = useState(true);
+  const [useThumb, setUseThumb] = useState(true);
   const topic = topics.find((t) => t.topic_id === form.topic);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -135,6 +136,7 @@ function NewProjectModal({ topics, onClose }) {
     try {
       const p = await api.post("/projects", form);
       if (article?.image && useImage) await api.post(`/projects/${p.id}/images/from-url`, { url: article.image, name: article.title }).catch(() => {});
+      if (article?.image && useThumb) await api.post(`/projects/${p.id}/thumbnail`, { url: article.image }).catch(() => {});
       navigate(`/projects/${p.id}`);
     } catch (err) {
       setError(err.message);
@@ -219,6 +221,12 @@ function NewProjectModal({ topics, onClose }) {
                   Thêm ảnh bài báo vào dự án (ảnh thuộc bản quyền {article.source})
                 </label>
               )}
+              {article.image && (
+                <label className="check">
+                  <input type="checkbox" checked={useThumb} onChange={(e) => setUseThumb(e.target.checked)} />
+                  Dùng ảnh bài báo làm thumbnail của video
+                </label>
+              )}
             </div>
             <button type="button" className="btn small" onClick={() => setArticle(null)}>Bỏ chọn</button>
           </div>
@@ -260,15 +268,10 @@ function NewProjectModal({ topics, onClose }) {
         {!anim && (
           <div className="auto-images">
             <label className="check">
-              <input type="checkbox" checked={form.auto_images > 0} onChange={(e) => setForm((f) => ({ ...f, auto_images: e.target.checked ? 8 : 0 }))} />
-              Tự tìm ảnh minh hoạ theo nội dung, ưu tiên ảnh PNG tách nền
+              <input type="checkbox" checked={form.auto_images > 0} onChange={(e) => setForm((f) => ({ ...f, auto_images: e.target.checked ? 1 : 0 }))} />
+              Mỗi cảnh tự tìm ảnh theo câu của cảnh đó
             </label>
-            {form.auto_images > 0 && (
-              <select value={form.auto_images} onChange={(e) => setForm((f) => ({ ...f, auto_images: Number(e.target.value) }))}>
-                {[5, 6, 7, 8, 9, 10].map((n) => <option key={n} value={n}>{n} ảnh</option>)}
-              </select>
-            )}
-            <small className="muted">Tải khi lập kế hoạch lần đầu: AI chọn những thứ cần minh hoạ, lấy PNG nền trong từ PNGImages.com, thiếu thì lấy ảnh Wikimedia rồi tự tách nền.</small>
+            <small className="muted">Trong cùng 1 lượt gọi lập kế hoạch, AI ghi cho từng cảnh các địa điểm, cảnh chính và cảnh con mà câu nhắc tới (câu nhắc 3 nơi → 3 ảnh) cùng icon hợp nội dung; ảnh chụp tải từ Wikimedia Commons hiện lần lượt phía sau cảnh, đúng lúc đọc tới.</small>
           </div>
         )}
         <div className="modal-actions">

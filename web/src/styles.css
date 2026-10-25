@@ -368,5 +368,21 @@ textarea.code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12
 .news-tab small { font-weight: 400; color: var(--muted); }
 .cutout-grid img { object-fit: contain; padding: 8px; box-sizing: border-box; background: repeating-conic-gradient(#e5e7eb 0% 25%, #f8fafc 0% 50%) 50% / 16px 16px; }
 .auto-images { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
-.auto-images select { width: auto; }
+
 .auto-images small { flex-basis: 100%; }
+.publish { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.publish-thumb img, .thumb-empty { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
+.publish-thumb .actions { margin-top: 8px; flex-wrap: wrap; }
+.publish-thumb select { width: auto; }
+.publish-text label { display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 720px) { .publish { grid-template-columns: 1fr; } }
+.scene-media { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+.scene-photos { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; margin-top: 6px; }
+.scene-photos figure { margin: 0; width: 150px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.scene-photos img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.scene-photos figcaption { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 4px 6px; font-size: 12px; }
+.scene-photos figcaption span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scene-photos figure input { border: 0; border-top: 1px solid var(--border); border-radius: 0; font-size: 12px; padding: 4px 6px; }
+.scene-photos select { width: auto; }
+.scene-icons { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+@media (max-width: 720px) { .scene-media { grid-template-columns: 1fr; } }
