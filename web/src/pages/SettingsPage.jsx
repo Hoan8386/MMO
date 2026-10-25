@@ -36,7 +36,7 @@ export default function SettingsPage({ onSaved }) {
   const setPreset = (id, patch) => setDraft((d) => ({ ...d, presets: d.presets.map((p) => (p.id === id ? { ...p, ...patch } : p)) }));
   const addPreset = () => {
     const id = `preset-${Date.now().toString(36)}`;
-    setDraft((d) => ({ ...d, presets: [...d.presets, { id, label: "Cấu hình mới", model: "req/claude-opus-5-5", billing: "request", effort: "high", max_tokens: 32000, custom_scenes: true, mix_templates: true, density: "rich" }] }));
+    setDraft((d) => ({ ...d, presets: [...d.presets, { id, label: "Cấu hình mới", model: "req/claude-opus-5-5", billing: "request", effort: "high", max_tokens: 32000, story_motion: true, mix_templates: true, density: "rich" }] }));
   };
   const removePreset = (id) => setDraft((d) => ({ ...d, presets: d.presets.filter((p) => p.id !== id), active: d.active === id ? d.presets.find((p) => p.id !== id)?.id : d.active }));
 
@@ -124,12 +124,12 @@ export default function SettingsPage({ onSaved }) {
                     <span><strong>Nhiều cảnh hơn</strong><small>Cảnh ngắn 3–6 giây, đổi frame liên tục, mở đầu có hook</small></span>
                   </label>
                   <label className="check">
-                    <input type="checkbox" checked={p.custom_scenes} onChange={(e) => setPreset(p.id, { custom_scenes: e.target.checked })} />
-                    <span><strong>AI tự thiết kế cảnh</strong><small>Khi không frame nào hợp, AI viết cảnh riêng (HTML + GSAP) cho video đó</small></span>
+                    <input type="checkbox" checked={p.story_motion} onChange={(e) => setPreset(p.id, { story_motion: e.target.checked })} />
+                    <span><strong>Hoạt ảnh theo câu chuyện</strong><small>Không thêm frame mới: AI thêm hiệu ứng (mưa, pháo hoa, sao…), chuyển động máy quay và nhân vật/icon diễn trên chính frame đã chọn, canh theo lời đọc</small></span>
                   </label>
                   <label className="check">
                     <input type="checkbox" checked={p.mix_templates} onChange={(e) => setPreset(p.id, { mix_templates: e.target.checked })} />
-                    <span><strong>Kết hợp hoạt hình và template</strong><small>Video giải thích có nhân vật hoạt hình; phim hoạt hình chen thẻ chương, sự thật, trích dẫn…</small></span>
+                    <span><strong>Thẻ xen giữa phim hoạt hình</strong><small>Phim hoạt hình chen thẻ chương, sự thật, trích dẫn… lấy từ frame có sẵn</small></span>
                   </label>
                 </div>
               )}

@@ -1,16 +1,17 @@
 // AI settings edited on the "Cấu hình AI" page, stored in MySQL (table settings, key "ai").
 // A preset is a model plus how it is billed. "token" presets are kept lean (few frames in the
 // prompt, low effort). "request" presets cost the same per call however long the call is, so
-// the planner sends the whole frame library, asks for more and shorter scenes, may write its own
-// scene templates and may mix cartoon shots with regular frames.
+// the planner sends the whole frame library, asks for more and shorter scenes and adds story
+// motion (animation acting out the narration, video/motion.js) to the frames it picks; in the
+// animation mode it may also insert regular frames as cards between cartoon shots.
 import { query } from "./db.js";
 import { config } from "./config.js";
 
 export const EFFORTS = ["low", "medium", "high", "max"];
 
 const PRESET_DEFAULTS = {
-  token: { effort: "low", max_tokens: 16000, custom_scenes: false, mix_templates: false, density: "normal" },
-  request: { effort: "high", max_tokens: 32000, custom_scenes: true, mix_templates: true, density: "rich" },
+  token: { effort: "low", max_tokens: 16000, story_motion: false, mix_templates: false, density: "normal" },
+  request: { effort: "high", max_tokens: 32000, story_motion: true, mix_templates: true, density: "rich" },
 };
 
 export const DEFAULT_SETTINGS = {
@@ -34,6 +35,8 @@ function normalize(s) {
     preset.effort = EFFORTS.includes(preset.effort) ? preset.effort : PRESET_DEFAULTS[billing].effort;
     preset.max_tokens = Math.min(64000, Math.max(2000, Number(preset.max_tokens) || PRESET_DEFAULTS[billing].max_tokens));
     preset.density = preset.density === "rich" ? "rich" : "normal";
+    preset.story_motion = preset.story_motion !== false && billing === "request";
+    delete preset.custom_scenes; // replaced by story_motion: unlimited presets no longer add frames
     return preset;
   });
   if (!out.presets.some((p) => p.id === out.active)) out.active = out.presets[0].id;

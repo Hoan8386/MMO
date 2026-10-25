@@ -1,0 +1,1432 @@
+{
+  "_comment": "Reputable news sites per topic (server/src/news.js). feeds: Vietnamese papers; foreign: international sites that specialise in the topic (English). keywords (optional): only articles of the Vietnamese feeds whose title or summary contains one of them are kept, for topics served by broad sections; a feed's own keywords override them. Feeds were checked on 23/10/2026.",
+  "ancient-civilizations": {
+    "keywords": [
+      "cổ đại",
+      "khảo cổ",
+      "cổ vật",
+      "hóa thạch",
+      "kim tự tháp",
+      "di chỉ",
+      "lăng mộ",
+      "nghìn năm",
+      "ancient",
+      "archaeolog",
+      "fossil",
+      "tomb"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Khoa học",
+        "url": "https://tuoitre.vn/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Archaeology",
+        "url": "https://www.theguardian.com/science/archaeology/rss"
+      },
+      {
+        "name": "Archaeology Magazine",
+        "url": "https://www.archaeology.org/feed"
+      },
+      {
+        "name": "Ancient Origins",
+        "url": "https://www.ancient-origins.net/rss.xml"
+      },
+      {
+        "name": "ScienceDaily Fossils & Ruins",
+        "url": "https://www.sciencedaily.com/rss/fossils_ruins.xml"
+      }
+    ]
+  },
+  "animals": {
+    "keywords": [
+      "loài",
+      "động vật",
+      "con vật",
+      "chim",
+      "cá ",
+      "thú",
+      "côn trùng",
+      "rừng",
+      "sinh vật",
+      "animal",
+      "species",
+      "wildlife"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Mongabay",
+        "url": "https://news.mongabay.com/feed/"
+      },
+      {
+        "name": "ScienceDaily Plants & Animals",
+        "url": "https://www.sciencedaily.com/rss/plants_animals.xml"
+      },
+      {
+        "name": "Smithsonian Science & Nature",
+        "url": "https://www.smithsonianmag.com/rss/science-nature/"
+      },
+      {
+        "name": "The Guardian Wildlife",
+        "url": "https://www.theguardian.com/environment/wildlife/rss"
+      }
+    ]
+  },
+  "business": {
+    "feeds": [
+      {
+        "name": "VnExpress Kinh doanh",
+        "url": "https://vnexpress.net/rss/kinh-doanh.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Kinh doanh",
+        "url": "https://tuoitre.vn/rss/kinh-doanh.rss"
+      },
+      {
+        "name": "Dân trí Kinh doanh",
+        "url": "https://dantri.com.vn/rss/kinh-doanh.rss"
+      },
+      {
+        "name": "CafeF",
+        "url": "https://cafef.vn/home.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "BBC Business",
+        "url": "https://feeds.bbci.co.uk/news/business/rss.xml"
+      },
+      {
+        "name": "CNBC Business",
+        "url": "https://www.cnbc.com/id/10001147/device/rss/rss.html"
+      },
+      {
+        "name": "TechCrunch Startups",
+        "url": "https://techcrunch.com/category/startups/feed/"
+      },
+      {
+        "name": "Entrepreneur",
+        "url": "https://www.entrepreneur.com/latest.rss"
+      }
+    ]
+  },
+  "career": {
+    "feeds": [
+      {
+        "name": "Dân trí Lao động - Việc làm",
+        "url": "https://dantri.com.vn/rss/lao-dong-viec-lam.rss"
+      },
+      {
+        "name": "Thanh Niên Giới trẻ",
+        "url": "https://thanhnien.vn/rss/gioi-tre.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Nhịp sống trẻ",
+        "url": "https://tuoitre.vn/rss/nhip-song-tre.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Fast Company Work Life",
+        "url": "https://www.fastcompany.com/work-life/rss"
+      },
+      {
+        "name": "CNBC Make It",
+        "url": "https://www.cnbc.com/id/44877279/device/rss/rss.html"
+      },
+      {
+        "name": "The Guardian Work & Careers",
+        "url": "https://www.theguardian.com/money/work-and-careers/rss"
+      }
+    ]
+  },
+  "crime": {
+    "feeds": [
+      {
+        "name": "VnExpress Pháp luật",
+        "url": "https://vnexpress.net/rss/phap-luat.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Pháp luật",
+        "url": "https://tuoitre.vn/rss/phap-luat.rss"
+      },
+      {
+        "name": "Dân trí Pháp luật",
+        "url": "https://dantri.com.vn/rss/phap-luat.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Marshall Project",
+        "url": "https://www.themarshallproject.org/rss/recent.rss"
+      },
+      {
+        "name": "The Guardian Crime",
+        "url": "https://www.theguardian.com/uk/ukcrime/rss"
+      },
+      {
+        "name": "CrimeReads",
+        "url": "https://crimereads.com/feed/"
+      }
+    ]
+  },
+  "culture": {
+    "feeds": [
+      {
+        "name": "Tuổi Trẻ Văn hóa",
+        "url": "https://tuoitre.vn/rss/van-hoa.rss"
+      },
+      {
+        "name": "Thanh Niên Văn hóa",
+        "url": "https://thanhnien.vn/rss/van-hoa.rss"
+      },
+      {
+        "name": "VnExpress Du lịch",
+        "url": "https://vnexpress.net/rss/du-lich.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Culture",
+        "url": "https://www.theguardian.com/culture/rss"
+      },
+      {
+        "name": "Atlas Obscura",
+        "url": "https://www.atlasobscura.com/feeds/latest"
+      },
+      {
+        "name": "Smithsonian Arts & Culture",
+        "url": "https://www.smithsonianmag.com/rss/arts-culture/"
+      },
+      {
+        "name": "The Guardian Books",
+        "url": "https://www.theguardian.com/books/rss"
+      }
+    ]
+  },
+  "disasters": {
+    "keywords": [
+      "bão",
+      "lũ",
+      "lụt",
+      "động đất",
+      "sóng thần",
+      "núi lửa",
+      "sạt lở",
+      "cháy rừng",
+      "hạn hán",
+      "thiên tai",
+      "lốc",
+      "mưa lớn",
+      "earthquake",
+      "flood",
+      "storm",
+      "wildfire"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Thời sự",
+        "url": "https://vnexpress.net/rss/thoi-su.rss"
+      },
+      {
+        "name": "VnExpress Thế giới",
+        "url": "https://vnexpress.net/rss/the-gioi.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Thời sự",
+        "url": "https://tuoitre.vn/rss/thoi-su.rss"
+      },
+      {
+        "name": "Dân trí Xã hội",
+        "url": "https://dantri.com.vn/rss/xa-hoi.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Natural Disasters",
+        "url": "https://www.theguardian.com/world/natural-disasters/rss"
+      },
+      {
+        "name": "NASA Earth Observatory",
+        "url": "https://earthobservatory.nasa.gov/feeds/natural-hazards.rss"
+      },
+      {
+        "name": "ScienceDaily Natural Disasters",
+        "url": "https://www.sciencedaily.com/rss/earth_climate/natural_disasters.xml"
+      },
+      {
+        "name": "Temblor (động đất)",
+        "url": "https://temblor.net/feed/"
+      },
+      {
+        "name": "Severe Weather Europe",
+        "url": "https://www.severe-weather.eu/feed/"
+      }
+    ]
+  },
+  "education": {
+    "feeds": [
+      {
+        "name": "VnExpress Giáo dục",
+        "url": "https://vnexpress.net/rss/giao-duc.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Giáo dục",
+        "url": "https://tuoitre.vn/rss/giao-duc.rss"
+      },
+      {
+        "name": "Thanh Niên Giáo dục",
+        "url": "https://thanhnien.vn/rss/giao-duc.rss"
+      },
+      {
+        "name": "Dân trí Giáo dục",
+        "url": "https://dantri.com.vn/rss/giao-duc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "EdSurge",
+        "url": "https://www.edsurge.com/articles_rss"
+      },
+      {
+        "name": "The Guardian Education",
+        "url": "https://www.theguardian.com/education/rss"
+      },
+      {
+        "name": "The Conversation Education",
+        "url": "https://theconversation.com/us/education/articles.atom"
+      }
+    ]
+  },
+  "entertainment": {
+    "feeds": [
+      {
+        "name": "VnExpress Giải trí",
+        "url": "https://vnexpress.net/rss/giai-tri.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Giải trí",
+        "url": "https://tuoitre.vn/rss/giai-tri.rss"
+      },
+      {
+        "name": "Thanh Niên Giải trí",
+        "url": "https://thanhnien.vn/rss/giai-tri.rss"
+      },
+      {
+        "name": "Dân trí Giải trí",
+        "url": "https://dantri.com.vn/rss/giai-tri.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Variety",
+        "url": "https://variety.com/feed/"
+      },
+      {
+        "name": "Deadline",
+        "url": "https://deadline.com/feed/"
+      },
+      {
+        "name": "The Hollywood Reporter",
+        "url": "https://www.hollywoodreporter.com/feed/"
+      },
+      {
+        "name": "The Guardian Film",
+        "url": "https://www.theguardian.com/film/rss"
+      }
+    ]
+  },
+  "environment": {
+    "keywords": [
+      "môi trường",
+      "khí hậu",
+      "ô nhiễm",
+      "nóng lên",
+      "phát thải",
+      "carbon",
+      "rác",
+      "nhựa",
+      "năng lượng tái tạo",
+      "rừng",
+      "climate",
+      "environment",
+      "pollution"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "VnExpress Thời sự",
+        "url": "https://vnexpress.net/rss/thoi-su.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Environment",
+        "url": "https://www.theguardian.com/environment/rss"
+      },
+      {
+        "name": "Carbon Brief",
+        "url": "https://www.carbonbrief.org/feed"
+      },
+      {
+        "name": "Inside Climate News",
+        "url": "https://insideclimatenews.org/feed/"
+      },
+      {
+        "name": "Mongabay",
+        "url": "https://news.mongabay.com/feed/"
+      },
+      {
+        "name": "BBC Science & Environment",
+        "url": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml"
+      }
+    ]
+  },
+  "everyday-science": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Khoa học",
+        "url": "https://tuoitre.vn/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Popular Science",
+        "url": "https://www.popsci.com/feed/"
+      },
+      {
+        "name": "Live Science",
+        "url": "https://www.livescience.com/feeds/all"
+      },
+      {
+        "name": "ScienceDaily Top Science",
+        "url": "https://www.sciencedaily.com/rss/top/science.xml"
+      },
+      {
+        "name": "Science News",
+        "url": "https://www.sciencenews.org/feed"
+      }
+    ]
+  },
+  "family-friends": {
+    "feeds": [
+      {
+        "name": "VnExpress Gia đình",
+        "url": "https://vnexpress.net/rss/gia-dinh.rss"
+      },
+      {
+        "name": "Thanh Niên Gia đình",
+        "url": "https://thanhnien.vn/rss/doi-song/gia-dinh.rss"
+      },
+      {
+        "name": "Dân trí Đời sống",
+        "url": "https://dantri.com.vn/rss/doi-song.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Family",
+        "url": "https://www.theguardian.com/lifeandstyle/family/rss"
+      },
+      {
+        "name": "The Guardian Relationships",
+        "url": "https://www.theguardian.com/lifeandstyle/relationships/rss"
+      },
+      {
+        "name": "PsyPost",
+        "url": "https://www.psypost.org/feed"
+      }
+    ]
+  },
+  "finance": {
+    "feeds": [
+      {
+        "name": "VnExpress Kinh doanh",
+        "url": "https://vnexpress.net/rss/kinh-doanh.rss"
+      },
+      {
+        "name": "CafeF",
+        "url": "https://cafef.vn/home.rss"
+      },
+      {
+        "name": "Thanh Niên Kinh tế",
+        "url": "https://thanhnien.vn/rss/kinh-te.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "CNBC Finance",
+        "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html"
+      },
+      {
+        "name": "MarketWatch",
+        "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories"
+      },
+      {
+        "name": "The Guardian Money",
+        "url": "https://www.theguardian.com/money/rss"
+      }
+    ]
+  },
+  "fun-facts": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Mental Floss",
+        "url": "https://www.mentalfloss.com/rss.xml"
+      },
+      {
+        "name": "Atlas Obscura",
+        "url": "https://www.atlasobscura.com/feeds/latest"
+      },
+      {
+        "name": "Live Science",
+        "url": "https://www.livescience.com/feeds/all"
+      }
+    ]
+  },
+  "future": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học - Công nghệ",
+        "url": "https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Nhịp sống số",
+        "url": "https://tuoitre.vn/rss/nhip-song-so.rss"
+      },
+      {
+        "name": "GenK",
+        "url": "https://genk.vn/rss/home.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "MIT Technology Review",
+        "url": "https://www.technologyreview.com/feed/"
+      },
+      {
+        "name": "Singularity Hub",
+        "url": "https://singularityhub.com/feed/"
+      },
+      {
+        "name": "Futurism",
+        "url": "https://futurism.com/feed"
+      },
+      {
+        "name": "Wired",
+        "url": "https://www.wired.com/feed/rss"
+      }
+    ]
+  },
+  "gaming": {
+    "feeds": [
+      {
+        "name": "GameK",
+        "url": "https://gamek.vn/home.rss"
+      },
+      {
+        "name": "GenK",
+        "url": "https://genk.vn/rss/home.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "PC Gamer",
+        "url": "https://www.pcgamer.com/rss/"
+      },
+      {
+        "name": "Eurogamer",
+        "url": "https://www.eurogamer.net/feed"
+      },
+      {
+        "name": "Dexerto",
+        "url": "https://www.dexerto.com/feed/"
+      },
+      {
+        "name": "The Guardian Games",
+        "url": "https://www.theguardian.com/games/rss"
+      }
+    ]
+  },
+  "general-knowledge": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Khoa học",
+        "url": "https://tuoitre.vn/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "BBC Tiếng Việt",
+        "url": "https://www.bbc.com/vietnamese/index.xml"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Smithsonian Science & Nature",
+        "url": "https://www.smithsonianmag.com/rss/science-nature/"
+      },
+      {
+        "name": "Mental Floss",
+        "url": "https://www.mentalfloss.com/rss.xml"
+      },
+      {
+        "name": "Science News",
+        "url": "https://www.sciencenews.org/feed"
+      }
+    ]
+  },
+  "habits": {
+    "feeds": [
+      {
+        "name": "VnExpress Sức khỏe",
+        "url": "https://vnexpress.net/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Dân trí Đời sống",
+        "url": "https://dantri.com.vn/rss/doi-song.rss"
+      },
+      {
+        "name": "Thanh Niên Đời sống",
+        "url": "https://thanhnien.vn/rss/doi-song.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "NYT Well",
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/Well.xml"
+      },
+      {
+        "name": "Lifehacker",
+        "url": "https://lifehacker.com/feed/rss"
+      },
+      {
+        "name": "The Guardian Health & Wellbeing",
+        "url": "https://www.theguardian.com/lifeandstyle/health-and-wellbeing/rss"
+      }
+    ]
+  },
+  "health": {
+    "feeds": [
+      {
+        "name": "VnExpress Sức khỏe",
+        "url": "https://vnexpress.net/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Sức khỏe",
+        "url": "https://tuoitre.vn/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Thanh Niên Sức khỏe",
+        "url": "https://thanhnien.vn/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Dân trí Sức khỏe",
+        "url": "https://dantri.com.vn/rss/suc-khoe.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "NYT Health",
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/Health.xml"
+      },
+      {
+        "name": "ScienceDaily Health & Medicine",
+        "url": "https://www.sciencedaily.com/rss/health_medicine.xml"
+      },
+      {
+        "name": "The Guardian Health & Wellbeing",
+        "url": "https://www.theguardian.com/lifeandstyle/health-and-wellbeing/rss"
+      },
+      {
+        "name": "NYT Well",
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/Well.xml"
+      }
+    ]
+  },
+  "inventions": {
+    "keywords": [
+      "phát minh",
+      "sáng chế",
+      "chế tạo",
+      "công nghệ mới",
+      "robot",
+      "thiết bị",
+      "nhà khoa học",
+      "invent",
+      "prototype"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học - Công nghệ",
+        "url": "https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Khoa học",
+        "url": "https://tuoitre.vn/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Công nghệ",
+        "url": "https://dantri.com.vn/rss/cong-nghe.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "New Atlas",
+        "url": "https://newatlas.com/index.rss"
+      },
+      {
+        "name": "IEEE Spectrum",
+        "url": "https://spectrum.ieee.org/feeds/feed.rss"
+      },
+      {
+        "name": "Interesting Engineering",
+        "url": "https://interestingengineering.com/feed"
+      }
+    ]
+  },
+  "life-skills": {
+    "feeds": [
+      {
+        "name": "Tuổi Trẻ Nhịp sống trẻ",
+        "url": "https://tuoitre.vn/rss/nhip-song-tre.rss"
+      },
+      {
+        "name": "Thanh Niên Giới trẻ",
+        "url": "https://thanhnien.vn/rss/gioi-tre.rss"
+      },
+      {
+        "name": "VnExpress Gia đình",
+        "url": "https://vnexpress.net/rss/gia-dinh.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Lifehacker",
+        "url": "https://lifehacker.com/feed/rss"
+      },
+      {
+        "name": "Fast Company Work Life",
+        "url": "https://www.fastcompany.com/work-life/rss"
+      },
+      {
+        "name": "Psyche",
+        "url": "https://psyche.co/feed"
+      }
+    ]
+  },
+  "little-known": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Atlas Obscura",
+        "url": "https://www.atlasobscura.com/feeds/latest"
+      },
+      {
+        "name": "Mental Floss",
+        "url": "https://www.mentalfloss.com/rss.xml"
+      },
+      {
+        "name": "Smithsonian History",
+        "url": "https://www.smithsonianmag.com/rss/history/"
+      },
+      {
+        "name": "Smithsonian",
+        "url": "https://www.smithsonianmag.com/rss/latest_articles/"
+      }
+    ]
+  },
+  "love": {
+    "feeds": [
+      {
+        "name": "VnExpress Tâm sự",
+        "url": "https://vnexpress.net/rss/tam-su.rss"
+      },
+      {
+        "name": "Dân trí Tình yêu - Giới tính",
+        "url": "https://dantri.com.vn/rss/tinh-yeu-gioi-tinh.rss"
+      },
+      {
+        "name": "VnExpress Gia đình",
+        "url": "https://vnexpress.net/rss/gia-dinh.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Relationships",
+        "url": "https://www.theguardian.com/lifeandstyle/relationships/rss"
+      },
+      {
+        "name": "PsyPost",
+        "url": "https://www.psypost.org/feed"
+      },
+      {
+        "name": "Psyche",
+        "url": "https://psyche.co/feed"
+      }
+    ]
+  },
+  "modern-society": {
+    "feeds": [
+      {
+        "name": "VnExpress Thời sự",
+        "url": "https://vnexpress.net/rss/thoi-su.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Thời sự",
+        "url": "https://tuoitre.vn/rss/thoi-su.rss"
+      },
+      {
+        "name": "Dân trí Xã hội",
+        "url": "https://dantri.com.vn/rss/xa-hoi.rss"
+      },
+      {
+        "name": "Thanh Niên Đời sống",
+        "url": "https://thanhnien.vn/rss/doi-song.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian Society",
+        "url": "https://www.theguardian.com/society/rss"
+      },
+      {
+        "name": "Pew Research Center",
+        "url": "https://www.pewresearch.org/feed/"
+      },
+      {
+        "name": "The Conversation",
+        "url": "https://theconversation.com/global/articles.atom"
+      }
+    ]
+  },
+  "motivation": {
+    "feeds": [
+      {
+        "name": "Dân trí Tấm lòng nhân ái",
+        "url": "https://dantri.com.vn/rss/tam-long-nhan-ai.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Nhịp sống trẻ",
+        "url": "https://tuoitre.vn/rss/nhip-song-tre.rss"
+      },
+      {
+        "name": "Thanh Niên Giới trẻ",
+        "url": "https://thanhnien.vn/rss/gioi-tre.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Good News Network",
+        "url": "https://www.goodnewsnetwork.org/feed/"
+      },
+      {
+        "name": "Positive News",
+        "url": "https://www.positive.news/feed/"
+      },
+      {
+        "name": "The Guardian The Upside",
+        "url": "https://www.theguardian.com/world/series/the-upside/rss"
+      }
+    ]
+  },
+  "mysteries": {
+    "keywords": [
+      "bí ẩn",
+      "kỳ lạ",
+      "lạ",
+      "chưa giải",
+      "bí mật",
+      "hiện tượng",
+      "mystery",
+      "mysterious",
+      "strange"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Live Science",
+        "url": "https://www.livescience.com/feeds/all"
+      },
+      {
+        "name": "Ancient Origins",
+        "url": "https://www.ancient-origins.net/rss.xml"
+      },
+      {
+        "name": "Atlas Obscura",
+        "url": "https://www.atlasobscura.com/feeds/latest"
+      }
+    ]
+  },
+  "news-events": {
+    "feeds": [
+      {
+        "name": "VnExpress Tin mới nhất",
+        "url": "https://vnexpress.net/rss/tin-moi-nhat.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Tin mới nhất",
+        "url": "https://tuoitre.vn/rss/tin-moi-nhat.rss"
+      },
+      {
+        "name": "Thanh Niên",
+        "url": "https://thanhnien.vn/rss/home.rss"
+      },
+      {
+        "name": "Dân trí",
+        "url": "https://dantri.com.vn/rss/home.rss"
+      },
+      {
+        "name": "BBC Tiếng Việt",
+        "url": "https://www.bbc.com/vietnamese/index.xml"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "BBC World",
+        "url": "https://feeds.bbci.co.uk/news/world/rss.xml"
+      },
+      {
+        "name": "Al Jazeera",
+        "url": "https://www.aljazeera.com/xml/rss/all.xml"
+      },
+      {
+        "name": "The Guardian World",
+        "url": "https://www.theguardian.com/world/rss"
+      },
+      {
+        "name": "NPR News",
+        "url": "https://feeds.npr.org/1001/rss.xml"
+      }
+    ]
+  },
+  "nutrition": {
+    "keywords": [
+      "ăn",
+      "thực phẩm",
+      "dinh dưỡng",
+      "món",
+      "uống",
+      "vitamin",
+      "chế độ",
+      "rau",
+      "trái cây",
+      "đường",
+      "muối"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Sức khỏe",
+        "url": "https://vnexpress.net/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Sức khỏe",
+        "url": "https://tuoitre.vn/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Dân trí Sức khỏe",
+        "url": "https://dantri.com.vn/rss/suc-khoe.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "ScienceDaily Nutrition",
+        "url": "https://www.sciencedaily.com/rss/health_medicine/nutrition.xml"
+      },
+      {
+        "name": "Harvard Nutrition Source",
+        "url": "https://www.hsph.harvard.edu/nutritionsource/feed/"
+      },
+      {
+        "name": "The Guardian Food",
+        "url": "https://www.theguardian.com/food/rss"
+      }
+    ]
+  },
+  "philosophy": {
+    "feeds": [
+      {
+        "name": "VnExpress Góc nhìn",
+        "url": "https://vnexpress.net/rss/goc-nhin.rss"
+      },
+      {
+        "name": "VnExpress Ý kiến",
+        "url": "https://vnexpress.net/rss/y-kien.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Aeon",
+        "url": "https://aeon.co/feed.rss"
+      },
+      {
+        "name": "Psyche",
+        "url": "https://psyche.co/feed"
+      },
+      {
+        "name": "Daily Nous",
+        "url": "https://dailynous.com/feed/"
+      },
+      {
+        "name": "The Guardian Philosophy",
+        "url": "https://www.theguardian.com/world/philosophy/rss"
+      }
+    ]
+  },
+  "psychology": {
+    "feeds": [
+      {
+        "name": "VnExpress Tâm sự",
+        "url": "https://vnexpress.net/rss/tam-su.rss"
+      },
+      {
+        "name": "VnExpress Sức khỏe",
+        "url": "https://vnexpress.net/rss/suc-khoe.rss"
+      },
+      {
+        "name": "Dân trí Đời sống",
+        "url": "https://dantri.com.vn/rss/doi-song.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "PsyPost",
+        "url": "https://www.psypost.org/feed"
+      },
+      {
+        "name": "ScienceDaily Mind & Brain",
+        "url": "https://www.sciencedaily.com/rss/mind_brain.xml"
+      },
+      {
+        "name": "The Guardian Psychology",
+        "url": "https://www.theguardian.com/science/psychology/rss"
+      },
+      {
+        "name": "Psyche",
+        "url": "https://psyche.co/feed"
+      }
+    ]
+  },
+  "science-discovery": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Khoa học",
+        "url": "https://tuoitre.vn/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "New Scientist",
+        "url": "https://www.newscientist.com/feed/home/"
+      },
+      {
+        "name": "Quanta Magazine",
+        "url": "https://www.quantamagazine.org/feed/"
+      },
+      {
+        "name": "Science News",
+        "url": "https://www.sciencenews.org/feed"
+      },
+      {
+        "name": "ScienceDaily Top Science",
+        "url": "https://www.sciencedaily.com/rss/top/science.xml"
+      }
+    ]
+  },
+  "self-development": {
+    "feeds": [
+      {
+        "name": "Tuổi Trẻ Nhịp sống trẻ",
+        "url": "https://tuoitre.vn/rss/nhip-song-tre.rss"
+      },
+      {
+        "name": "Thanh Niên Giới trẻ",
+        "url": "https://thanhnien.vn/rss/gioi-tre.rss"
+      },
+      {
+        "name": "VnExpress Góc nhìn",
+        "url": "https://vnexpress.net/rss/goc-nhin.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Psyche",
+        "url": "https://psyche.co/feed"
+      },
+      {
+        "name": "Fast Company Work Life",
+        "url": "https://www.fastcompany.com/work-life/rss"
+      },
+      {
+        "name": "Lifehacker",
+        "url": "https://lifehacker.com/feed/rss"
+      }
+    ]
+  },
+  "social-psychology": {
+    "feeds": [
+      {
+        "name": "VnExpress Góc nhìn",
+        "url": "https://vnexpress.net/rss/goc-nhin.rss"
+      },
+      {
+        "name": "Dân trí Xã hội",
+        "url": "https://dantri.com.vn/rss/xa-hoi.rss"
+      },
+      {
+        "name": "Thanh Niên Đời sống",
+        "url": "https://thanhnien.vn/rss/doi-song.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "PsyPost",
+        "url": "https://www.psypost.org/feed"
+      },
+      {
+        "name": "ScienceDaily Mind & Brain",
+        "url": "https://www.sciencedaily.com/rss/mind_brain.xml"
+      },
+      {
+        "name": "The Guardian Psychology",
+        "url": "https://www.theguardian.com/science/psychology/rss"
+      }
+    ]
+  },
+  "space": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss",
+        "keywords": [
+          "vũ trụ",
+          "thiên văn",
+          "hành tinh",
+          "sao",
+          "mặt trăng",
+          "mặt trời",
+          "tên lửa",
+          "vệ tinh",
+          "NASA",
+          "SpaceX",
+          "thiên thạch",
+          "lỗ đen",
+          "thiên hà"
+        ]
+      }
+    ],
+    "foreign": [
+      {
+        "name": "NASA",
+        "url": "https://www.nasa.gov/news-release/feed/"
+      },
+      {
+        "name": "Space.com",
+        "url": "https://www.space.com/feeds/all"
+      },
+      {
+        "name": "ESA Space Science",
+        "url": "https://www.esa.int/rssfeed/Our_Activities/Space_Science"
+      },
+      {
+        "name": "Universe Today",
+        "url": "https://www.universetoday.com/feed/"
+      },
+      {
+        "name": "The Guardian Space",
+        "url": "https://www.theguardian.com/science/space/rss"
+      }
+    ]
+  },
+  "storytelling": {
+    "feeds": [],
+    "foreign": []
+  },
+  "technology": {
+    "feeds": [
+      {
+        "name": "VnExpress Số hóa",
+        "url": "https://vnexpress.net/rss/so-hoa.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Công nghệ",
+        "url": "https://tuoitre.vn/rss/cong-nghe.rss"
+      },
+      {
+        "name": "Thanh Niên Công nghệ",
+        "url": "https://thanhnien.vn/rss/cong-nghe.rss"
+      },
+      {
+        "name": "Dân trí Công nghệ",
+        "url": "https://dantri.com.vn/rss/cong-nghe.rss"
+      },
+      {
+        "name": "VietNamNet Công nghệ",
+        "url": "https://vietnamnet.vn/rss/cong-nghe.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Verge",
+        "url": "https://www.theverge.com/rss/index.xml"
+      },
+      {
+        "name": "TechCrunch",
+        "url": "https://techcrunch.com/feed/"
+      },
+      {
+        "name": "Ars Technica",
+        "url": "https://feeds.arstechnica.com/arstechnica/index"
+      },
+      {
+        "name": "MIT Technology Review",
+        "url": "https://www.technologyreview.com/feed/"
+      }
+    ]
+  },
+  "travel": {
+    "feeds": [
+      {
+        "name": "VnExpress Du lịch",
+        "url": "https://vnexpress.net/rss/du-lich.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Du lịch",
+        "url": "https://tuoitre.vn/rss/du-lich.rss"
+      },
+      {
+        "name": "Thanh Niên Du lịch",
+        "url": "https://thanhnien.vn/rss/du-lich.rss"
+      },
+      {
+        "name": "Dân trí Du lịch",
+        "url": "https://dantri.com.vn/rss/du-lich.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Condé Nast Traveler",
+        "url": "https://www.cntraveler.com/feed/rss"
+      },
+      {
+        "name": "The Guardian Travel",
+        "url": "https://www.theguardian.com/travel/rss"
+      },
+      {
+        "name": "Atlas Obscura",
+        "url": "https://www.atlasobscura.com/feeds/latest"
+      }
+    ]
+  },
+  "true-stories": {
+    "feeds": [
+      {
+        "name": "Dân trí Tấm lòng nhân ái",
+        "url": "https://dantri.com.vn/rss/tam-long-nhan-ai.rss"
+      },
+      {
+        "name": "VnExpress Tâm sự",
+        "url": "https://vnexpress.net/rss/tam-su.rss"
+      },
+      {
+        "name": "Tuổi Trẻ Nhịp sống trẻ",
+        "url": "https://tuoitre.vn/rss/nhip-song-tre.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "The Guardian The Long Read",
+        "url": "https://www.theguardian.com/news/series/the-long-read/rss"
+      },
+      {
+        "name": "Good News Network",
+        "url": "https://www.goodnewsnetwork.org/feed/"
+      },
+      {
+        "name": "Smithsonian History",
+        "url": "https://www.smithsonianmag.com/rss/history/"
+      }
+    ]
+  },
+  "what-if": {
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "xkcd What If?",
+        "url": "https://what-if.xkcd.com/feed.atom"
+      },
+      {
+        "name": "New Scientist",
+        "url": "https://www.newscientist.com/feed/home/"
+      },
+      {
+        "name": "Live Science",
+        "url": "https://www.livescience.com/feeds/all"
+      },
+      {
+        "name": "Futurism",
+        "url": "https://futurism.com/feed"
+      }
+    ]
+  },
+  "wildlife": {
+    "keywords": [
+      "loài",
+      "động vật",
+      "hoang dã",
+      "chim",
+      "thú",
+      "cá voi",
+      "cá mập",
+      "voi",
+      "hổ",
+      "báo",
+      "rừng",
+      "bảo tồn",
+      "wildlife",
+      "species",
+      "animal"
+    ],
+    "feeds": [
+      {
+        "name": "VnExpress Khoa học",
+        "url": "https://vnexpress.net/rss/khoa-hoc.rss"
+      },
+      {
+        "name": "Dân trí Khoa học",
+        "url": "https://dantri.com.vn/rss/khoa-hoc.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "Mongabay",
+        "url": "https://news.mongabay.com/feed/"
+      },
+      {
+        "name": "The Guardian Wildlife",
+        "url": "https://www.theguardian.com/environment/wildlife/rss"
+      },
+      {
+        "name": "ScienceDaily Plants & Animals",
+        "url": "https://www.sciencedaily.com/rss/plants_animals.xml"
+      },
+      {
+        "name": "Smithsonian Science & Nature",
+        "url": "https://www.smithsonianmag.com/rss/science-nature/"
+      }
+    ]
+  },
+  "world-history": {
+    "keywords": [
+      "lịch sử",
+      "chiến tranh",
+      "thế kỷ",
+      "năm 19",
+      "hoàng đế",
+      "triều đại",
+      "cổ",
+      "khảo cổ",
+      "history",
+      "historic",
+      "war"
+    ],
+    "feeds": [
+      {
+        "name": "BBC Tiếng Việt",
+        "url": "https://www.bbc.com/vietnamese/index.xml"
+      },
+      {
+        "name": "VnExpress Thế giới",
+        "url": "https://vnexpress.net/rss/the-gioi.rss"
+      }
+    ],
+    "foreign": [
+      {
+        "name": "HistoryExtra",
+        "url": "https://www.historyextra.com/feed/"
+      },
+      {
+        "name": "HistoryNet",
+        "url": "https://www.historynet.com/feed/"
+      },
+      {
+        "name": "Smithsonian History",
+        "url": "https://www.smithsonianmag.com/rss/history/"
+      },
+      {
+        "name": "The Guardian Archaeology",
+        "url": "https://www.theguardian.com/science/archaeology/rss"
+      }
+    ]
+  }
+}

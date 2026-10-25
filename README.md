@@ -15,6 +15,15 @@ và con vật, lời thoại nhiều giọng, hành động, cảm xúc), hệ t
 
 Chạy không cần giao diện: `npm --prefix server run make:video -- samples/tin-cong-nghe.txt --slug thu`.
 
+**Lấy tin mới theo chủ đề**: mỗi chủ đề gắn với RSS của các báo uy tín trong
+[server/assets/news-sources.json](server/assets/news-sources.json), chia hai nhóm: **báo Việt Nam** (VnExpress, Tuổi Trẻ,
+Thanh Niên, Dân trí…) và **báo nước ngoài** chuyên về chủ đề đó (NASA, Space.com cho vũ trụ; The Verge, Ars Technica cho
+công nghệ; PsyPost cho tâm lý; Variety cho giải trí…). Trong form "Dự án mới" bấm
+**Lấy tin mới**, chọn một bài: hệ thống đọc toàn văn làm tư liệu và thêm ảnh bài báo vào dự án. Ảnh báo thuộc bản quyền
+của tòa soạn, cần ghi nguồn và kiểm tra quyền sử dụng trước khi đăng video. Chạy bằng lệnh:
+`npm --prefix server run news -- technology --limit 20 --region intl --images --full` (`--region vn|intl|all`; lưu vào `storage/news/<chủ đề>/`;
+`--all` cho mọi chủ đề, `--list` để xem nguồn).
+
 Mọi thông tin (dự án, phiên bản render, lượt gọi AI, job) lưu trong **MySQL**; giao diện quản lý viết bằng **React**.
 
 ```

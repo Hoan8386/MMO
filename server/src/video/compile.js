@@ -6,6 +6,7 @@ import { findAsset, copyAsset, KIND_OF_INPUT } from "./library.js";
 import { fill, scriptJson } from "./template.js";
 import { layoutFor, aspectKey, DEFAULT_ASPECT } from "./aspects.js";
 import { sceneFx } from "./fx.js";
+import { motionAssets } from "./motion.js";
 import { shotLayout, shotProps, stageHtml, ENGINE_JS } from "../animation/stage.js";
 
 const FONT = "BeVietnamPro-SemiBold.ttf";
@@ -91,14 +92,14 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
 // root's first children (so the frame's content paints over them) and its script.
 function withFx(html, sc, { L, wide }) {
   const badge = sc.frame.inputs.corner_icon && sc.inputs.corner_icon ? sc.inputs.corner_icon : null;
-  const fx = sceneFx({ id: sc.id, duration: sc.duration, width: L.scene.w, height: L.scene.h, wide, background: BACKGROUND, badge });
+  const fx = sceneFx({ id: sc.id, duration: sc.duration, width: L.scene.w, height: L.scene.h, wide, background: BACKGROUND, badge, motion: sc.motion, marks: sc.props.marks });
   return html
     .replace("</style>", () => `${fx.css}\n      </style>`)
     .replace(new RegExp(`(<div id="${sc.id}-root")([^>]*>)`), (_, open, rest) => `${open}${badge ? ' class="has-badge"' : ""}${rest}\n        ${fx.html}`)
     .replace("</template>", () => `  <script>${fx.script}\n      </script>\n    </template>`);
 }
 
-// Copies the library icons, logos and photos the scenes use into the project's assets/.
+// Copies the library icons, logos and photos the scenes use (inputs and motion actors) into the project's assets/.
 async function copyLibraryAssets(dir, scenes) {
   const wanted = new Map();
   for (const sc of scenes) {
@@ -111,6 +112,10 @@ async function copyLibraryAssets(dir, scenes) {
         const a = findAsset(kind, name);
         if (a) wanted.set(`${kind}:${name}`, a);
       }
+    }
+    for (const [kind, name] of motionAssets(sc.motion)) {
+      const a = findAsset(kind, name);
+      if (a) wanted.set(`${kind}:${name}`, a);
     }
   }
   for (const a of wanted.values()) await copyAsset(dir, a);

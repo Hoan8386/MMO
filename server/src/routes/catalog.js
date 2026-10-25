@@ -2,6 +2,7 @@ import { Router } from "express";
 import { query, one } from "../db.js";
 import { loadFrames, loadTopics, selectFrames, refreshCatalog } from "../video/catalog.js";
 import { loadAssets } from "../video/library.js";
+import { topicFeeds } from "../news.js";
 import { BACKGROUND_STYLES } from "../video/compile.js";
 import { RIGS, rigPreviewSvg, ACTIONS, EMOTIONS, VOICE_STYLES } from "../animation/rigs.js";
 import { SETTING_IDS, settingName, settingPreviewSvg, TIMES } from "../animation/settings.js";
@@ -23,6 +24,8 @@ topicsRouter.get("/", (req, res) => {
       ...t,
       frame_ids: selectFrames(frames, { topic: t, images: ["x"] }).map((f) => f.frame_id),
       assets: { illustration: count(t, "illustration"), logo: count(t, "logo"), photo: count(t, "photo") },
+      news_feeds: topicFeeds(t.topic_id, "vn").map((f) => f.name),
+      news_foreign: topicFeeds(t.topic_id, "intl").map((f) => f.name),
     })),
   );
 });

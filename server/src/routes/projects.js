@@ -10,6 +10,7 @@ import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } fr
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
 import { VOICES, voiceHash, voiceFor } from "../video/tts.js";
 import { ASPECTS, DEFAULT_ASPECT } from "../video/aspects.js";
+import { downloadImage } from "../news.js";
 
 const router = Router();
 const upload = multer({ dest: path.join(STORAGE_DIR, "tmp"), limits: { fileSize: 15 * 1024 * 1024, files: 20 } });
@@ -172,6 +173,23 @@ router.post("/:id/images", upload.array("images"), async (req, res) => {
     await fs.rename(f.path, path.join(imgDir, name));
   }
   res.json(await listImages(projectDir(p.slug)));
+});
+
+// Downloads an image from a URL (e.g. a news article's photo) into the project's images.
+router.post("/:id/images/from-url", async (req, res) => {
+  const p = await loadProject(req.params.id);
+  const dir = projectDir(p.slug);
+  const imgDir = path.join(dir, "assets", "img");
+  const existing = await listImages(dir);
+  const base = slugify(String(req.body.name || "")).slice(0, 50) || "anh-bai-bao";
+  let name = base;
+  for (let n = 2; existing.some((f) => path.parse(f).name === name); n++) name = `${base}-${n}`;
+  try {
+    await downloadImage(String(req.body.url || ""), imgDir, name);
+  } catch (err) {
+    return res.status(400).json({ error: `Không tải được ảnh: ${err.cause?.code || err.message}` });
+  }
+  res.json(await listImages(dir));
 });
 
 router.delete("/:id/images/:name", async (req, res) => {

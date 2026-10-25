@@ -341,3 +341,28 @@ textarea.code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12
   .frame-detail-grid, .frame-detail-grid.narrow { grid-template-columns: 1fr; }
   .lib-stats div { min-width: 0; }
 }
+
+/* News articles of a topic (NewsPicker.jsx) */
+.news-backdrop { z-index: 20; }
+.modal.news-picker { width: min(860px, 100%); position: relative; }
+.news-sources { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -4px 0 14px; }
+.news-list { display: flex; flex-direction: column; gap: 12px; }
+.news-item { display: grid; grid-template-columns: 200px 1fr; gap: 14px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.news-thumb { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px; background: #eef0f3; }
+.news-thumb.empty { display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+.news-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.news-body p { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--text); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.news-actions { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.news-cta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.news-picked { display: grid; grid-template-columns: 120px 1fr auto; gap: 12px; align-items: start; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: #f8fafc; }
+.news-picked img { width: 120px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; }
+.news-picked > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.news-picked .check { font-size: 13px; margin-top: 4px; }
+@media (max-width: 640px) {
+  .news-item { grid-template-columns: 1fr; }
+  .news-picked { grid-template-columns: 1fr; }
+}
+.news-tabs { display: flex; gap: 6px; margin: 0 0 10px; border-bottom: 1px solid var(--border); }
+.news-tab { font: inherit; font-size: 14px; background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; margin-bottom: -1px; cursor: pointer; color: var(--muted); }
+.news-tab.active { color: var(--text); border-bottom-color: var(--primary); font-weight: 600; }
+.news-tab small { font-weight: 400; color: var(--muted); }

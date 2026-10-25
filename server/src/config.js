@@ -33,6 +33,11 @@ export const config = {
     planEffort: env.PLAN_EFFORT || "low",
     // Server-side refusal fallback is an Anthropic API beta; third-party gateways may reject it.
     fallbacks: (env.AI_FALLBACKS || "on") !== "off",
+    // Structured outputs (the JSON schema sent as output_config.format). Through a gateway such as
+    // caheoai a schema-constrained answer is held back until it is complete, and the gateway drops
+    // connections that stay silent for ~90s; so by default the schema goes into the prompt instead
+    // whenever ANTHROPIC_BASE_URL is set. on/off overrides.
+    structured: env.AI_STRUCTURED ? env.AI_STRUCTURED !== "off" : !env.ANTHROPIC_BASE_URL,
   },
   pythonBin: path.resolve(SERVER_DIR, env.PYTHON_BIN || ".venv\\Scripts\\python.exe"),
   hyperframesVersion: env.HYPERFRAMES_VERSION || "0.8.181",

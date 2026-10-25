@@ -1,8 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
-import { activePreset, getSettings } from "../settings.js";
+import { EFFORTS, activePreset, getSettings } from "../settings.js";
 import { describeFrames } from "./catalog.js";
 import { validatePlan } from "./validate.js";
+import { motionSchema, motionGuide } from "./motion.js";
 
 const SYSTEM = `You plan short narrated videos that are assembled ONLY from a fixed library of animated templates ("frames"). You never write HTML; you return a JSON plan.
 
@@ -21,12 +22,21 @@ Rules:
 - Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state. The only exception: wrong answer options in a quiz, which must be plausible but clearly wrong.`;
 
 let client;
+const GATEWAY_LIMIT_MS = 300_000;
+
+// "4m05s" for a duration in ms; since(t) for the time since a Date.now() timestamp.
+const duration = (ms) => {
+  const s = Math.round(ms / 1000);
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m${String(s % 60).padStart(2, "0")}s`;
+};
+const since = (t) => duration(Date.now() - t);
 
 // Asks the AI for a plan, validates it, and gives the AI one chance to repair errors.
 // Returns { plan, calls } where calls records token usage for cost tracking.
 // library: { icons: [name], logos: [name], photos: [{ name, label, credit }] } that suit the topic.
-// extra: additional prompt sections (rich mode, cartoon shots, custom scenes) for unlimited presets.
-export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", mock = false, onLog = () => {} }) {
+// extra: additional prompt sections (rich mode) for unlimited presets; motion: each scene also gets
+// a story motion (motion.js) layered on its frame.
+export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, mock = false, onLog = () => {} }) {
   const allowedIds = allowed.map((f) => f.frame_id);
   if (mock || config.ai.mode === "mock") {
     const plan = mockPlan({ material, title, allowed, images, library, topic });
@@ -37,11 +47,11 @@ export async function planVideo({ material, title, channel, topic, frames, allow
 
   // Extra retries ride out brief network/DNS drops on the way to the API or gateway.
   client ??= new Anthropic({ maxRetries: 4 });
-  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, library, targetSeconds, extra });
+  const { messages, schema } = planRequest({ material, title, channel, topic, allowed, images, library, targetSeconds, extra, motion });
   const calls = [];
   for (let attempt = 1; attempt <= 3; attempt++) {
     onLog(`AI lập kế hoạch (lần ${attempt})`);
-    const { json, text, usage } = await callModel(messages, schema).catch((err) => {
+    const { json, text, usage } = await callModel(messages, schema, SYSTEM, activePreset(), onLog).catch((err) => {
       if (err instanceof Anthropic.APIConnectionError) {
         const host = process.env.ANTHROPIC_BASE_URL ? new URL(process.env.ANTHROPIC_BASE_URL).host : "api.anthropic.com";
         throw new Error(`Không kết nối được tới máy chủ AI (${host}): ${err.cause?.code || err.message}. Kiểm tra mạng rồi bấm lập kế hoạch lại.`);
@@ -52,6 +62,7 @@ export async function planVideo({ material, title, channel, topic, frames, allow
     const errors = json ? validatePlan(json, frames, { allowedFrameIds: allowedIds, images }) : ["không đọc được JSON"];
     if (!errors.length) return { plan: json, calls };
     onLog(`Plan có ${errors.length} lỗi, yêu cầu AI sửa: ${errors.join("; ").slice(0, 300)}`);
+    onLog(`AI đã trả về (đoạn đầu): ${text.slice(0, 300)}`);
     if (attempt === 3) throw new Error(`AI trả về plan không hợp lệ:\n- ${errors.join("\n- ")}`);
     messages.push({ role: "assistant", content: text });
     messages.push({ role: "user", content: `The plan has these errors. Return the complete corrected plan.\n- ${errors.join("\n- ")}` });
@@ -62,18 +73,20 @@ const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [], character
 
 // The planning request (system prompt, first user message, output schema), without calling the API.
 // Library lists only reach the prompt when an allowed frame can use them.
-export function planRequest({ material, title, channel, topic, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "" }) {
+export function planRequest({ material, title, channel, topic, allowed, images = [], library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false }) {
+  // Story motion casts icons and characters as actors, so their lists go in even when no frame uses them.
   const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
   const lib = {
-    icons: uses("icon", "icons") ? library.icons : [],
+    icons: motion || uses("icon", "icons") ? library.icons : [],
     logos: uses("logo") ? library.logos : [],
     photos: uses("image") ? library.photos : [],
     cutouts: uses("cutout") ? library.cutouts || [] : [],
-    characters: uses("character", "characters") ? library.characters || [] : [],
+    characters: motion || uses("character", "characters") ? library.characters || [] : [],
   };
+  if (motion) extra += motionGuide;
   const groups = {};
   for (const c of lib.characters) (groups[c.group] ||= []).push(c.name);
-  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], lib);
+  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name)], lib, { motion });
   const words = Math.round(targetSeconds * 2.6);
   const prompt = `Available frames (* = required input):
 ${describeFrames(allowed)}
@@ -97,18 +110,42 @@ ${material.trim()}
 
 // Model, effort and output length come from the active preset (Cấu hình AI page).
 // Streaming keeps long "unlimited" answers within the SDK's request time limit.
-export async function callModel(messages, schema, system = SYSTEM, preset = activePreset()) {
+// onLog gets a timer every 30s: time since the request, and whether the answer has started.
+// The per-request gateway ends any response after GATEWAY_LIMIT_MS ("Lượt gọi đã bị phía khách
+// hủy"); a call cut there is retried with the next lower effort, which thinks for less time.
+export async function callModel(messages, schema, system = SYSTEM, preset = activePreset(), onLog = () => {}) {
   client ??= new Anthropic({ maxRetries: 4 });
-  const body = {
-    model: preset.model,
-    max_tokens: preset.max_tokens,
-    system,
-    messages,
-    output_config: { effort: preset.effort, format: { type: "json_schema", schema } },
-  };
-  const response = getSettings().fallbacks
-    ? await client.messages.stream({ ...body, fallbacks: "default" }, { headers: { "anthropic-beta": "server-side-fallback-2026-07-01" } }).finalMessage()
-    : await client.messages.stream(body).finalMessage();
+  const started = Date.now();
+  let response;
+  let empty = 0;
+  for (let effort = preset.effort; ; ) {
+    const body = {
+      model: preset.model,
+      max_tokens: preset.max_tokens,
+      system: config.ai.structured ? system : `${system}
+
+${schemaInPrompt(schema)}`,
+      messages,
+      output_config: config.ai.structured ? { effort, format: { type: "json_schema", schema } } : { effort },
+    };
+    const attempt = Date.now();
+    try {
+      response = await streamOnce(body, onLog);
+      break;
+    } catch (err) {
+      // The gateway sometimes opens the stream and closes it without a single event; nothing was
+      // generated, so ask again (twice at most).
+      if (/without sending any chunks/.test(err.message) && ++empty <= 2) {
+        onLog(`Gateway đóng kết nối mà không gửi dữ liệu: gọi lại (lần ${empty}/2)`);
+        continue;
+      }
+      const lower = EFFORTS[EFFORTS.indexOf(effort) - 1];
+      if (preset.billing !== "request" || !lower || Date.now() - attempt < GATEWAY_LIMIT_MS * 0.8 || !(err instanceof Anthropic.APIError)) throw err;
+      onLog(`Gateway cắt lượt gọi ở giới hạn ${duration(GATEWAY_LIMIT_MS)}: gọi lại với effort ${lower} (đang là ${effort})`);
+      effort = lower;
+    }
+  }
+  onLog(`AI trả lời xong sau ${since(started)}`);
   if (response.stop_reason === "refusal") throw new Error("AI từ chối lập kế hoạch cho nội dung này");
   if (response.stop_reason === "max_tokens") {
     const raw = response.content.map((b) => b.text ?? `[${b.type}]`).join("");
@@ -134,11 +171,50 @@ export async function callModel(messages, schema, system = SYSTEM, preset = acti
   return { json, text, usage };
 }
 
+// Without structured outputs the model is told the schema; validation and the repair round still
+// catch whatever it gets wrong.
+const schemaInPrompt = (schema) =>
+  `OUTPUT FORMAT: reply with ONE JSON object and nothing else (no markdown fences, no comments). It must conform to this JSON Schema:
+${JSON.stringify(schema)}`;
+
+// One streamed request; returns the final message. Errors carry the elapsed time and progress.
+async function streamOnce(body, onLog) {
+  const stream = getSettings().fallbacks
+    ? client.messages.stream({ ...body, fallbacks: "default" }, { headers: { "anthropic-beta": "server-side-fallback-2026-07-01" } })
+    : client.messages.stream(body);
+  const started = Date.now();
+  // firstByte: response headers; lastEvent: last SSE event of any kind (pings included), so a
+  // gateway that cuts a silent connection shows up as a long gap before the error.
+  let firstByte = 0;
+  let lastEvent = 0;
+  let chars = 0;
+  let thinking = 0;
+  stream.on("connect", () => {
+    firstByte = lastEvent = Date.now();
+    onLog(`AI kết nối sau ${since(started)} (effort ${body.output_config.effort}${body.output_config.format ? "" : ", schema trong prompt"})`);
+  });
+  stream.on("streamEvent", (e) => {
+    lastEvent = Date.now();
+    if (e.type === "content_block_delta" && e.delta.type === "thinking_delta") thinking += e.delta.thinking.length;
+  });
+  stream.on("text", (t) => (chars += t.length));
+  const progress = () => (firstByte ? `trả lời ${chars} ký tự, suy nghĩ ${thinking} ký tự, dữ liệu cuối ${since(lastEvent)} trước` : "chưa có phản hồi");
+  const timer = setInterval(() => onLog(`⏱ Đang chờ AI: ${since(started)} — ${progress()}`), 30_000);
+  try {
+    return await stream.finalMessage();
+  } catch (err) {
+    err.message = `${err.message} (sau ${since(started)}, ${progress()})`;
+    throw err;
+  } finally {
+    clearInterval(timer);
+  }
+}
+
 // One schema branch per allowed frame, so the model can only emit inputs that frame accepts.
 // Length limits live in the prompt and the validator: structured outputs ignore maxLength.
-export function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
+export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false } = {}) {
   // Shared enums live in $defs so a long icon list is sent once, not once per frame.
-  const $defs = {};
+  const $defs = motion ? { motion: motionSchema } : {};
   if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
   if (lib.logos.length) $defs.logo = { type: "string", enum: lib.logos };
   if (lib.cutouts?.length) $defs.cutout = { type: "string", enum: lib.cutouts };
@@ -170,8 +246,9 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY) {
         keywords: { type: "array", items: { type: "string" } },
         transition_out: { type: "string", enum: ["fade", "wipe"] },
         inputs: { type: "object", properties: props, required, additionalProperties: false },
+        ...(motion ? { motion: { $ref: "#/$defs/motion" } } : {}),
       },
-      required: ["frame_id", "voice_text", "keywords", "transition_out", "inputs"],
+      required: ["frame_id", "voice_text", "keywords", "transition_out", "inputs", ...(motion ? ["motion"] : [])],
       additionalProperties: false,
     };
   };

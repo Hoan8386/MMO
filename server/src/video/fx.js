@@ -6,6 +6,8 @@
 // Motion uses CSS custom properties (--fy, --fr, --push) applied through the independent
 // `translate` / `rotate` / `scale` properties, so it never fights a template's own transforms.
 // Positions come from fixed lists, never Math.random, so every render is identical.
+// A scene's story motion (motion.js, unlimited presets) adds its layers here and replaces the push-in.
+import { motionLayer } from "./motion.js";
 
 // Sparkle positions as fractions of the canvas, kept to the edges so they never sit under text.
 const SPARKS = [
@@ -17,13 +19,14 @@ const SPARK_SHAPE = { stars: "star", burst: "star", bokeh: "orb", waves: "orb" }
 
 const BADGE = 180;
 
-export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge }) {
+export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks }) {
+  const mo = motionLayer({ id, D, W, H, marks, motion });
   const r = `#${id}-root`;
   const shape = SPARK_SHAPE[background] || "dot";
   const sparks = SPARKS.map(([x, y, s], i) => ({ x: Math.round(x * W), y: Math.round(y * H), s: shape === "orb" ? s * 3 : s, i }));
 
   const css = `
-        ${r} { scale: var(--push, 1); }
+        ${r} { scale: var(--push, 1); translate: var(--cx, 0px) 0; rotate: var(--crot, 0deg); }
         ${r} .fx-layer { position: absolute; inset: 0; pointer-events: none; }
         ${r} .fx-spark { position: absolute; opacity: 0; translate: 0 var(--fy, 0px); }
         ${r} .fx-spark.dot { border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
@@ -43,11 +46,13 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
             : ""
         }`
             : ""
-        }`;
+        }${mo ? mo.css : ""}`;
 
   const html =
+    (mo?.back || "") +
     `<div class="fx-layer">${sparks.map((p) => `<i class="fx-spark ${shape}" style="left:${p.x}px;top:${p.y}px;width:${p.s}px;height:${p.s}px"></i>`).join("")}</div>` +
-    (badge ? `<div class="fx-badge"><div class="ring"></div><div class="disc"></div><img src="assets/icons/${badge}.svg" alt="" /></div>` : "");
+    (badge ? `<div class="fx-badge"><div class="ring"></div><div class="disc"></div><img src="assets/icons/${badge}.svg" alt="" /></div>` : "") +
+    (mo?.front || "");
 
   const script = `
         (() => {
@@ -57,7 +62,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           const D = ${D};
           // Repeats of a yoyo that fit before the exit and end back where they started.
           const yoyos = (at, half) => 2 * Math.floor((D - 0.5 - at) / (2 * half)) - 1;
-          tl.fromTo(R, { "--push": 1 }, { "--push": 1.025, duration: D, ease: "none" }, 0);
+          ${mo ? mo.camera : `tl.fromTo(R, { "--push": 1 }, { "--push": 1.025, duration: D, ease: "none" }, 0);`}
           R.querySelectorAll(".fx-spark").forEach((el, i) => {
             const at = 0.15 + (i % 6) * 0.12;
             tl.fromTo(el, { opacity: 0, scale: 0.3 }, { opacity: ${shape === "orb" ? 0.35 : 0.55}, scale: 1, duration: 0.6, ease: "power2.out" }, at);
@@ -80,7 +85,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           for (let t = 1.1; t < D - 1.2; t += 1.8) tl.fromTo(ring, { opacity: 0.7, scale: 1 }, { opacity: 0, scale: 1.4, duration: 1.2, ease: "power1.out" }, t);
           tl.to(B, { opacity: 0, scale: 0.6, duration: 0.4, ease: "power2.in" }, D - 0.45);`
               : ""
-          }
+          }${mo ? mo.script : ""}
         })();`;
 
   return { css, html, script };

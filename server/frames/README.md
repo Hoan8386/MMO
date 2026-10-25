@@ -51,6 +51,10 @@ Bộ biên dịch tự thêm vào **mọi** cảnh, template không cần viết
 Chuyển động dùng biến CSS `--fy`, `--fr`, `--push` qua các thuộc tính `translate` / `rotate` / `scale`,
 nên không đụng tới `transform` mà template tự animate.
 
+Với preset unlimited, mỗi cảnh còn có trường `motion` do AI chọn (`server/src/video/motion.js`): hiệu ứng phủ cảnh
+(mưa, tuyết, pháo hoa, sao…), chuyển động máy quay (thay cho "đẩy máy" ở trên) và tối đa 2 nhân vật/icon diễn ở hai mép,
+canh theo từ khoá. Lớp này chèn cùng chỗ với lớp hiệu ứng chung, template không cần viết gì.
+
 Input tuỳ chọn `corner_icon` (`"type": "icon"`): khai báo trong meta.json là đủ, bộ biên dịch tự vẽ icon
 trong một đĩa sáng ở góc phải trên (khung 16:9, `.wrap` được thu hẹp 340px bên phải) hoặc giữa phía trên
 (khung dọc/vuông), bật vào và có vòng sáng nhịp. Chỉ thêm cho frame có `.wrap` và góc trên còn trống.

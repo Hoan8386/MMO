@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, PROJECT_BUSY } from "../api.js";
 import { ProjectStatusBadge, Progress, ErrorNote, AspectPicker, AspectBadge } from "../components.jsx";
+import NewsPicker, { articleMaterial } from "../NewsPicker.jsx";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -116,6 +117,11 @@ function NewProjectModal({ topics, onClose }) {
   const anim = form.mode === "animation";
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  // News article chosen with "Lấy tin mới": fills title and material; its photo is added after creation.
+  const [showNews, setShowNews] = useState(false);
+  const [article, setArticle] = useState(null);
+  const [useImage, setUseImage] = useState(true);
+  const topic = topics.find((t) => t.topic_id === form.topic);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   useEffect(() => {
@@ -128,11 +134,18 @@ function NewProjectModal({ topics, onClose }) {
     setError("");
     try {
       const p = await api.post("/projects", form);
+      if (article?.image && useImage) await api.post(`/projects/${p.id}/images/from-url`, { url: article.image, name: article.title }).catch(() => {});
       navigate(`/projects/${p.id}`);
     } catch (err) {
       setError(err.message);
       setSaving(false);
     }
+  }
+
+  function pickArticle(a) {
+    setArticle(a);
+    setShowNews(false);
+    setForm((f) => ({ ...f, title: f.title.trim() ? f.title : a.title.slice(0, 200), material: articleMaterial(a) }));
   }
 
   return (
@@ -186,6 +199,30 @@ function NewProjectModal({ topics, onClose }) {
           <span className="field-label">Khung hình — chọn theo nền tảng đăng</span>
           <AspectPicker value={form.aspect_ratio} onChange={(v) => setForm((f) => ({ ...f, aspect_ratio: v }))} />
         </div>
+        {!anim && (topic?.news_feeds?.length > 0 || topic?.news_foreign?.length > 0) && (
+          <div className="news-cta">
+            <button type="button" className="btn" onClick={() => setShowNews(true)}>Lấy tin mới — {topic.name}</button>
+            <small className="muted">
+              {[topic.news_feeds.length && `${topic.news_feeds.length} báo Việt Nam`, topic.news_foreign.length && `${topic.news_foreign.length} báo nước ngoài`].filter(Boolean).join(" · ")}
+            </small>
+          </div>
+        )}
+        {article && (
+          <div className="news-picked">
+            {article.image && <img src={article.image} alt="" referrerPolicy="no-referrer" />}
+            <div>
+              <strong>{article.title}</strong>
+              <small className="muted">{article.source} · {article.text ? "đã lấy toàn văn bài" : "chỉ lấy được tóm tắt"}</small>
+              {article.image && (
+                <label className="check">
+                  <input type="checkbox" checked={useImage} onChange={(e) => setUseImage(e.target.checked)} />
+                  Thêm ảnh bài báo vào dự án (ảnh thuộc bản quyền {article.source})
+                </label>
+              )}
+            </div>
+            <button type="button" className="btn small" onClick={() => setArticle(null)}>Bỏ chọn</button>
+          </div>
+        )}
         <label>
           {anim ? "Mô tả câu chuyện" : "Tư liệu / kịch bản"}
           <textarea
@@ -225,6 +262,7 @@ function NewProjectModal({ topics, onClose }) {
           <button className="btn primary" disabled={saving}>{saving ? "Đang tạo…" : "Tạo dự án"}</button>
         </div>
       </form>
+      {showNews && topic && <NewsPicker topic={topic} onPick={pickArticle} onClose={() => setShowNews(false)} />}
     </div>
   );
 }

@@ -2,8 +2,10 @@
 // shots (one spoken line each), then into a regular plan whose scenes use the animation frames
 // (anim-title, anim-shot, anim-end), so voicing, timeline, compile and render are shared.
 import { callModel, planSchema } from "../video/planner.js";
+import { activePreset } from "../settings.js";
 import { describeFrames } from "../video/catalog.js";
-import { richGuide, customSceneGuide } from "../video/guides.js";
+import { richGuide } from "../video/guides.js";
+import { motionGuide } from "../video/motion.js";
 import { validatePlan } from "../video/validate.js";
 import { RIGS, RIG_IDS, ACTIONS, EMOTIONS, VOICE_STYLES } from "./rigs.js";
 import { SETTING_IDS, settingName, TIMES } from "./settings.js";
@@ -27,7 +29,7 @@ Rules:
 const VOICE_IDS = Object.keys(VOICE_STYLES);
 
 // Frames that may appear between cartoon shots as "cards" (chapter titles, facts, quotes…).
-const CARD_FRAMES = ["story-chapter", "fun-fact", "big-question", "quote", "icon-hero", "icon-points", "timeline-steps", "place-card", "era-card", "myth-fact", "what-if", "story-cast", "percent-ring", "scale-compare", "ai-scene"];
+const CARD_FRAMES = ["story-chapter", "fun-fact", "big-question", "quote", "icon-hero", "icon-points", "timeline-steps", "place-card", "era-card", "myth-fact", "what-if", "story-cast", "percent-ring", "scale-compare"];
 
 function schema(cards = null) {
   const speakers = ["narrator", ...RIG_IDS];
@@ -159,9 +161,10 @@ export function screenplayToPlan(sp) {
 // Plan errors use scenes[i]; the AI wrote shots[k] and cards[j].
 const toShotErrors = (errors, labels) => errors.map((e) => e.replace(/scenes\[(\d+)\]/g, (_, i) => labels[Number(i)] || `scenes[${i}]`));
 
-// options: { unlimited, rich, mix, custom, library, canvas } from the active preset (see pipeline.js).
+// options: { rich, mix, motion, library } from the active preset (see pipeline.js). motion: cards also get
+// a story motion layered on their frame (cartoon shots have their own engine).
 export async function planAnimation({ material, title, targetSeconds = 60, frames, mock = false, onLog = () => {}, options = {} }) {
-  const cardFrames = options.mix ? CARD_FRAMES.filter((id) => frames.get(id)?.status === "active" && (id !== "ai-scene" || options.custom)).map((id) => frames.get(id)) : [];
+  const cardFrames = options.mix ? CARD_FRAMES.filter((id) => frames.get(id)?.status === "active").map((id) => frames.get(id)) : [];
   const allowed = [...[...frames.values()].filter((f) => f.engine === "animation"), ...cardFrames].map((f) => f.frame_id);
   const check = (plan) => {
     const errors = validatePlan(plan, frames, { allowedFrameIds: allowed });
@@ -181,19 +184,19 @@ export async function planAnimation({ material, title, targetSeconds = 60, frame
   if (options.rich) extra += richGuide(targetSeconds, "shots").replace(/about \d+ shots/, `about ${Math.round(targetSeconds / 3.5)} shots`);
   if (cardFrames.length) {
     const lib = { icons: options.library?.icons || [], logos: [], photos: [], cutouts: [], characters: (options.library?.characters || []) };
-    cardSchema = planSchema(cardFrames, [], lib);
+    cardSchema = planSchema(cardFrames, [], lib, { motion: options.motion });
     extra += `
 CARDS: between shots you may insert regular animated scenes ("cards") — a chapter title when the story moves on, a fun fact, a question to the viewer, a quote, a timeline… Narrated by the narrator (voice_text). Use 2–5 cards in the film, never two in a row.
 Card frames (* = required input):
 ${describeFrames(cardFrames)}
 ${lib.icons.length ? `Icons for cards: ${lib.icons.join(", ")}\n` : ""}`;
-    if (cardFrames.some((f) => f.frame_id === "ai-scene")) extra += customSceneGuide(options.canvas || { w: 1920, h: 1080 });
+    if (options.motion) extra += motionGuide.replace("give every scene", "give every card's scene");
   }
   const messages = [{ role: "user", content: request({ material, title, targetSeconds, extra }) }];
   const calls = [];
   for (let attempt = 1; attempt <= 3; attempt++) {
     onLog(`AI viết kịch bản hoạt hình (lần ${attempt})`);
-    const { json, text, usage } = await callModel(messages, schema(cardSchema), SYSTEM);
+    const { json, text, usage } = await callModel(messages, schema(cardSchema), SYSTEM, activePreset(), onLog);
     calls.push({ step: "plan", attempt, ...usage });
     let plan = null;
     let labels = [];
@@ -204,6 +207,7 @@ ${lib.icons.length ? `Icons for cards: ${lib.icons.join(", ")}\n` : ""}`;
     }
     if (!errors.length) return { plan, calls };
     onLog(`Kịch bản có ${errors.length} lỗi, yêu cầu AI sửa: ${errors.join("; ").slice(0, 300)}`);
+    onLog(`AI đã trả về (đoạn đầu): ${text.slice(0, 300)}`);
     if (attempt === 3) throw new Error(`AI trả về kịch bản không hợp lệ:\n- ${errors.join("\n- ")}`);
     messages.push({ role: "assistant", content: text });
     messages.push({ role: "user", content: `The screenplay has these errors. Return the complete corrected screenplay.\n- ${toShotErrors(errors, labels).join("\n- ")}` });

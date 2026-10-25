@@ -1,4 +1,5 @@
 import { findAsset, KIND_OF_INPUT } from "./library.js";
+import { motionErrors } from "./motion.js";
 
 // AI-written scenes (frame engine "custom") run inside the render browser, so they may only
 // animate their own markup: no network, no timers or randomness (renders must repeat exactly),
@@ -51,6 +52,7 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [] } = {}
     if (sc.voice_text?.length > 400) errors.push(`${at}: voice_text quá dài (${sc.voice_text.length} > 400 ký tự)`);
     if (sc.keywords != null && !Array.isArray(sc.keywords)) errors.push(`${at}: keywords phải là mảng`);
     if (sc.transition_out != null && !["fade", "wipe"].includes(sc.transition_out)) errors.push(`${at}: transition_out phải là fade hoặc wipe`);
+    errors.push(...motionErrors(at, sc.motion, Array.isArray(sc.keywords) ? sc.keywords.length : 0));
 
     const inputs = sc.inputs || {};
     for (const key of Object.keys(inputs)) {

@@ -8,8 +8,7 @@ import { planVideo } from "./planner.js";
 import { planAnimation } from "../animation/planner.js";
 import { rigById } from "../animation/rigs.js";
 import { activePreset } from "../settings.js";
-import { layoutFor } from "./aspects.js";
-import { richGuide, mixGuide, customSceneGuide } from "./guides.js";
+import { richGuide } from "./guides.js";
 import { topicAssets, findAsset } from "./library.js";
 import { validatePlan } from "./validate.js";
 import { voiceScenes, voiceFor } from "./tts.js";
@@ -43,25 +42,17 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   if (project.mode === "animation") return makeAnimationPlan(dir, project, material, frames, { mock, onLog });
   const images = await listImages(dir);
   const topic = getTopic(project.topic);
-  // Unlimited presets (billed per request) get the whole matching library, cartoon shots and
-  // AI-designed scenes, plus extra guidance; token presets stay lean.
+  // Unlimited presets (billed per request) get the whole matching library and story motion
+  // (animation layered on the frames they pick, motion.js) instead of new frames; token presets stay lean.
   const preset = activePreset();
   const unlimited = preset.billing === "request";
   const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images, ...(unlimited ? { perType: 99, maxContent: 99 } : {}) });
-  const supports = (id) => frames.get(id)?.status === "active" && frames.get(id).aspect_ratios.includes(project.aspectRatio || "16:9");
   let extra = "";
   if (unlimited && preset.density === "rich") extra += richGuide(project.targetSeconds || 90);
-  if (unlimited && preset.mix_templates && supports("anim-shot")) {
-    allowed.push(frames.get("anim-shot"));
-    extra += mixGuide;
-  }
-  if (unlimited && preset.custom_scenes && supports("ai-scene")) {
-    allowed.push(frames.get("ai-scene"));
-    extra += customSceneGuide(layoutFor(project.aspectRatio || "16:9", project.width, project.height).scene);
-  }
+  const motion = unlimited && preset.story_motion;
   const library = topicLibrary(topic.topic_id);
   onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited" : "theo token"})`);
-  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon`);
+  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon${motion ? ", AI thêm hoạt ảnh theo câu chuyện vào từng cảnh" : ""}`);
   const { plan, calls } = await planVideo({
     material,
     title: project.title,
@@ -73,6 +64,7 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     library,
     targetSeconds: project.targetSeconds,
     extra,
+    motion,
     mock,
     onLog,
   });
@@ -108,9 +100,8 @@ async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }
     ? {
         rich: preset.density === "rich",
         mix: preset.mix_templates,
-        custom: preset.custom_scenes,
+        motion: preset.story_motion,
         library: topicLibrary(project.topic || "storytelling"),
-        canvas: layoutFor(project.aspectRatio || "16:9", project.width, project.height).scene,
       }
     : {};
   const { plan, calls } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options });

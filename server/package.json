@@ -9,6 +9,7 @@
     "assets:cutouts": "node scripts/download-assets.js --only cutouts",
     "test:ai": "node scripts/test-ai.js",
     "make:video": "node scripts/make-video.js",
+    "news": "node scripts/fetch-news.js",
     "preview:frames": "node scripts/preview-frames.js"
   },
   "dependencies": {
