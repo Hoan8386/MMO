@@ -7,6 +7,17 @@ const TRANSITIONS = [
   { value: "wipe", label: "Quét màu (đổi chủ đề)" },
 ];
 
+// Video styles (server/src/video/styles.js): how the whole video moves — camera, photo entrances, grade.
+const VIDEO_STYLES = [
+  ["documentary", "Phim tài liệu — chậm rãi, fade, ảnh đẩy chậm", "lịch sử, khoa học, văn hoá"],
+  ["news", "Bản tin — cảnh ngắn, wipe, ảnh lật nhanh", "tin tức, sự kiện, ra mắt sản phẩm"],
+  ["kinetic", "Chữ động — nhịp nhanh, ảnh bật zoom", "mẹo, danh sách, video dọc"],
+  ["playful", "Vui nhộn — nảy, ảnh mở hình tròn", "sự thật thú vị, trẻ em, động vật"],
+  ["cinematic", "Điện ảnh — viền đen, ảnh tối dần, kịch tính", "bí ẩn, vũ trụ, câu chuyện cảm xúc"],
+  ["tech", "Công nghệ — chớp sáng, scanline, tông lạnh", "công nghệ, AI, game"],
+  ["storybook", "Truyện kể — ấm, chậm, tông giấy", "truyện, gia đình, bài học"],
+];
+
 // library: assets of the project's topic, { illustration: [], logo: [], photo: [] }.
 // enumLabels: display names for fixed choices (characters, settings, actions…), keyed by value.
 export default function PlanEditor({ plan, frames, images, library = {}, enumLabels = {}, errors, audio, disabled, onChange }) {
@@ -28,10 +39,20 @@ export default function PlanEditor({ plan, frames, images, library = {}, enumLab
 
   return (
     <div className="plan-editor">
-      <label>
-        Tiêu đề video
-        <input value={plan.title || ""} disabled={disabled} onChange={(e) => onChange({ ...plan, title: e.target.value })} />
-      </label>
+      <div className="grid-2">
+        <label>
+          Tiêu đề video
+          <input value={plan.title || ""} disabled={disabled} onChange={(e) => onChange({ ...plan, title: e.target.value })} />
+        </label>
+        <label>
+          Phong cách dựng
+          <select value={plan.style || ""} disabled={disabled} onChange={(e) => onChange({ ...plan, style: e.target.value || undefined })}>
+            <option value="">Mặc định theo chủ đề</option>
+            {VIDEO_STYLES.map(([id, label, hint]) => <option key={id} value={id} title={hint}>{label}</option>)}
+          </select>
+          <small className="muted">AI chọn theo nội dung khi lập kế hoạch; đổi xong hãy dựng lại.</small>
+        </label>
+      </div>
       {general.map((e) => <div key={e} className="note error">{e}</div>)}
       {scenes.map((s, i) => (
         <SceneEditor

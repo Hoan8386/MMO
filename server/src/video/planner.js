@@ -1,9 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
-import { EFFORTS, activePreset, getSettings } from "../settings.js";
+import { activePreset, getSettings } from "../settings.js";
 import { describeFrames } from "./catalog.js";
 import { validatePlan } from "./validate.js";
-import { motionSchema, motionGuide } from "./motion.js";
+import { motionSchema, motionGuide, cleanMotion } from "./motion.js";
+import { STYLE_IDS, styleGuide } from "./styles.js";
 
 const SYSTEM = `You plan short narrated videos that are assembled ONLY from a fixed library of animated templates ("frames"). You never write HTML; you return a JSON plan.
 
@@ -18,13 +19,16 @@ Rules:
 - keywords: exact phrases copied verbatim from the same scene's voice_text, in spoken order, used to time the animation as described for each frame. Use [] when the frame needs none.
 - transition_out: "wipe" when the next scene starts a new topic, otherwise "fade".
 - Icons and logos: pick the icon that literally shows the scene's subject (a planet for space, a pill for medicine); the same icon at most twice per video. Use a brand logo only for a brand the material names. Pick a cutout only when it shows the very object the scene talks about.
-- Images and cutouts listed with a description were found for this material: show them in the scenes that talk about what they show.
+- Project images listed with a description come from this very article (its own photos and captions) or were found for it: show each in the scene that talks about what it shows, before any other picture. Never show a picture of something the material does not talk about (another game, place, product or person of the same topic).
 - Image frames may use project images or library photos. Use a library photo only when its description matches what the scene says, and copy its credit into the credit input.
 - description: one short Vietnamese question (at most 120 characters) about the most surprising point of the video, so viewers are curious enough to click; built only on facts in the material, no emoji, no hashtags.
 - Use only facts from the user's material. Never invent numbers, quotes, names, dates or a channel name, and never add opinions or evaluations (e.g. "quite competitive") that the material does not state. The only exception: wrong answer options in a quiz, which must be plausible but clearly wrong.`;
 
 let client;
-const GATEWAY_LIMIT_MS = 300_000;
+// No time limit on our side: a planning call waits as long as the server takes to answer. The SDK's
+// own default (10 minutes) is replaced by a day; extra retries only ride out network drops.
+const NO_TIMEOUT_MS = 24 * 60 * 60 * 1000;
+const anthropic = () => (client ??= new Anthropic({ maxRetries: 4, timeout: NO_TIMEOUT_MS }));
 
 // "4m05s" for a duration in ms; since(t) for the time since a Date.now() timestamp.
 const duration = (ms) => {
@@ -42,7 +46,8 @@ const since = (t) => duration(Date.now() - t);
 // visuals: each scene also lists the photos its sentence calls for (scene.visuals) and an image input
 // may say "visual:<n>" for the scene's n-th one; fetchImages(items) downloads them after the answer and
 // returns { item index: image file } for the ones found.
-export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, visuals = false, fetchImages = null, mock = false, onLog = () => {} }) {
+// music: the topic's background tracks [{ id, name, mood }]; with two or more the AI picks one (plan.music).
+export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, music = [], visuals = false, fetchImages = null, mock = false, onLog = () => {} }) {
   const allowedIds = allowed.map((f) => f.frame_id);
   if (mock || config.ai.mode === "mock") {
     const plan = mockPlan({ material, title, allowed, images, library, topic });
@@ -51,9 +56,8 @@ export async function planVideo({ material, title, channel, topic, frames, allow
     return { plan, calls: [], errors: [] };
   }
 
-  // Extra retries ride out brief network/DNS drops on the way to the API or gateway.
-  client ??= new Anthropic({ maxRetries: 4 });
-  const req = planRequest({ material, title, channel, topic, allowed, images, labels, library, targetSeconds, extra, motion, visuals: visuals && !!fetchImages });
+  anthropic();
+  const req = planRequest({ material, title, channel, topic, allowed, images, labels, library, targetSeconds, extra, motion, music, visuals: visuals && !!fetchImages });
   onLog("AI lập kế hoạch (1 lượt gọi)");
   const { json, text, usage } = await callModel(req.messages, req.schema, SYSTEM, activePreset(), onLog).catch((err) => {
     if (err instanceof Anthropic.APIConnectionError) {
@@ -66,6 +70,8 @@ export async function planVideo({ material, title, channel, topic, frames, allow
   if (!json || !Array.isArray(json.scenes)) throw new Error(`AI trả về kế hoạch không đọc được. Đoạn đầu: ${text.slice(0, 300)}`);
 
   tidyScenes(json, library);
+  if (!music.some((t) => String(t.id) === String(json.music))) delete json.music;
+  if (!STYLE_IDS.includes(json.style)) delete json.style;
   const fixed = autoFix(json, frames);
   if (fixed.length) onLog(`Tự sửa ${fixed.length} chỗ trong kế hoạch: ${fixed.join("; ").slice(0, 300)}`);
   let pictures = images;
@@ -107,7 +113,8 @@ function tidyScenes(plan, library) {
     sc.visuals = raw.map((v, i) => {
       const [item] = cleanItems([v]);
       const keyword = typeof v?.keyword === "string" && v.keyword.trim() && voice.includes(v.keyword.trim().toLowerCase()) ? v.keyword.trim() : "";
-      return item ? { ...item, keyword, n: i + 1 } : null;
+      const subject = typeof v?.subject === "string" ? v.subject.trim().slice(0, 80) : "";
+      return item ? { ...item, subject, keyword, n: i + 1 } : null;
     });
     sc.icons = [...new Set((Array.isArray(sc.icons) ? sc.icons : []).filter((x) => icons.has(x)))].slice(0, MAX_SCENE_ICONS);
   }
@@ -123,6 +130,12 @@ function autoFix(plan, frames) {
     const frame = frames.get(sc.frame_id);
     if (!Array.isArray(sc.keywords)) sc.keywords = [];
     if (!["fade", "wipe"].includes(sc.transition_out)) sc.transition_out = "fade";
+    if ("motion" in sc) {
+      const { motion, dropped } = cleanMotion(sc.motion, sc.keywords.length);
+      if (motion) sc.motion = motion;
+      else delete sc.motion;
+      if (dropped) notes.push(`s${i + 1}.motion: bỏ ${dropped} phần không hợp lệ`);
+    }
     if (!frame || !sc.inputs || typeof sc.inputs !== "object") return;
     for (const k of Object.keys(sc.inputs)) {
       const spec = frame.inputs[k];
@@ -160,7 +173,7 @@ function autoFix(plan, frames) {
 // project image or a library photo. Returns the image names the plan may now use.
 async function attachVisuals(plan, frames, fetchImages, { images, library, onLog }) {
   const items = [];
-  plan.scenes.forEach((sc, s) => sc.visuals.forEach((v, j) => v && items.push({ s, j, queries: v.queries, label: v.label })));
+  plan.scenes.forEach((sc, s) => sc.visuals.forEach((v, j) => v && items.push({ s, j, queries: v.queries, label: v.label, subject: v.subject })));
   const found = items.length ? await fetchImages(items.map(({ queries, label }) => ({ queries, label }))).catch((err) => (onLog(`Không tải được ảnh: ${err.message}`), {})) : {};
   const fileOf = new Map(items.map((it, i) => [`${it.s}:${it.j}`, found[i]]));
   for (const [s, sc] of plan.scenes.entries()) {
@@ -177,7 +190,8 @@ async function attachVisuals(plan, frames, fetchImages, { images, library, onLog
       if (frame?.inputs[k]?.type !== "image" || typeof v !== "string" || !/^visual:\d+$/.test(v)) continue;
       const n = Number(v.slice(7));
       const own = sc.visuals.find((x) => x?.n === n)?.image;
-      const pick = own || sc.visuals.find(Boolean)?.image || near(s)[0] || images[0] || library.photos[0]?.name;
+      // Only pictures of this material: never a topic library photo, which may show something else.
+      const pick = own || sc.visuals.find(Boolean)?.image || near(s)[0] || images[0];
       if (pick) sc.inputs[k] = pick;
       if (!own && pick) replaced++;
     }
@@ -188,7 +202,8 @@ async function attachVisuals(plan, frames, fetchImages, { images, library, onLog
 }
 
 const visualsGuide = `
-Photos for each scene: in "visuals" list, for the scene's own sentence, every place, scene or concrete thing it shows — as many as the sentence names (three places → three photos, the main scene and the smaller scenes inside it), none for an abstract sentence; at most ${MAX_VISUALS}. They are downloaded after you plan and shown one after another behind the scene. For each: queries = 1–2 English image-search phrases naming the real place or thing, most specific first, then a more generic one (e.g. ["da lat flower garden", "da lat"], ["hoan kiem lake hanoi", "hanoi lake"]), 1–5 lowercase words, no words like "photo" or "image"; label = short Vietnamese name; keyword = the exact phrase of the voice_text at which the photo should appear ("" for the start).
+Photos for each scene: in "visuals" list, for the scene's own sentence, every place, scene, person, product or event it shows — as many as the sentence names (three places → three photos, the main scene and the smaller scenes inside it), none for an abstract sentence; at most ${MAX_VISUALS}. They are downloaded after you plan and shown one after another behind the scene. Photos must show THIS material's own subject, never just its topic: an article about League of Legends gets League of Legends photos only, never other games or "esports" in general.
+For each: subject = the proper name the photo must show, in English as it is written on Wikipedia ("League of Legends", "Faker", "Hoan Kiem Lake", "iPhone 16") — "" only for a plain generic thing named in the sentence; queries = 1–2 English image-search phrases that both contain the subject (e.g. ["league of legends world championship", "league of legends worlds stage"], ["hoan kiem lake hanoi", "turtle tower hoan kiem"]), never a broader phrase without it, 1–5 lowercase words, no words like "photo" or "image"; label = short Vietnamese name; keyword = the exact phrase of the voice_text at which the photo should appear ("" for the start). A photo whose subject cannot be found is left out rather than replaced by something else.
 An image input may use "visual:<n>" to show the scene's n-th photo (n from 1).`;
 
 const iconsGuide = `
@@ -197,25 +212,32 @@ Icons for each scene: in "icons" pick 0–${MAX_SCENE_ICONS} icons from the Icon
 // The planning request (system prompt, first user message, output schema), without calling the API.
 // Library lists only reach the prompt when an allowed frame can use them; icons always do (scene icons).
 // labels: what the project's own images and cutouts show ({ image file or cutout name: label }).
-// visuals: each scene also lists its photos (see planVideo).
-export function planRequest({ material, title, channel, topic, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, visuals = false }) {
+// visuals: each scene also lists its photos (see planVideo); music: the topic's tracks to choose from.
+export function planRequest({ material, title, channel, topic, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, music = [], visuals = false }) {
   // Story motion casts icons and characters as actors, so their lists go in even when no frame uses them.
   const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
   const lib = {
     icons: library.icons,
     logos: uses("logo") ? library.logos : [],
-    photos: uses("image") ? library.photos : [],
+    // Topic library photos show the topic, not this material: left out when the scenes get their own photos.
+    photos: uses("image") && !visuals ? library.photos : [],
     cutouts: uses("cutout") ? library.cutouts || [] : [],
     characters: motion || uses("character", "characters") ? library.characters || [] : [],
   };
   if (motion) extra += motionGuide;
   if (visuals) extra += visualsGuide;
+  extra += styleGuide;
   if (lib.icons.length) extra += iconsGuide;
   const groups = {};
   for (const c of lib.characters) (groups[c.group] ||= []).push(c.name);
   // Placeholders visual:<n> are valid image names only in the schema; the prompt lists the real ones.
   const placeholders = Array.from({ length: visuals ? MAX_VISUALS : 0 }, (_, i) => `visual:${i + 1}`);
-  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name), ...placeholders], lib, { motion, visuals });
+  const tracks = music.length > 1 ? music : [];
+  if (tracks.length)
+    extra += `
+Background music: in "music" give the id of the track whose mood fits the video best:
+${tracks.map((t) => `- ${t.id}: ${t.name}${t.mood ? ` — ${t.mood}` : ""}`).join("\n")}`;
+  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name), ...placeholders], lib, { motion, visuals, music: tracks.map((t) => String(t.id)) });
   const words = Math.round(targetSeconds * 2.6);
   const described = (n) => (labels[n] ? `${n} (${labels[n]})` : n);
   const prompt = `Available frames (* = required input):
@@ -239,16 +261,17 @@ ${material.trim()}
 
 
 // Model, effort and output length come from the active preset (Cấu hình AI page).
-// Streaming keeps long "unlimited" answers within the SDK's request time limit.
+// Streaming keeps long "unlimited" answers flowing; there is no time limit on our side.
 // onLog gets a timer every 30s: time since the request, and whether the answer has started.
-// The per-request gateway ends any response after GATEWAY_LIMIT_MS ("Lượt gọi đã bị phía khách
-// hủy"); a call cut there is retried with the next lower effort, which thinks for less time.
+// A call that fails is not asked again at a lower effort (that would be a second paid call); only a
+// stream the gateway closed before sending anything is retried, since nothing was generated.
 export async function callModel(messages, schema, system = SYSTEM, preset = activePreset(), onLog = () => {}) {
-  client ??= new Anthropic({ maxRetries: 4 });
+  anthropic();
   const started = Date.now();
+  const effort = preset.effort;
   let response;
   let empty = 0;
-  for (let effort = preset.effort; ; ) {
+  for (;;) {
     const body = {
       model: preset.model,
       max_tokens: preset.max_tokens,
@@ -258,7 +281,6 @@ ${schemaInPrompt(schema)}`,
       messages,
       output_config: config.ai.structured ? { effort, format: { type: "json_schema", schema } } : { effort },
     };
-    const attempt = Date.now();
     try {
       response = await streamOnce(body, onLog);
       break;
@@ -269,10 +291,10 @@ ${schemaInPrompt(schema)}`,
         onLog(`Gateway đóng kết nối mà không gửi dữ liệu: gọi lại (lần ${empty}/2)`);
         continue;
       }
-      const lower = EFFORTS[EFFORTS.indexOf(effort) - 1];
-      if (preset.billing !== "request" || !lower || Date.now() - attempt < GATEWAY_LIMIT_MS * 0.8 || !(err instanceof Anthropic.APIError)) throw err;
-      onLog(`Gateway cắt lượt gọi ở giới hạn ${duration(GATEWAY_LIMIT_MS)}: gọi lại với effort ${lower} (đang là ${effort})`);
-      effort = lower;
+      // Cut by the far side after a long wait: our side never gives up, so say where it came from.
+      if (err instanceof Anthropic.APIError && Date.now() - started > 240_000)
+        err.message = `${err.message} — máy chủ AI/cổng trung gian đã tự ngắt lượt gọi (phía ứng dụng không giới hạn thời gian chờ). Thử hạ effort ở trang Cấu hình AI để AI trả lời nhanh hơn.`;
+      throw err;
     }
   }
   onLog(`AI trả lời xong sau ${since(started)}`);
@@ -342,7 +364,7 @@ async function streamOnce(body, onLog) {
 
 // One schema branch per allowed frame, so the model can only emit inputs that frame accepts.
 // Length limits live in the prompt and the validator: structured outputs ignore maxLength.
-export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false, visuals = false } = {}) {
+export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false, visuals = false, music = [] } = {}) {
   // Shared enums live in $defs so a long icon list is sent once, not once per frame.
   const $defs = motion ? { motion: motionSchema } : {};
   if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
@@ -357,8 +379,8 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
       description: "photos of the places, scenes and things this scene's sentence shows",
       items: {
         type: "object",
-        properties: { queries: { type: "array", items: { type: "string" } }, label: { type: "string" }, keyword: { type: "string" } },
-        required: ["queries", "label", "keyword"],
+        properties: { subject: { type: "string" }, queries: { type: "array", items: { type: "string" } }, label: { type: "string" }, keyword: { type: "string" } },
+        required: ["subject", "queries", "label", "keyword"],
         additionalProperties: false,
       },
     };
@@ -402,9 +424,11 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
     properties: {
       title: { type: "string" },
       description: { type: "string", description: "one short curiosity question, at most 120 characters" },
+      style: { type: "string", enum: STYLE_IDS },
+      ...(music.length ? { music: { type: "string", enum: music } } : {}),
       scenes: { type: "array", items: { anyOf: allowed.map(branch) } },
     },
-    required: ["title", "description", "scenes"],
+    required: ["title", "description", "style", ...(music.length ? ["music"] : []), "scenes"],
     additionalProperties: false,
     ...(Object.keys($defs).length ? { $defs } : {}),
   };

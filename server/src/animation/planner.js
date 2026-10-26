@@ -177,7 +177,7 @@ export async function planAnimation({ material, title, targetSeconds = 60, frame
     const { plan } = screenplayToPlan(mockScreenplay(material, title));
     const errors = check(plan);
     if (errors.length) throw new Error(`Kịch bản mẫu không hợp lệ:\n- ${errors.join("\n- ")}`);
-    return { plan, calls: [] };
+    return { plan, calls: [], errors: [] };
   }
   let extra = "";
   let cardSchema = null;
@@ -192,26 +192,16 @@ ${describeFrames(cardFrames)}
 ${lib.icons.length ? `Icons for cards: ${lib.icons.join(", ")}\n` : ""}`;
     if (options.motion) extra += motionGuide.replace("give every scene", "give every card's scene");
   }
+  // One call: what is wrong in the answer is left for the plan editor instead of asking again.
   const messages = [{ role: "user", content: request({ material, title, targetSeconds, extra }) }];
-  const calls = [];
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    onLog(`AI viết kịch bản hoạt hình (lần ${attempt})`);
-    const { json, text, usage } = await callModel(messages, schema(cardSchema), SYSTEM, activePreset(), onLog);
-    calls.push({ step: "plan", attempt, ...usage });
-    let plan = null;
-    let labels = [];
-    let errors = ["không đọc được JSON"];
-    if (json?.shots?.length) {
-      ({ plan, labels } = screenplayToPlan(json));
-      errors = check(plan);
-    }
-    if (!errors.length) return { plan, calls };
-    onLog(`Kịch bản có ${errors.length} lỗi, yêu cầu AI sửa: ${errors.join("; ").slice(0, 300)}`);
-    onLog(`AI đã trả về (đoạn đầu): ${text.slice(0, 300)}`);
-    if (attempt === 3) throw new Error(`AI trả về kịch bản không hợp lệ:\n- ${errors.join("\n- ")}`);
-    messages.push({ role: "assistant", content: text });
-    messages.push({ role: "user", content: `The screenplay has these errors. Return the complete corrected screenplay.\n- ${toShotErrors(errors, labels).join("\n- ")}` });
-  }
+  onLog("AI viết kịch bản hoạt hình (1 lượt gọi)");
+  const { json, text, usage } = await callModel(messages, schema(cardSchema), SYSTEM, activePreset(), onLog);
+  const calls = [{ step: "plan", attempt: 1, ...usage }];
+  if (!json?.shots?.length) throw new Error(`AI trả về kịch bản không đọc được. Đoạn đầu: ${text.slice(0, 300)}`);
+  const { plan, labels } = screenplayToPlan(json);
+  const errors = check(plan);
+  if (errors.length) onLog(`Kịch bản còn ${errors.length} lỗi cần sửa tay trong trình sửa (không gọi lại AI): ${toShotErrors(errors, labels).join("; ").slice(0, 300)}`);
+  return { plan, calls, errors };
 }
 
 // ---------------------------------------------------------------- mock (no AI)

@@ -27,6 +27,7 @@ export const pipelineProject = (p) => ({
   rate: p.voice_rate,
   targetSeconds: p.target_seconds,
   autoImages: p.auto_images,
+  music: p.music || "auto",
   aspectRatio: p.aspect_ratio,
   width: p.width,
   height: p.height,

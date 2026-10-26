@@ -28,8 +28,9 @@ export async function fetchJson(url) {
 const FREE = /^(cc0|public domain|pd|cc by(-sa)? \d|cc by(-sa)?$|attribution)/i;
 const strip = (html) => String(html || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 
-// Searches Wikimedia Commons for large landscape photos with a free licence.
-export async function commonsSearch(query, want, { minWidth = 1600 } = {}) {
+// Searches Wikimedia Commons for large landscape photos with a free licence. Each result carries
+// `text` (file title, categories and description) so a caller can check what the photo really shows.
+export async function commonsSearch(query, want, { minWidth = 1600, minRatio = 1.3 } = {}) {
   const url =
     "https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrnamespace=6&gsrlimit=25" +
     `&gsrsearch=${encodeURIComponent(`${query} filetype:bitmap`)}&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=1600`;
@@ -40,10 +41,12 @@ export async function commonsSearch(query, want, { minWidth = 1600 } = {}) {
     const ii = p.imageinfo?.[0];
     const meta = ii?.extmetadata || {};
     const license = strip(meta.LicenseShortName?.value);
-    if (!ii || ii.mime !== "image/jpeg" || ii.width < minWidth || ii.width / ii.height < 1.3 || ii.width / ii.height > 2.4) continue;
+    if (!ii || ii.mime !== "image/jpeg" || ii.width < minWidth || ii.width / ii.height < minRatio || ii.width / ii.height > 2.4) continue;
     if (!FREE.test(license) || /nonfree|fair use/i.test(license)) continue;
     const artist = strip(meta.Artist?.value).slice(0, 80) || "Wikimedia Commons";
-    picked.push({ thumb: ii.thumburl, page: ii.descriptionurl, title: p.title.replace(/^File:/, "").replace(/\.[^.]+$/, ""), license, artist, w: ii.thumbwidth, h: ii.thumbheight });
+    const title = p.title.replace(/^File:/, "").replace(/\.[^.]+$/, "");
+    const text = [title, strip(meta.Categories?.value), strip(meta.ImageDescription?.value).slice(0, 500), strip(meta.ObjectName?.value)].join(" | ");
+    picked.push({ thumb: ii.thumburl, page: ii.descriptionurl, title, text, license, artist, w: ii.thumbwidth, h: ii.thumbheight });
     if (picked.length === want) break;
   }
   return picked;

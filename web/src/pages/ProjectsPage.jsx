@@ -135,7 +135,13 @@ function NewProjectModal({ topics, onClose }) {
     setError("");
     try {
       const p = await api.post("/projects", form);
-      if (article?.image && useImage) await api.post(`/projects/${p.id}/images/from-url`, { url: article.image, name: article.title }).catch(() => {});
+      // The article's own photos (main image first) — they show exactly what the video is about.
+      if (useImage) {
+        for (const [i, img] of articlePhotos(article).entries()) {
+          const label = img.caption || article.title;
+          await api.post(`/projects/${p.id}/images/from-url`, { url: img.url, name: `bai-bao-${i + 1}-${label}`.slice(0, 60), label, credit: `Ảnh: ${article.source}` }).catch(() => {});
+        }
+      }
       if (article?.image && useThumb) await api.post(`/projects/${p.id}/thumbnail`, { url: article.image }).catch(() => {});
       navigate(`/projects/${p.id}`);
     } catch (err) {
@@ -215,10 +221,10 @@ function NewProjectModal({ topics, onClose }) {
             <div>
               <strong>{article.title}</strong>
               <small className="muted">{article.source} · {article.text ? "đã lấy toàn văn bài" : "chỉ lấy được tóm tắt"}</small>
-              {article.image && (
+              {articlePhotos(article).length > 0 && (
                 <label className="check">
                   <input type="checkbox" checked={useImage} onChange={(e) => setUseImage(e.target.checked)} />
-                  Thêm ảnh bài báo vào dự án (ảnh thuộc bản quyền {article.source})
+                  Thêm {articlePhotos(article).length} ảnh trong bài báo vào dự án — AI ưu tiên dùng cho đúng cảnh (ảnh thuộc bản quyền {article.source})
                 </label>
               )}
               {article.image && (
@@ -282,4 +288,11 @@ function NewProjectModal({ topics, onClose }) {
       {showNews && topic && <NewsPicker topic={topic} onPick={pickArticle} onClose={() => setShowNews(false)} />}
     </div>
   );
+}
+
+// The chosen article's photos: those found in its body, else just its main image.
+function articlePhotos(article) {
+  if (!article) return [];
+  const list = article.images?.length ? article.images : article.image ? [{ url: article.image, caption: "" }] : [];
+  return list.slice(0, 12);
 }

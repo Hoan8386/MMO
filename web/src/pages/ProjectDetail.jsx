@@ -255,6 +255,7 @@ export default function ProjectDetail() {
       )}
 
       <PublishCard p={p} disabled={busy} onChanged={load} onError={setError} />
+      <MusicCard p={p} disabled={busy} onChanged={load} onError={setError} />
       <ProjectInfo p={p} disabled={busy} onSaved={load} onError={setError} />
       <ImagesCard p={p} disabled={busy} onChanged={load} onError={setError} />
 
@@ -349,6 +350,47 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
           <p className="script clamp">{p.material}</p>
         </>
       )}
+    </section>
+  );
+}
+
+// Background music of the video: automatic (the AI picks among the topic's tracks while planning),
+// none, or one track chosen by hand. Takes effect at the next build.
+function MusicCard({ p, disabled, onChanged, onError }) {
+  const [tracks, setTracks] = useState([]);
+  useEffect(() => {
+    api.get(`/music?topic=${encodeURIComponent(p.topic)}`).then((list) => setTracks(list[0]?.tracks || []), () => setTracks([]));
+  }, [p.topic]);
+  const value = p.music || "auto";
+  const aiPick = tracks.find((t) => String(t.id) === String(p.plan?.music)) || tracks[0];
+  // A hand-picked track may belong to another topic; it is then not in this list.
+  const picked = value === "auto" ? aiPick : tracks.find((t) => String(t.id) === value);
+  async function change(music) {
+    try {
+      await api.put(`/projects/${p.id}`, { music });
+      onChanged();
+    } catch (e) {
+      onError(e.message);
+    }
+  }
+  return (
+    <section className="card">
+      <div className="card-head">
+        <h2>Nhạc nền</h2>
+        <Link className="btn small" to="/music">Quản lý nhạc theo chủ đề</Link>
+      </div>
+      <div className="music-pick">
+        <select value={value} disabled={disabled} onChange={(e) => change(e.target.value)}>
+          <option value="auto">Tự động — AI chọn theo nội dung{aiPick ? ` (${aiPick.name})` : ""}</option>
+          <option value="none">Không dùng nhạc nền</option>
+          {tracks.map((t) => <option key={t.id} value={String(t.id)}>{t.name}{t.mood ? ` — ${t.mood}` : ""}</option>)}
+          {value !== "auto" && value !== "none" && !picked && <option value={value}>Bản nhạc #{value}</option>}
+        </select>
+        {value !== "none" && picked && <audio src={picked.url} controls preload="none" />}
+      </div>
+      <p className="muted small">
+        {tracks.length ? "Đổi nhạc xong hãy dựng lại để áp dụng." : "Chủ đề này chưa có nhạc — thêm ở trang Nhạc nền."}
+      </p>
     </section>
   );
 }

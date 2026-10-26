@@ -5,7 +5,7 @@ import multer from "multer";
 import { query, one } from "../db.js";
 import { STORAGE_DIR } from "../config.js";
 import { loadTopics } from "../video/catalog.js";
-import { projectDir, slugify, listImages, projectMedia, planErrors, hasManualEdits, readJson, finalizePlan } from "../video/pipeline.js";
+import { projectDir, slugify, listImages, projectMedia, planErrors, hasManualEdits, readJson, finalizePlan, fetchedFile } from "../video/pipeline.js";
 import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
 import { VOICES, voiceHash, voiceFor } from "../video/tts.js";
@@ -15,7 +15,7 @@ import { downloadImage } from "../news.js";
 const router = Router();
 const upload = multer({ dest: path.join(STORAGE_DIR, "tmp"), limits: { fileSize: 15 * 1024 * 1024, files: 20 } });
 const storageUrl = (p) => `/storage/${path.relative(STORAGE_DIR, p).replace(/\\/g, "/")}`;
-const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds", "auto_images", "description"];
+const FIELDS = ["title", "material", "channel", "topic", "voice", "voice_rate", "target_seconds", "auto_images", "description", "music"];
 // Fetch photos of the places and scenes with the first plan: on (1) unless turned off.
 const autoImages = (v) => (v === undefined || v === true || Number(v) > 0 ? 1 : 0);
 const THUMB_RE = /^thumbnail\.(jpe?g|png|webp)$/i;
@@ -116,6 +116,8 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const fields = Object.fromEntries(FIELDS.filter((f) => req.body[f] !== undefined).map((f) => [f, req.body[f]]));
   if (fields.auto_images !== undefined) fields.auto_images = autoImages(fields.auto_images);
+  // Background music: "auto" (stored as NULL), "none" or a track id.
+  if (fields.music !== undefined) fields.music = fields.music === "none" ? "none" : /^\d+$/.test(String(fields.music)) ? String(fields.music) : null;
   if (req.body.aspect_ratio !== undefined) Object.assign(fields, aspectFields(req.body.aspect_ratio));
   if (!Object.keys(fields).length) return res.status(400).json({ error: "Không có gì để cập nhật" });
   await query(`UPDATE projects SET ${Object.keys(fields).map((k) => `${k}=?`).join(", ")} WHERE id=?`, [...Object.values(fields), req.params.id]);
@@ -236,10 +238,26 @@ router.post("/:id/images/from-url", async (req, res) => {
   const base = slugify(String(req.body.name || "")).slice(0, 50) || "anh-bai-bao";
   let name = base;
   for (let n = 2; existing.some((f) => path.parse(f).name === name); n++) name = `${base}-${n}`;
+  let file;
   try {
-    await downloadImage(String(req.body.url || ""), imgDir, name);
+    file = await downloadImage(String(req.body.url || ""), imgDir, name);
   } catch (err) {
     return res.status(400).json({ error: `Không tải được ảnh: ${err.cause?.code || err.message}` });
+  }
+  // What the photo shows (its caption) and where it came from, so the planner can place it and image
+  // frames carry the credit (see projectMedia).
+  if (req.body.label || req.body.credit) {
+    const record = await readJson(fetchedFile(dir), { items: [] });
+    record.items.push({
+      name: path.parse(file).name,
+      kind: "photo",
+      file: `assets/img/${file}`,
+      label: String(req.body.label || req.body.name || "").slice(0, 160),
+      credit: req.body.credit ? String(req.body.credit).slice(0, 120) : null,
+      source: "article",
+      source_url: String(req.body.url),
+    });
+    await fs.writeFile(fetchedFile(dir), JSON.stringify(record, null, 2));
   }
   res.json(await listImages(dir));
 });

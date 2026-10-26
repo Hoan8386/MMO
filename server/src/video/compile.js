@@ -23,7 +23,9 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 // template changes never alter an existing video.
 // `silent` leaves out the voice-over (used for frame previews, which have no audio).
 // Scenes are laid out on the format's design canvas and scaled into the output (see aspects.js).
-export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT, width, height, topic, silent = false }, timeline) {
+// music: { file (in the project, e.g. assets/music/bgm.mp3), duration, volume } or null (see music.js).
+// style: the video style the planner chose (styles.js), applied to every scene's motion layer.
+export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT, width, height, topic, music = null, style = "documentary", silent = false }, timeline) {
   const L = layoutFor(aspectRatio, width, height);
   THEME = topic.theme;
   BACKGROUND = topic.background || "grid";
@@ -65,7 +67,7 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
       // Lets a template restyle itself per format: {{__r}}[data-aspect="9x16"] .cols { … }
       .replace(`id="${sc.id}-root"`, `id="${sc.id}-root" data-aspect="${aspectKey(aspectRatio)}"`);
     // The shared motion layer (particles, push-in) would jump at every cut of a cartoon.
-    if (!anim) html = withFx(html, sc, { L, wide: aspectRatio === "16:9" });
+    if (!anim) html = withFx(html, sc, { L, wide: aspectRatio === "16:9", style });
     await fs.writeFile(path.join(dir, "compositions", `${sc.id}.html`), html);
     used[sc.frame_id] = sc.frame.version;
   }
@@ -84,13 +86,13 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
   if (wipes.length) await fs.writeFile(path.join(dir, "compositions", "transitions.html"), transitionsHtml(size, wipes));
   else await fs.rm(path.join(dir, "compositions", "transitions.html"), { force: true });
 
-  await fs.writeFile(path.join(dir, "index.html"), hostHtml({ title, ...size, L }, timeline, wipes.length > 0, silent));
+  await fs.writeFile(path.join(dir, "index.html"), hostHtml({ title, ...size, L }, timeline, wipes.length > 0, silent, music));
   return { frames: used };
 }
 
 // Adds the shared motion layer (fx.js) to a filled scene: its CSS, its elements as the
 // root's first children (so the frame's content paints over them) and its script.
-function withFx(html, sc, { L, wide }) {
+function withFx(html, sc, { L, wide, style }) {
   const badge = sc.frame.inputs.corner_icon && sc.inputs.corner_icon ? sc.inputs.corner_icon : null;
   // The scene's photos go behind the frame, except one the frame already shows itself.
   const shown = new Set(Object.entries(sc.frame.inputs).filter(([, i]) => i.type === "image").map(([k]) => sc.inputs[k]));
@@ -108,6 +110,7 @@ function withFx(html, sc, { L, wide }) {
     photos: keep.map((v) => v.image),
     photoAt: keep.map((v, i) => (i ? v.at : 0)),
     icons: sc.icons || [],
+    style,
   });
   return html
     .replace("</style>", () => `${fx.css}\n      </style>`)
@@ -288,7 +291,29 @@ function captionsHtml(size, caps, { bottom, font, maxWidth }) {
   );
 }
 
-function hostHtml({ title, W, H, total, L }, { scenes }, hasWipes, silent) {
+// Background music under the narration: the track repeated until the video ends, at the topic's volume,
+// fading in at the start and out at the end, with short fades where one repeat meets the next. The
+// level is the track gain (data-volume); the volume lane only shapes the fades (0..1) on top of it, so a
+// player that ignores the lane still plays the music at the right level, just without fades.
+const FADE_IN = 1.5;
+const FADE_OUT = 2.5;
+const SEAM = 0.4;
+function bgmClips({ file, duration, volume }, total) {
+  const len = duration > 1 ? duration : total;
+  const r = (x) => Math.round(x * 1000) / 1000;
+  const clips = [];
+  for (let start = 0, i = 0; start < total - 0.05; start += len, i++) {
+    const d = r(Math.min(len, total - start));
+    const inT = r(Math.min(start === 0 ? FADE_IN : SEAM, d / 3));
+    const outT = r(Math.min(start + len >= total - 0.05 ? FADE_OUT : SEAM, d / 3));
+    const points = [{ t: 0, v: 0 }, { t: inT, v: 1 }, { t: r(d - outT), v: 1 }, { t: d, v: 0 }];
+    const automation = JSON.stringify({ version: 1, lanes: [{ target: "volume", points }] });
+    clips.push(`      <audio id="bgm-${i}" src="${file}" data-start="${r(start)}" data-duration="${d}" data-media-start="0" data-track-index="5" data-volume="${r(volume)}" data-automation='${automation}'></audio>`);
+  }
+  return clips.join("\n");
+}
+
+function hostHtml({ title, W, H, total, L }, { scenes }, hasWipes, silent, music) {
   const layer = (id, track, kind = "", w = W, h = H) =>
     `      <div id="h-${id}" data-composition-id="${id}" data-composition-src="compositions/${id}.html" data-start="0" data-duration="${total}" data-track-index="${track}"${kind ? ` data-track-kind="${kind}"` : ""} data-width="${w}" data-height="${h}"></div>`;
   const sceneHosts = scenes
@@ -327,7 +352,7 @@ function hostHtml({ title, W, H, total, L }, { scenes }, hasWipes, silent) {
 ${layer("background", 0, "", L.full.w, L.full.h)}
 ${sceneHosts}
 ${hasWipes ? layer("transitions", 2) + "\n" : ""}${layer("captions", 3, "captions")}
-${audios}
+${audios}${silent || !music ? "" : `\n${bgmClips(music, total)}`}
     </div>
     <script>
       window.__timelines["main"] = gsap.timeline({ paused: true });

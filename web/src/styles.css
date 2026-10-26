@@ -386,3 +386,24 @@ textarea.code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12
 .scene-photos select { width: auto; }
 .scene-icons { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
 @media (max-width: 720px) { .scene-media { grid-template-columns: 1fr; } }
+.music-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.music-card h2 { display: flex; align-items: center; gap: 10px; }
+.music-card label { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.music-volume input[type="range"] { width: 100%; }
+.track-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.track { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
+.track-head { display: flex; align-items: center; gap: 8px; }
+.track-head input { flex: 1; min-width: 0; }
+.track audio, .music-pick audio { width: 100%; height: 36px; }
+.music-pick { display: flex; flex-direction: column; gap: 8px; }
+.search { width: auto; min-width: 220px; }
+.music-link { display: flex; gap: 8px; margin-top: 10px; }
+.music-link input { flex: 1; min-width: 0; }
+.mixkit { margin-top: 10px; padding: 10px; border: 1px dashed var(--border); border-radius: 8px; }
+.mixkit-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mixkit-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow: auto; }
+.mixkit-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 180px) auto; gap: 8px; align-items: center; }
+.mixkit-info { display: flex; flex-direction: column; min-width: 0; }
+.mixkit-info strong, .mixkit-info span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mixkit-list audio { width: 100%; height: 32px; }
+@media (max-width: 720px) { .mixkit-list li { grid-template-columns: 1fr; } }

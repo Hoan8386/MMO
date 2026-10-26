@@ -24,7 +24,7 @@ const REGIONS = [
 ];
 
 // Latest articles of a topic from its news feeds (server/assets/news-sources.json).
-// onPick receives { title, summary, text, image, source, url } of the chosen article.
+// onPick receives { title, summary, text, image, images: [{ url, caption }], source, url } of the chosen article.
 export default function NewsPicker({ topic, onPick, onClose }) {
   const regions = REGIONS.filter((r) => r.feeds(topic).length);
   const [region, setRegion] = useState(regions[0]?.id || "vn");
@@ -55,9 +55,9 @@ export default function NewsPicker({ topic, onPick, onClose }) {
     setError("");
     try {
       const full = await api.get(`/news/article?url=${encodeURIComponent(item.link)}`);
-      onPick({ title: item.title || full.title, summary: full.summary || item.summary, text: full.text, image: full.image || item.image, source: item.source, url: item.link });
+      onPick({ title: item.title || full.title, summary: full.summary || item.summary, text: full.text, image: full.image || item.image, images: full.images || [], source: item.source, url: item.link });
     } catch (e) {
-      onPick({ title: item.title, summary: item.summary, text: "", image: item.image, source: item.source, url: item.link });
+      onPick({ title: item.title, summary: item.summary, text: "", image: item.image, images: item.image ? [{ url: item.image, caption: "" }] : [], source: item.source, url: item.link });
     }
   }
 

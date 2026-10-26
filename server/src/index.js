@@ -11,6 +11,7 @@ import { syncAssetsToDb } from "./video/library.js";
 import { loadSettings, activePreset } from "./settings.js";
 import settingsRouter from "./routes/settings.js";
 import newsRouter from "./routes/news.js";
+import musicRouter from "./routes/music.js";
 
 fs.mkdirSync(STORAGE_DIR, { recursive: true });
 await initDb();
@@ -35,6 +36,7 @@ app.use("/api/topics", topicsRouter);
 app.use("/api/library", libraryRouter);
 app.use("/api/animation", animationRouter);
 app.use("/api/news", newsRouter);
+app.use("/api/music", musicRouter);
 
 // Serve the built React app when it exists (npm run build in web/).
 const webDist = path.join(ROOT_DIR, "web", "dist");

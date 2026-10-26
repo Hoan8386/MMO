@@ -193,14 +193,52 @@ export async function fetchArticle(url) {
     paragraphs.push(text);
     if ((size += text.length) > 9000) break;
   }
+  const image = meta("og:image") || null;
   return {
     url: u.href,
     title: meta("og:title") || clean(tag(html, "title") || ""),
     summary: meta("og:description") || meta("description"),
-    image: meta("og:image") || null,
+    image,
+    images: articleImages(html.slice(start, footer > 0 ? start + footer : undefined), u, image),
     site: meta("og:site_name") || u.hostname.replace(/^www\./, ""),
     text: paragraphs.join("\n\n"),
   };
+}
+
+// Photos inside the article body (lazy-loaded ones included), with their caption: [{ url, caption }].
+// These show exactly what the article is about, unlike photos found by searching. Icons, logos, avatars,
+// ads and tiny images are skipped; the main image (og:image) comes first.
+const NOT_PHOTO = /logo|icon|avatar|sprite|banner|advert|\bads?\b|pixel|1x1|spacer|loading|placeholder|emoji|\.svg|\.gif/i;
+function articleImages(body, base, main) {
+  const out = [];
+  const add = (src, caption) => {
+    let url;
+    try {
+      url = new URL(decode(src).trim(), base).href;
+    } catch {
+      return;
+    }
+    if (!/^https?:/.test(url) || NOT_PHOTO.test(url) || out.some((x) => x.url === url)) return;
+    out.push({ url, caption: caption.slice(0, 160) });
+  };
+  if (main) add(main, "");
+  for (const m of body.matchAll(/<img\b[^>]*>/gi)) {
+    const tagText = m[0];
+    const attr = (n) => tagText.match(new RegExp(`\\b${n}=["']([^"']+)["']`, "i"))?.[1];
+    const src = attr("data-src") || attr("data-original") || attr("data-lazy-src") || attr("src");
+    if (!src || src.startsWith("data:")) continue;
+    const w = Number(attr("width"));
+    if (w && w < 300) continue;
+    // The caption: a figcaption after this image and before the next one, else the alt text.
+    const after = body.slice(m.index + tagText.length, m.index + tagText.length + 1500);
+    const nextImg = after.search(/<img\b/i);
+    const fig = after.match(/<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/i);
+    const own = fig && (nextImg < 0 || after.indexOf(fig[0]) < nextImg);
+    const caption = clean((own ? fig[1] : "") || attr("alt") || "");
+    add(src, caption);
+    if (out.length >= 15) break;
+  }
+  return out;
 }
 
 // Saves an image into dir as <baseName>.<ext>; returns the file name. JPEG, PNG and WebP only.

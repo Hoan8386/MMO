@@ -4,6 +4,7 @@ import ProjectsPage from "./pages/ProjectsPage.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
 import FramesPage from "./pages/FramesPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
+import MusicPage from "./pages/MusicPage.jsx";
 import { api } from "./api.js";
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
         <nav>
           <NavLink to="/" end>Dự án video</NavLink>
           <NavLink to="/frames">Thư viện frame</NavLink>
+          <NavLink to="/music">Nhạc nền</NavLink>
           <NavLink to="/settings">Cấu hình AI</NavLink>
         </nav>
         <div className="sidebar-foot">
@@ -44,6 +46,7 @@ export default function App() {
           <Route path="/" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/frames" element={<FramesPage />} />
+          <Route path="/music" element={<MusicPage />} />
           <Route path="/settings" element={<SettingsPage onSaved={loadHealth} />} />
         </Routes>
       </main>

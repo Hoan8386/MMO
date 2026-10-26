@@ -10,6 +10,10 @@ import { rigById } from "../animation/rigs.js";
 import { activePreset } from "../settings.js";
 import { topicAssets, findAsset } from "./library.js";
 import { downloadImages } from "./auto-images.js";
+import { richGuide, mixGuide, customSceneGuide } from "./guides.js";
+import { layoutFor } from "./aspects.js";
+import { topicTracks, pickTrack, copyTrack } from "./music.js";
+import { styleFor, STYLES } from "./styles.js";
 import { validatePlan } from "./validate.js";
 import { voiceScenes, voiceFor } from "./tts.js";
 import { buildTimeline } from "./timeline.js";
@@ -66,17 +70,34 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   if (project.mode === "animation") return makeAnimationPlan(dir, project, material, frames, { mock, onLog });
   const { images, cutouts, labels } = await projectMedia(dir);
   const topic = getTopic(project.topic);
-  // Billing only changes how calls are counted; every preset plans the same way.
+  // Unlimited presets (billed per request) get more in the same single call: the whole matching frame
+  // library, more scenes, story motion on every scene, cartoon shots and AI-designed scenes.
   const preset = activePreset();
+  const unlimited = preset.billing === "request";
   // Each scene also lists the photos its sentence calls for (auto-images.js), in the same AI call.
   const visuals = project.autoImages > 0;
   // A scene's own photo counts as a project image, so the image frames are offered.
-  const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images: visuals ? [...images, "visual:1"] : images, cutouts });
+  const allowed = selectFrames(frames, { topic, aspectRatio: project.aspectRatio, images: visuals ? [...images, "visual:1"] : images, cutouts, ...(unlimited ? { perType: 99, maxContent: 99 } : {}) });
+  const supports = (id) => frames.get(id)?.status === "active" && frames.get(id).aspect_ratios.includes(project.aspectRatio || "16:9");
+  let extra = "";
+  if (unlimited) {
+    extra += richGuide(project.targetSeconds || 90);
+    if (supports("anim-shot")) {
+      allowed.push(frames.get("anim-shot"));
+      extra += mixGuide;
+    }
+    if (supports("ai-scene")) {
+      allowed.push(frames.get("ai-scene"));
+      extra += customSceneGuide(layoutFor(project.aspectRatio || "16:9", project.width, project.height).scene);
+    }
+  }
   const library = topicLibrary(topic.topic_id);
   // The cutouts fetched for this video come first: they show what this material is about.
   library.cutouts = [...cutouts, ...library.cutouts];
-  onLog(`Model ${preset.model} (${preset.billing === "request" ? "theo lượt" : "theo token"})`);
-  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${cutouts.length} ảnh tách nền của dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon`);
+  // Background music the AI may choose from (the topic's tracks), in the same call.
+  const music = project.music && project.music !== "auto" ? [] : await topicTracks(topic.topic_id).catch(() => []);
+  onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited: thêm frame, chuyển động, cảnh hoạt hình, cảnh AI tự thiết kế" : "theo token"})`);
+  onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${cutouts.length} ảnh tách nền của dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon, ${music.length} bản nhạc nền`);
   const { plan, calls, errors } = await planVideo({
     material,
     title: project.title,
@@ -88,6 +109,9 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     labels,
     library,
     targetSeconds: project.targetSeconds,
+    extra,
+    motion: unlimited,
+    music,
     visuals,
     fetchImages: (items) => downloadImages(dir, items, { onLog }),
     mock,
@@ -120,8 +144,10 @@ export function topicLibrary(topicId) {
 async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }) {
   onLog("Phim hoạt hình: AI viết kịch bản, chọn nhân vật, bối cảnh và hành động");
   const preset = activePreset();
-  onLog(`Model ${preset.model} (${preset.billing === "request" ? "theo lượt" : "theo token"})`);
-  const { plan, calls } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options: {} });
+  const unlimited = preset.billing === "request";
+  onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited: thêm cảnh, thẻ chen giữa có chuyển động" : "theo token"})`);
+  const options = unlimited ? { rich: true, mix: true, motion: true, library: topicLibrary(project.topic || "storytelling") } : {};
+  const { plan, calls, errors = [] } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options });
   const stamped = calls.map((c) => ({ ...c, at: new Date().toISOString(), frames_sent: 3 }));
   if (stamped.length) {
     const logFile = path.join(dir, "ai_calls.json");
@@ -129,7 +155,7 @@ async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }
     await fs.writeFile(logFile, JSON.stringify([...prev, ...stamped], null, 2));
   }
   finalizePlan(plan, project, frames);
-  return { plan, calls: stamped };
+  return { plan, calls: stamped, errors };
 }
 
 // Numbers scenes s01… in order and applies project-level values the AI must not decide.
@@ -189,7 +215,13 @@ export async function buildProject(dir, project, plan, { onLog = () => {} } = {}
 
   const timeline = buildTimeline(plan, vo, frames);
   timeline.warnings.forEach((w) => onLog(`Cảnh báo: ${w}`));
-  const { frames: used } = await compileProject(dir, { ...project, title: project.title || plan.title, topic: getTopic(project.topic) }, timeline);
+  // Background music: the project's choice, else the one the AI picked, else the topic's first track.
+  const track = await pickTrack(project, plan).catch((err) => (onLog(`Không đọc được nhạc nền: ${err.message}`), null));
+  const music = track ? await copyTrack(dir, track) : null;
+  onLog(music ? `Nhạc nền: ${track.name} (âm lượng ${Math.round(music.volume * 100)}%)` : "Không có nhạc nền");
+  const style = styleFor(plan, project.topic);
+  onLog(`Phong cách dựng: ${STYLES[style].label}${plan.style ? "" : " (mặc định theo chủ đề)"}`);
+  const { frames: used } = await compileProject(dir, { ...project, title: project.title || plan.title, topic: getTopic(project.topic), music, style }, timeline);
   await fs.writeFile(
     path.join(dir, "timeline.json"),
     JSON.stringify(

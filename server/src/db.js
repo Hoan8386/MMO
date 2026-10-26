@@ -49,6 +49,13 @@ export async function initDb({ resetJobs = true } = {}) {
     [database],
   );
   if (!hasDescription.length) await admin.query("ALTER TABLE projects ADD COLUMN description VARCHAR(500) NULL AFTER auto_images");
+  // Background music (music.js): the project's choice and each topic's style note and volume.
+  const hasColumn = async (table, column) =>
+    (await admin.query("SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=? AND COLUMN_NAME=?", [database, table, column]))[0].length > 0;
+  if (!(await hasColumn("projects", "music"))) await admin.query("ALTER TABLE projects ADD COLUMN music VARCHAR(20) NULL AFTER description");
+  if (!(await hasColumn("topics", "music_style"))) await admin.query("ALTER TABLE topics ADD COLUMN music_style VARCHAR(500) NULL AFTER theme");
+  if (!(await hasColumn("music_tracks", "source_url"))) await admin.query("ALTER TABLE music_tracks ADD COLUMN source_url VARCHAR(500) NULL AFTER duration");
+  if (!(await hasColumn("topics", "music_volume"))) await admin.query("ALTER TABLE topics ADD COLUMN music_volume DECIMAL(4,2) NOT NULL DEFAULT 0.15 AFTER music_style");
   const [jobType] = await admin.query(
     "SELECT COLUMN_TYPE AS t FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='jobs' AND COLUMN_NAME='type'",
     [database],

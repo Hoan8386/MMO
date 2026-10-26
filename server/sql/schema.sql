@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS projects (
   auto_images INT NOT NULL DEFAULT 1,
   -- Short curiosity question for the video's post, written by the planner; editable.
   description VARCHAR(500) NULL,
+  -- Background music: NULL/'auto' = the AI's pick among the topic's tracks, 'none' = no music, or a music_tracks id.
+  music VARCHAR(20) NULL,
   plan JSON NULL,
   plan_approved TINYINT(1) NOT NULL DEFAULT 0,
   status ENUM('draft','planning','awaiting_approval','building','built','rendering','completed','failed') NOT NULL DEFAULT 'draft',
@@ -89,10 +91,28 @@ CREATE TABLE IF NOT EXISTS topics (
   related_tags JSON NOT NULL,
   background VARCHAR(20) NOT NULL DEFAULT 'grid',
   theme JSON NOT NULL,
+  -- What kind of background music suits the topic (a note for whoever uploads tracks) and its level 0..1.
+  music_style VARCHAR(500) NULL,
+  music_volume DECIMAL(4,2) NOT NULL DEFAULT 0.15,
   sort_order INT NOT NULL DEFAULT 99,
   active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Background music tracks per topic (storage/music/<topic_id>/<file>), see src/video/music.js.
+-- mood: how the track feels, read by the planner to pick the track that fits the video.
+CREATE TABLE IF NOT EXISTS music_tracks (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  topic_id VARCHAR(50) NOT NULL,
+  name VARCHAR(200) NOT NULL,
+  mood VARCHAR(300) NULL,
+  file VARCHAR(255) NOT NULL,
+  duration DECIMAL(8,3) NULL,
+  -- Where the file came from (e.g. a Pixabay download link), for checking its licence later.
+  source_url VARCHAR(500) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_music_topic (topic_id)
 );
 
 -- Shared asset library (storage/library/, downloaded by scripts/download-assets.js).

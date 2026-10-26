@@ -11,6 +11,20 @@
 // Positions come from fixed lists, never Math.random, so every render is identical.
 // A scene's story motion (motion.js, unlimited presets) adds its layers here and replaces the push-in.
 import { motionLayer } from "./motion.js";
+import { STYLES } from "./styles.js";
+
+// How each style's scene photos come in (styles.js photo.enter), as GSAP from → to on the image.
+const PHOTO_ENTER = {
+  fade: [{ opacity: 0 }, { opacity: 1 }],
+  wipe: [{ opacity: 1, clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)" }],
+  zoom: [{ opacity: 0 }, { opacity: 1 }],
+  iris: [{ opacity: 1, clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)" }],
+  flash: [{ opacity: 0 }, { opacity: 1 }],
+};
+const OVERLAY = {
+  vignette: "background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);",
+  scanlines: "background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 4px); mix-blend-mode: screen;",
+};
 
 // Sparkle positions as fractions of the canvas, kept to the edges so they never sit under text.
 const SPARKS = [
@@ -23,7 +37,10 @@ const SPARK_SHAPE = { stars: "star", burst: "star", bokeh: "orb", waves: "orb" }
 const BADGE = 180;
 const ICON = 104;
 
-export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks, photos = [], photoAt = [], icons = [] }) {
+// style: a key of STYLES (styles.js) — camera, photo entrance and grade, overlay, icon pops, sparkles.
+export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks, photos = [], photoAt = [], icons = [], style = "documentary" }) {
+  const look = (STYLES[style] || STYLES.documentary).fx;
+  const bar = Math.round(H * 0.055);
   const mo = motionLayer({ id, D, W, H, marks, motion });
   const r = `#${id}-root`;
   const shape = SPARK_SHAPE[background] || "dot";
@@ -54,7 +71,8 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           photos.length
             ? `
         ${r} .fx-photos { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-        ${r} .fx-photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+        ${r} .fx-photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; filter: ${look.photo.filter || "none"}; }
+        ${r} .fx-photos .flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
         ${r} .fx-photos .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 58%, transparent), color-mix(in srgb, var(--bg) 84%, transparent)); }`
             : ""
         }${
@@ -69,7 +87,9 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
         }${mo ? mo.css : ""}`;
 
   const html =
-    (photos.length ? `<div class="fx-photos">${photos.map((p) => `<img src="assets/img/${p}" alt="" />`).join("")}<div class="scrim"></div></div>` : "") +
+    (photos.length ? `<div class="fx-photos">${photos.map((p) => `<img src="assets/img/${p}" alt="" />`).join("")}<div class="scrim"></div>${look.photo.enter === "flash" ? '<div class="flash"></div>' : ""}</div>` : "") +
+    (OVERLAY[look.overlay] ? `<div class="fx-overlay" style="position:absolute;inset:0;pointer-events:none;${OVERLAY[look.overlay]}"></div>` : "") +
+    (look.bars ? `<div class="fx-bar" style="position:absolute;left:0;right:0;top:0;height:${bar}px;background:#000;z-index:6;transform-origin:top"></div><div class="fx-bar" style="position:absolute;left:0;right:0;bottom:0;height:${bar}px;background:#000;z-index:6;transform-origin:bottom"></div>` : "") +
     (mo?.back || "") +
     `<div class="fx-layer">${sparks.map((p) => `<i class="fx-spark ${shape}" style="left:${p.x}px;top:${p.y}px;width:${p.s}px;height:${p.s}px"></i>`).join("")}</div>` +
     (badge ? `<div class="fx-badge"><div class="ring"></div><div class="disc"></div><img src="assets/icons/${badge}.svg" alt="" /></div>` : "") +
@@ -84,10 +104,10 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           const D = ${D};
           // Repeats of a yoyo that fit before the exit and end back where they started.
           const yoyos = (at, half) => 2 * Math.floor((D - 0.5 - at) / (2 * half)) - 1;
-          ${mo ? mo.camera : `tl.fromTo(R, { "--push": 1 }, { "--push": 1.025, duration: D, ease: "none" }, 0);`}
+          ${mo ? mo.camera : `tl.fromTo(R, { "--push": 1 }, { "--push": ${look.push}, duration: D, ease: "none" }, 0);`}
           R.querySelectorAll(".fx-spark").forEach((el, i) => {
             const at = 0.15 + (i % 6) * 0.12;
-            tl.fromTo(el, { opacity: 0, scale: 0.3 }, { opacity: ${shape === "orb" ? 0.35 : 0.55}, scale: 1, duration: 0.6, ease: "power2.out" }, at);
+            tl.fromTo(el, { opacity: 0, scale: 0.3 }, { opacity: ${Math.min(1, (shape === "orb" ? 0.35 : 0.55) * look.sparks).toFixed(2)}, scale: 1, duration: 0.6, ease: "power2.out" }, at);
             tl.fromTo(el, { "--fy": "0px" }, { "--fy": (i % 2 ? -1 : 1) * (40 + (i % 4) * 18) + "px", duration: Math.max(1, D - at), ease: "sine.inOut" }, at);
             const tw = 1 + (i % 5) * 0.2;
             if (yoyos(tw, 0.9) > 0) tl.to(el, { opacity: 0.15, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: yoyos(tw, 0.9) }, tw);
@@ -102,7 +122,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
             badge
               ? `
           const B = R.querySelector(".fx-badge");
-          tl.fromTo(B, { opacity: 0, scale: 0.2, rotation: -25 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)" }, 0.35);
+          tl.fromTo(B, { opacity: 0, scale: 0.2, rotation: -25 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.7, ease: "${look.iconEase}" }, 0.35);
           const ring = B.querySelector(".ring");
           for (let t = 1.1; t < D - 1.2; t += 1.8) tl.fromTo(ring, { opacity: 0.7, scale: 1 }, { opacity: 0, scale: 1.4, duration: 1.2, ease: "power1.out" }, t);
           tl.to(B, { opacity: 0, scale: 0.6, duration: 0.4, ease: "power2.in" }, D - 0.45);`
@@ -110,13 +130,23 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           }${
             photos.length
               ? `
-          // Scene photos: each fades in over the previous one at its time and zooms slowly until the end.
+          // Scene photos: each comes in over the previous one at its time, the style's way (fade, wipe,
+          // iris, zoom punch, flash cut), and keeps moving until the scene ends.
           const AT = ${JSON.stringify(photoAt)};
+          const [IN, OUT] = ${JSON.stringify(PHOTO_ENTER[look.photo.enter] || PHOTO_ENTER.fade)};
+          const FLASH = R.querySelector(".fx-photos .flash");
           R.querySelectorAll(".fx-photos img").forEach((el, i) => {
             const at = Math.max(0.05, AT[i] ?? 0);
-            tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: i ? 0.7 : 0.5, ease: "power1.inOut" }, at);
-            tl.fromTo(el, { scale: 1.02, xPercent: i % 2 ? 1.5 : -1.5 }, { scale: 1.14, xPercent: i % 2 ? -1.5 : 1.5, duration: Math.max(1, D - at), ease: "none" }, at);
+            tl.fromTo(el, IN, { ...OUT, duration: ${look.photo.dur}, ease: "power2.inOut" }, at);
+            tl.fromTo(el, { scale: ${look.photo.zoom[0]}, xPercent: i % 2 ? 1.5 : -1.5 }, { scale: ${look.photo.zoom[1]}, xPercent: i % 2 ? -1.5 : 1.5, duration: Math.max(1, D - at), ease: "none" }, at);
+            if (FLASH) tl.fromTo(FLASH, { opacity: 0.85 }, { opacity: 0, duration: 0.35, ease: "power2.out" }, at);
           });`
+              : ""
+          }${
+            look.bars
+              ? `
+          // Letterbox bars slide in at the start.
+          R.querySelectorAll(".fx-bar").forEach((el) => tl.fromTo(el, { scaleY: 0 }, { scaleY: 1, duration: 0.8, ease: "power3.out" }, 0));`
               : ""
           }${
             icons.length
@@ -124,7 +154,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
           // Scene icons pop in one by one over the first part of the narration.
           const step = Math.min(0.8, Math.max(0.3, (D - 2) / ${icons.length}));
           R.querySelectorAll(".fx-icon").forEach((el, i) => {
-            tl.fromTo(el, { opacity: 0, scale: 0.3, rotation: -20 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.6 + i * step);
+            tl.fromTo(el, { opacity: 0, scale: 0.3, rotation: -20 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.6, ease: "${look.iconEase}" }, 0.6 + i * step);
             tl.to(el, { opacity: 0, scale: 0.6, duration: 0.35, ease: "power2.in" }, D - 0.45);
           });`
               : ""

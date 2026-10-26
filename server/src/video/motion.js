@@ -114,6 +114,29 @@ export function motionErrors(at, motion, keywordCount) {
   return errors;
 }
 
+// The usable part of an AI-written motion: unknown effects or cameras dropped, actors kept only when
+// every field is valid (planning makes one call, so nothing is sent back to be fixed). Returns
+// { motion, dropped } where dropped counts what was removed.
+export function cleanMotion(motion, keywordCount) {
+  if (!motion || typeof motion !== "object" || Array.isArray(motion)) return { motion: undefined, dropped: motion == null ? 0 : 1 };
+  let dropped = 0;
+  const out = {};
+  if (EFFECTS[motion.effect]) out.effect = motion.effect;
+  else if (motion.effect != null) dropped++;
+  if (CAMERAS[motion.camera]) out.camera = motion.camera;
+  else if (motion.camera != null) dropped++;
+  const actors = Array.isArray(motion.actors) ? motion.actors : [];
+  out.actors = actors
+    .filter((a) => {
+      const at = a?.at === -1 || (Number.isInteger(a?.at) && a.at >= 0 && a.at < keywordCount);
+      const ok = KINDS[a?.kind] && findAsset(KINDS[a.kind], a.name) && MOVES[a.move] && ["left", "right"].includes(a.side) && at;
+      if (!ok) dropped++;
+      return ok;
+    })
+    .slice(0, MAX_ACTORS);
+  return { motion: out, dropped };
+}
+
 // Library assets a motion uses, as [library kind, name], for copying into the project.
 export const motionAssets = (motion) => (motion?.actors || []).filter((a) => KINDS[a.kind]).map((a) => [KINDS[a.kind], a.name]);
 

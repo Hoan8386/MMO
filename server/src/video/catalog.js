@@ -92,6 +92,8 @@ export async function refreshCatalog() {
     related_tags: parse(r.related_tags),
     background: r.background,
     theme: parse(r.theme),
+    music_style: r.music_style ?? null,
+    music_volume: r.music_volume != null ? Number(r.music_volume) : null,
     active: !!r.active,
   }));
   await refreshAssets();
