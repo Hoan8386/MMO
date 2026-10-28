@@ -4,30 +4,45 @@ import crypto from "node:crypto";
 import { config, SERVER_DIR } from "../config.js";
 import { run, probeDuration } from "./proc.js";
 import { VOICE_STYLES, rigById } from "../animation/rigs.js";
+import { ELEVEN_VOICES, elevenVoiceId, narrationTone, CHARACTER_VOICES, elevenVoiceAll } from "./elevenlabs-tts.js";
+
+const ELEVEN = config.tts.engine === "elevenlabs";
 
 const SCRIPT = path.join(SERVER_DIR, "scripts", "tts_words.py");
 
-export const VOICES = [
+const EDGE_VOICES = [
   { id: "vi-VN-HoaiMyNeural", label: "Tiếng Việt — Nữ (Hoài My)" },
   { id: "vi-VN-NamMinhNeural", label: "Tiếng Việt — Nam (Nam Minh)" },
   { id: "en-US-JennyNeural", label: "English — Female (Jenny)" },
   { id: "en-US-GuyNeural", label: "English — Male (Guy)" },
 ];
+// The voices of the engine in use (server/.env TTS_ENGINE / ELEVENLABS_API_KEY).
+export const VOICES = ELEVEN ? ELEVEN_VOICES : EDGE_VOICES;
+export const DEFAULT_VOICE = VOICES[0].id;
 
-// Identifies a voiced line; audio is reused whenever text, voice, rate and pitch are unchanged.
-// (Without a pitch the hash is the same as before pitch existed, so old audio stays valid.)
-export const voiceHash = (text, voice, rate, pitch) =>
-  crypto.createHash("sha1").update(`${text}\n${voice}\n${rate}${pitch && pitch !== "+0Hz" ? `\n${pitch}` : ""}`).digest("hex").slice(0, 16);
+// Identifies a voiced line; audio is reused whenever text, voice, rate, pitch and the ElevenLabs tone
+// are unchanged. (Without a pitch or tone the hash is the same as before they existed, so old audio
+// stays valid.)
+export const voiceHash = (text, voice, rate, pitch, tone) =>
+  crypto
+    .createHash("sha1")
+    .update(`${text}\n${voice}\n${rate}${pitch && pitch !== "+0Hz" ? `\n${pitch}` : ""}${tone ? `\n${config.tts.elevenModel}\n${tone}` : ""}`)
+    .digest("hex")
+    .slice(0, 16);
 
 // The voice of one scene: in an animation, a character's line uses that character's voice style
 // (plan.cast); narration and every other video use the project voice.
+// With ElevenLabs the narrator's tone (how steady or expressive) follows the video style (plan.style).
 export function voiceFor(scene, project, plan) {
   const speaker = scene.inputs?.speaker;
   if (scene.frame_id?.startsWith("anim-") && speaker && speaker !== "narrator") {
     const member = (plan.cast || []).find((c) => c.rig === speaker);
-    const style = VOICE_STYLES[member?.voice] || VOICE_STYLES[rigById(speaker)?.voice];
+    const key = VOICE_STYLES[member?.voice] ? member.voice : rigById(speaker)?.voice;
+    const style = VOICE_STYLES[key];
+    if (style && ELEVEN) return { voice: CHARACTER_VOICES[key] || elevenVoiceId(style.voice), rate: style.rate, pitch: undefined, tone: "character" };
     if (style) return { voice: style.voice, rate: style.rate, pitch: style.pitch };
   }
+  if (ELEVEN) return { voice: elevenVoiceId(project.voice), rate: project.rate, pitch: undefined, tone: narrationTone(plan?.style) };
   return { voice: project.voice, rate: project.rate, pitch: undefined };
 }
 
@@ -40,7 +55,7 @@ export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => 
 
   const hashOf = (sc) => {
     const v = voiceOf(sc);
-    return voiceHash(sc.voice_text, v.voice, v.rate, v.pitch);
+    return voiceHash(sc.voice_text, v.voice, v.rate, v.pitch, v.tone);
   };
 
   // Index existing audio by hash first, so reordered or renumbered scenes reuse their voice.
@@ -57,7 +72,7 @@ export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => 
 
   const result = {};
   const jobs = [];
-  for (const sc of scenes) {
+  for (const [i, sc] of scenes.entries()) {
     const hash = hashOf(sc);
     const mp3 = path.join(voDir, `${sc.id}.mp3`);
     const words = path.join(voDir, `${sc.id}.words.json`);
@@ -71,7 +86,9 @@ export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => 
       continue;
     }
     const v = voiceOf(sc);
-    jobs.push({ id: sc.id, text: sc.voice_text, voice: v.voice, rate: v.rate, ...(v.pitch ? { pitch: v.pitch } : {}), mp3, words, metaFile, hash });
+    // ElevenLabs also hears the neighbouring lines, so the intonation runs on from scene to scene.
+    const around = ELEVEN ? { tone: v.tone, previous: scenes[i - 1]?.voice_text, next: scenes[i + 1]?.voice_text } : {};
+    jobs.push({ id: sc.id, text: sc.voice_text, voice: v.voice, rate: v.rate, ...(v.pitch ? { pitch: v.pitch } : {}), ...around, mp3, words, metaFile, hash });
   }
   // Drop audio of scenes that no longer exist (e.g. s09 after deleting a scene).
   const ids = new Set(scenes.map((s) => s.id));
@@ -83,10 +100,14 @@ export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => 
   if (jobs.length) {
     // The words file is written last, so its presence marks a finished scene.
     for (const j of jobs) await fs.rm(j.words, { force: true });
-    const jobsFile = path.join(voDir, "_jobs.json");
-    await fs.writeFile(jobsFile, JSON.stringify(jobs));
-    const failure = await run(config.pythonBin, [SCRIPT, jobsFile]).then(() => null, (err) => err);
-    await fs.rm(jobsFile, { force: true });
+    let failure = null;
+    if (ELEVEN) failure = await elevenVoiceAll(jobs).then(() => null, (err) => err);
+    else {
+      const jobsFile = path.join(voDir, "_jobs.json");
+      await fs.writeFile(jobsFile, JSON.stringify(jobs));
+      failure = await run(config.pythonBin, [SCRIPT, jobsFile]).then(() => null, (err) => err);
+      await fs.rm(jobsFile, { force: true });
+    }
     // Keep every scene that did finish, so a retry only redoes the ones that failed.
     const failed = [];
     for (const j of jobs) {

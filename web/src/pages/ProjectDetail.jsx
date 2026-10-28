@@ -89,10 +89,11 @@ export default function ProjectDetail() {
     }
   }
 
-  async function replan(mock) {
+  // fromSaved: process the AI's last saved answer again — no new AI call.
+  async function replan(mock, fromSaved = false) {
     if (p.plan && !confirm("Lập lại kế hoạch sẽ thay toàn bộ kế hoạch hiện tại. Tiếp tục?")) return;
     setDraft(null);
-    await api.post(`/projects/${id}/plan`, { mock });
+    await api.post(`/projects/${id}/plan`, { mock, fromSaved });
   }
 
   async function openStudio() {
@@ -157,6 +158,11 @@ export default function ProjectDetail() {
             <div className="actions">
               <button className="btn" disabled={busy} onClick={() => act(() => replan(false))}>{p.plan ? "Lập lại bằng AI" : "Lập kế hoạch bằng AI"}</button>
               <button className="btn small" disabled={busy} onClick={() => act(() => replan(true))} title="Không gọi AI, không tốn token">Thử (mock)</button>
+              {p.mode !== "animation" && (
+                <button className="btn small" disabled={busy} onClick={() => act(() => replan(false, true))} title="Xử lý lại câu trả lời AI đã lưu (sửa JSON, tải ảnh, kiểm tra) — không gọi AI, không tốn lượt">
+                  Dùng lại câu trả lời AI gần nhất
+                </button>
+              )}
             </div>
           </div>
           <div className="step">
@@ -332,6 +338,7 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
               Giọng đọc
               <select value={f.voice} onChange={set("voice")}>
                 {voices.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
+                {voices.length > 0 && !voices.some((v) => v.id === f.voice) && <option value={f.voice}>{f.voice} (giọng cũ — tự dùng giọng tương ứng)</option>}
               </select>
             </label>
             <label>Tốc độ đọc<input value={f.voice_rate} onChange={set("voice_rate")} /></label>
@@ -345,7 +352,7 @@ function ProjectInfo({ p, disabled, onSaved, onError }) {
       ) : (
         <>
           <p className="muted small info-line">
-            <TopicChip topic={topic} fallback={p.topic} /> <AspectBadge ratio={p.aspect_ratio} /> · Kênh: {p.channel || "—"} · Giọng: {p.voice} ({p.voice_rate}) · Mong muốn {p.target_seconds} giây
+            <TopicChip topic={topic} fallback={p.topic} /> <AspectBadge ratio={p.aspect_ratio} /> · Kênh: {p.channel || "—"} · Giọng: {voices.find((v) => v.id === p.voice)?.label || p.voice} ({p.voice_rate}) · Mong muốn {p.target_seconds} giây
           </p>
           <p className="script clamp">{p.material}</p>
         </>

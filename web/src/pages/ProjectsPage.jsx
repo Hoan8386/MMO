@@ -126,7 +126,14 @@ function NewProjectModal({ topics, onClose }) {
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   useEffect(() => {
-    api.get("/projects/voices").then(setVoices).catch(() => {});
+    api
+      .get("/projects/voices")
+      .then((list) => {
+        setVoices(list);
+        // The engine's first voice when the default one is not offered (e.g. ElevenLabs voices).
+        setForm((f) => (list.length && !list.some((v) => v.id === f.voice) ? { ...f, voice: list[0].id } : f));
+      })
+      .catch(() => {});
   }, []);
 
   async function submit(e) {

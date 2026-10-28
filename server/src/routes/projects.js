@@ -8,7 +8,7 @@ import { loadTopics } from "../video/catalog.js";
 import { projectDir, slugify, listImages, projectMedia, planErrors, hasManualEdits, readJson, finalizePlan, fetchedFile } from "../video/pipeline.js";
 import { planJob, buildJob, renderJob, isBusy, loadProject, pipelineProject } from "../video/jobs.js";
 import { startStudio, stopStudio, studioSession } from "../video/studio.js";
-import { VOICES, voiceHash, voiceFor } from "../video/tts.js";
+import { VOICES, DEFAULT_VOICE, voiceHash, voiceFor } from "../video/tts.js";
 import { ASPECTS, DEFAULT_ASPECT } from "../video/aspects.js";
 import { downloadImage } from "../news.js";
 
@@ -56,7 +56,7 @@ router.post("/", async (req, res) => {
   const topic = loadTopics().has(req.body.topic) ? req.body.topic : mode === "animation" && loadTopics().has("storytelling") ? "storytelling" : "technology";
   const r = await query(
     "INSERT INTO projects (slug, mode, title, material, channel, topic, voice, voice_rate, target_seconds, aspect_ratio, width, height, auto_images) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-    [slug, mode, title.trim(), material, req.body.channel || null, topic, req.body.voice || "vi-VN-HoaiMyNeural", req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height, autoImages(req.body.auto_images)],
+    [slug, mode, title.trim(), material, req.body.channel || null, topic, req.body.voice || DEFAULT_VOICE, req.body.voice_rate || "+6%", Number(req.body.target_seconds) || 90, size.aspect_ratio, size.width, size.height, autoImages(req.body.auto_images)],
   );
   const dir = projectDir(slug);
   await fs.mkdir(path.join(dir, "assets", "img"), { recursive: true });
@@ -84,7 +84,7 @@ router.get("/:id", async (req, res) => {
   const audio = {};
   for (const s of p.plan?.scenes ?? []) {
     const v = voiceFor(s, { voice: p.voice, rate: p.voice_rate }, p.plan);
-    const hit = byHash.get(voiceHash(s.voice_text, v.voice, v.rate, v.pitch));
+    const hit = byHash.get(voiceHash(s.voice_text, v.voice, v.rate, v.pitch, v.tone));
     if (s.id && hit) audio[s.id] = { url: `${storageUrl(path.join(voDir, `${hit.id}.mp3`))}?h=${hit.hash}`, duration: hit.duration, scene_duration: sceneDur[hit.id] };
   }
   const [versions, usage, jobs] = await Promise.all([
@@ -151,7 +151,7 @@ function action(fn) {
   };
 }
 
-router.post("/:id/plan", action((id, b) => planJob(id, { mock: !!b.mock })));
+router.post("/:id/plan", action((id, b) => planJob(id, { mock: !!b.mock, fromSaved: !!b.fromSaved })));
 router.post("/:id/build", action((id, b) => buildJob(id, { render: b.render !== false, force: !!b.force })));
 router.post("/:id/render", action((id) => renderJob(id)));
 

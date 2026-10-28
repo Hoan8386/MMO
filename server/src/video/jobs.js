@@ -74,11 +74,11 @@ async function recordCalls(id, calls) {
   }
 }
 
-export function planJob(id, { mock = false } = {}) {
+export function planJob(id, { mock = false, fromSaved = false } = {}) {
   enqueue(id, "plan", "ai", async ({ log }) => {
     const p = await loadProject(id);
     await setProject(id, { status: "planning", progress: 0, plan_approved: 0 });
-    const { plan, calls, errors } = await makePlan(projectDir(p.slug), pipelineProject(p), p.material, { mock, onLog: log });
+    const { plan, calls, errors } = await makePlan(projectDir(p.slug), pipelineProject(p), p.material, { mock, fromSaved, onLog: log });
     await recordCalls(id, calls);
     const tokens = calls.reduce((a, c) => a + c.input_tokens + c.cache_read_input_tokens + c.output_tokens, 0);
     // The click-bait question lives on the project (editable there), not in the plan.
@@ -90,7 +90,7 @@ export function planJob(id, { mock = false } = {}) {
       status: "awaiting_approval",
       progress: 100,
       message: `Đã lập kế hoạch ${plan.scenes.length} cảnh${
-        !calls.length ? " (mock)" : calls[0].billing === "request" ? ` (${calls.length} lượt gọi ${calls[0].model}, không tính token)` : ` (${tokens} token)`
+        fromSaved ? " (dùng lại câu trả lời đã lưu, không tốn lượt gọi)" : !calls.length ? " (mock)" : calls[0].billing === "request" ? ` (${calls.length} lượt gọi ${calls[0].model}, không tính token)` : ` (${tokens} token)`
       }${errors.length ? ` — còn ${errors.length} lỗi cần sửa tay trước khi dựng` : " — hãy xem lại rồi duyệt"}`,
     });
   });

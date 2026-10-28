@@ -47,7 +47,7 @@ const since = (t) => duration(Date.now() - t);
 // may say "visual:<n>" for the scene's n-th one; fetchImages(items) downloads them after the answer and
 // returns { item index: image file } for the ones found.
 // music: the topic's background tracks [{ id, name, mood }]; with two or more the AI picks one (plan.music).
-export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, music = [], visuals = false, fetchImages = null, mock = false, onLog = () => {} }) {
+export async function planVideo({ material, title, channel, topic, frames, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, music = [], visuals = false, fetchImages = null, savedAnswer = null, mock = false, onLog = () => {} }) {
   const allowedIds = allowed.map((f) => f.frame_id);
   if (mock || config.ai.mode === "mock") {
     const plan = mockPlan({ material, title, allowed, images, library, topic });
@@ -58,28 +58,33 @@ export async function planVideo({ material, title, channel, topic, frames, allow
 
   anthropic();
   const req = planRequest({ material, title, channel, topic, allowed, images, labels, library, targetSeconds, extra, motion, music, visuals: visuals && !!fetchImages });
-  onLog("AI lập kế hoạch (1 lượt gọi)");
-  const { json, text, usage } = await callModel(req.messages, req.schema, SYSTEM, activePreset(), onLog).catch((err) => {
+  // savedAnswer: the AI's last answer (ai_last_response.txt) processed again, without a new call.
+  if (savedAnswer) onLog("Dùng lại câu trả lời AI gần nhất (không gọi AI)");
+  else onLog("AI lập kế hoạch (1 lượt gọi)");
+  const answer = savedAnswer ? { json: parseLooseJson(savedAnswer), text: savedAnswer, usage: null } : null;
+  const { json, text, usage } = answer || await callModel(req.messages, req.schema, SYSTEM, activePreset(), onLog).catch((err) => {
     if (err instanceof Anthropic.APIConnectionError) {
       const host = process.env.ANTHROPIC_BASE_URL ? new URL(process.env.ANTHROPIC_BASE_URL).host : "api.anthropic.com";
       throw new Error(`Không kết nối được tới máy chủ AI (${host}): ${err.cause?.code || err.message}. Kiểm tra mạng rồi bấm lập kế hoạch lại.`);
     }
     throw err;
   });
-  const calls = [{ step: "plan", attempt: 1, ...usage }];
-  if (!json || !Array.isArray(json.scenes)) throw new Error(`AI trả về kế hoạch không đọc được. Đoạn đầu: ${text.slice(0, 300)}`);
+  const calls = usage ? [{ step: "plan", attempt: 1, ...usage }] : [];
+  // The full answer goes back to the caller either way (saved as ai_last_response.txt).
+  if (!json || !Array.isArray(json.scenes)) throw Object.assign(new Error(`AI trả về kế hoạch không đọc được (toàn văn lưu ở ai_last_response.txt). Đoạn đầu: ${text.slice(0, 300)}`), { raw: text });
+  if (!strictJson(text)) onLog("JSON của AI có lỗi cú pháp nhỏ (xuống dòng trong chuỗi, dấu phẩy thừa hoặc bị cắt cụt) — đã tự sửa, kiểm tra lại các cảnh cuối");
 
   tidyScenes(json, library);
   if (!music.some((t) => String(t.id) === String(json.music))) delete json.music;
   if (!STYLE_IDS.includes(json.style)) delete json.style;
-  const fixed = autoFix(json, frames);
+  const fixed = [...autoFix(json, frames), ...ensureEnds(json, frames, allowed, library)];
   if (fixed.length) onLog(`Tự sửa ${fixed.length} chỗ trong kế hoạch: ${fixed.join("; ").slice(0, 300)}`);
   let pictures = images;
   if (req.visuals) pictures = await attachVisuals(json, frames, fetchImages, { images, library, onLog });
   else for (const sc of json.scenes) sc.visuals = [];
   const errors = validatePlan(json, frames, { allowedFrameIds: allowedIds, images: pictures, cutouts: library.cutouts });
   if (errors.length) onLog(`Kế hoạch còn ${errors.length} lỗi cần sửa tay trong trình sửa (không gọi lại AI): ${errors.join("; ").slice(0, 300)}`);
-  return { plan: json, calls, errors };
+  return { plan: json, calls, errors, raw: text };
 }
 
 const EMPTY_LIBRARY = { icons: [], logos: [], photos: [], cutouts: [], characters: [] };
@@ -304,13 +309,7 @@ ${schemaInPrompt(schema)}`,
     throw new Error(`AI trả về bị cắt ngang (max_tokens, ${response.usage?.output_tokens} token ra): …${raw.slice(-300)}`);
   }
   const text = response.content.find((b) => b.type === "text")?.text ?? "";
-  let json = null;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    const m = text.match(/\{[\s\S]*\}/);
-    if (m) try { json = JSON.parse(m[0]); } catch { /* reported as a validation error */ }
-  }
+  const json = parseLooseJson(text);
   // `model` is what actually answered (a fallback or gateway may differ from the request).
   const usage = {
     model: response.model || preset.model,
@@ -321,6 +320,86 @@ ${schemaInPrompt(schema)}`,
     cache_creation_input_tokens: response.usage?.cache_creation_input_tokens ?? 0,
   };
   return { json, text, usage };
+}
+
+// The JSON object in a model's answer, read leniently since a plan comes from one call and a near-miss
+// must not waste it: markdown fences and text around the object are ignored, raw line breaks and tabs
+// inside strings (common in custom-scene code) are escaped, trailing commas dropped, and an answer cut
+// off mid-way keeps everything up to its last complete element (e.g. the scenes finished so far).
+// Returns null when nothing usable is found.
+// Whether the answer was valid JSON as it came (only a markdown fence around it allowed).
+const strictJson = (text) => {
+  try {
+    JSON.parse(text.trim().replace(/^```(?:json)?s*|s*```$/g, ""));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export function parseLooseJson(text) {
+  const tryParse = (s) => {
+    try {
+      return JSON.parse(s);
+    } catch {
+      return undefined;
+    }
+  };
+  const direct = tryParse(text);
+  if (direct && typeof direct === "object") return direct;
+  const start = text.indexOf("{");
+  if (start < 0) return null;
+  // One pass: escape control characters inside strings, and remember after each closed object/array
+  // which brackets were still open, so a cut-off answer can be closed at its last complete element.
+  let out = "";
+  let inString = false;
+  let escaped = false;
+  let word = ""; // letters outside strings: only true / false / null (or a number's exponent) belong there
+  const stack = [];
+  const cuts = []; // [length of out, closers needed]
+  // A stray word outside a string ('…"keyword": "x"}hes], …' came back once) is dropped.
+  const endWord = () => {
+    if (word && (/^(true|false|null)$/.test(word) || (/^[eE]$/.test(word) && /\d$/.test(out)))) out += word;
+    word = "";
+  };
+  for (const c of text.slice(start)) {
+    if (!inString && /[A-Za-z_]/.test(c)) {
+      word += c;
+      continue;
+    }
+    endWord();
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (c === "\\") escaped = true;
+      else if (c === '"') inString = false;
+      else if (c === "\n") { out += "\\n"; continue; }
+      else if (c === "\r") { out += "\\r"; continue; }
+      else if (c === "\t") { out += "\\t"; continue; }
+      else if (c < " ") { out += `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`; continue; }
+      out += c;
+      continue;
+    }
+    if (c === '"') inString = true;
+    else if (c === "{" || c === "[") stack.push(c === "{" ? "}" : "]");
+    else if (c === "}" || c === "]") {
+      stack.pop();
+      out = out.replace(/,\s*$/, ""); // a trailing comma before the closer
+      out += c;
+      if (!stack.length) break; // the end of the top-level object
+      cuts.push([out.length, [...stack].reverse().join("")]);
+      continue;
+    }
+    out += c;
+  }
+  const whole = tryParse(out);
+  if (whole && typeof whole === "object") return whole;
+  // Cut off: close at the latest point that still parses.
+  for (let i = cuts.length - 1; i >= Math.max(0, cuts.length - 400); i--) {
+    const [len, closers] = cuts[i];
+    const fixed = tryParse(`${out.slice(0, len)}${closers}`);
+    if (fixed && typeof fixed === "object") return fixed;
+  }
+  return null;
 }
 
 // Without structured outputs the model is told the schema; validation and the repair round still
@@ -437,6 +516,29 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
 // Deterministic plan for running the pipeline without spending tokens:
 // one sentence per scene, frame picked by simple heuristics.
 // Fills a frame's required text inputs with a cut-down string (mock mode only).
+// A video opens with an intro and closes with an outro. When the answer lacks one (the model forgot it,
+// or a broken answer was cut short), a plain one is added instead of failing the plan.
+function ensureEnds(plan, frames, allowed, library) {
+  const cut = (s, n) => (s.length <= n ? s : s.slice(0, n - 1).replace(/\s+\S*$/, "") + "…");
+  const typeOf = (sc) => frames.get(sc?.frame_id)?.scene_type;
+  const pick = (type, prefer) => allowed.find((f) => f.frame_id === prefer) || allowed.find((f) => f.scene_type === type);
+  const base = { keywords: [], transition_out: "fade", visuals: [], icons: [] };
+  const notes = [];
+  if (typeOf(plan.scenes[0]) !== "intro") {
+    const f = pick("intro");
+    const title = String(plan.title || "Video");
+    if (f) plan.scenes.unshift({ ...base, frame_id: f.frame_id, voice_text: `${title.replace(/[.!?…]+$/, "")}.`, inputs: fillText(f, title, cut, library) });
+    if (f) notes.push("thêm cảnh mở đầu");
+  }
+  if (typeOf(plan.scenes.at(-1)) !== "outro") {
+    const f = pick("outro", "outro-subscribe");
+    const inputs = f?.frame_id === "outro-subscribe" ? { message: "Cảm ơn bạn đã xem", cta: "Đăng ký kênh để xem video tiếp theo" } : f ? fillText(f, "Cảm ơn bạn đã xem", cut, library) : null;
+    if (f) plan.scenes.push({ ...base, frame_id: f.frame_id, voice_text: "Cảm ơn bạn đã theo dõi. Đừng quên đăng ký kênh để xem những video tiếp theo nhé.", inputs });
+    if (f) notes.push("thêm cảnh kết");
+  }
+  return notes;
+}
+
 function fillText(frame, text, cut, library = EMPTY_LIBRARY) {
   const inputs = {};
   for (const [k, i] of Object.entries(frame.inputs)) {

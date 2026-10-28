@@ -65,8 +65,12 @@ export async function projectMedia(dir) {
 }
 
 // project: { title, channel, topic, voice, rate, targetSeconds, aspectRatio, width, height, autoImages }
-export async function makePlan(dir, project, material, { mock = false, onLog = () => {} } = {}) {
+// fromSaved: process the AI's last saved answer again (ai_last_response.txt) instead of calling the AI.
+export async function makePlan(dir, project, material, { mock = false, fromSaved = false, onLog = () => {} } = {}) {
   const frames = loadFrames();
+  const savedAnswer = fromSaved ? await fs.readFile(path.join(dir, "ai_last_response.txt"), "utf8").catch(() => null) : null;
+  if (fromSaved && !savedAnswer) throw new Error("Chưa có câu trả lời AI nào được lưu cho dự án này — hãy lập kế hoạch bằng AI");
+  if (fromSaved && project.mode === "animation") throw new Error("Dùng lại câu trả lời đã lưu chưa hỗ trợ phim hoạt hình — hãy lập kế hoạch bằng AI");
   if (project.mode === "animation") return makeAnimationPlan(dir, project, material, frames, { mock, onLog });
   const { images, cutouts, labels } = await projectMedia(dir);
   const topic = getTopic(project.topic);
@@ -98,7 +102,7 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   const music = project.music && project.music !== "auto" ? [] : await topicTracks(topic.topic_id).catch(() => []);
   onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited: thêm frame, chuyển động, cảnh hoạt hình, cảnh AI tự thiết kế" : "theo token"})`);
   onLog(`Chủ đề ${topic.name}: thư viện ${frames.size} frame, gửi cho AI ${allowed.length} frame phù hợp, ${images.length} ảnh dự án, ${cutouts.length} ảnh tách nền của dự án, ${library.photos.length} ảnh thư viện, ${library.icons.length} icon, ${music.length} bản nhạc nền`);
-  const { plan, calls, errors } = await planVideo({
+  const { plan, calls, errors, raw } = await planVideo({
     material,
     title: project.title,
     channel: project.channel,
@@ -114,9 +118,14 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
     music,
     visuals,
     fetchImages: (items) => downloadImages(dir, items, { onLog }),
+    savedAnswer,
     mock,
     onLog,
+  }).catch(async (err) => {
+    if (err.raw) await saveRaw(dir, err.raw);
+    throw err;
   });
+  if (raw && !savedAnswer) await saveRaw(dir, raw);
   const { credits } = await projectMedia(dir);
   const stamped = calls.map((c) => ({ ...c, at: new Date().toISOString(), frames_sent: allowed.length }));
   if (stamped.length) {
@@ -127,6 +136,9 @@ export async function makePlan(dir, project, material, { mock = false, onLog = (
   finalizePlan(plan, project, frames, credits);
   return { plan, calls: stamped, errors: errors || [] };
 }
+
+// The AI's last full answer, kept in the project folder to look into when a plan comes out wrong.
+const saveRaw = (dir, text) => fs.writeFile(path.join(dir, "ai_last_response.txt"), text).catch(() => {});
 
 // Names of the library icons, logos, photos, cutouts and characters that suit a topic (what the planner may pick from).
 export function topicLibrary(topicId) {
@@ -147,7 +159,11 @@ async function makeAnimationPlan(dir, project, material, frames, { mock, onLog }
   const unlimited = preset.billing === "request";
   onLog(`Model ${preset.model} (${unlimited ? "theo lượt, chế độ unlimited: thêm cảnh, thẻ chen giữa có chuyển động" : "theo token"})`);
   const options = unlimited ? { rich: true, mix: true, motion: true, library: topicLibrary(project.topic || "storytelling") } : {};
-  const { plan, calls, errors = [] } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options });
+  const { plan, calls, errors = [], raw } = await planAnimation({ material, title: project.title, targetSeconds: project.targetSeconds, frames, mock, onLog, options }).catch(async (err) => {
+    if (err.raw) await saveRaw(dir, err.raw);
+    throw err;
+  });
+  if (raw) await saveRaw(dir, raw);
   const stamped = calls.map((c) => ({ ...c, at: new Date().toISOString(), frames_sent: 3 }));
   if (stamped.length) {
     const logFile = path.join(dir, "ai_calls.json");

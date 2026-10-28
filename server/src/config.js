@@ -39,6 +39,12 @@ export const config = {
     // whenever ANTHROPIC_BASE_URL is set. on/off overrides.
     structured: env.AI_STRUCTURED ? env.AI_STRUCTURED !== "off" : !env.ANTHROPIC_BASE_URL,
   },
+  // Voiceover: ElevenLabs when a key is set (video/elevenlabs-tts.js), else edge-tts (scripts/tts_words.py).
+  tts: {
+    engine: env.TTS_ENGINE?.trim() || (env.ELEVENLABS_API_KEY?.trim() ? "elevenlabs" : "edge"),
+    elevenKey: env.ELEVENLABS_API_KEY?.trim() || "",
+    elevenModel: env.ELEVENLABS_MODEL?.trim() || "eleven_flash_v2_5",
+  },
   pythonBin: path.resolve(SERVER_DIR, env.PYTHON_BIN || ".venv\\Scripts\\python.exe"),
   hyperframesVersion: env.HYPERFRAMES_VERSION || "0.8.181",
 };

@@ -197,11 +197,11 @@ ${lib.icons.length ? `Icons for cards: ${lib.icons.join(", ")}\n` : ""}`;
   onLog("AI viết kịch bản hoạt hình (1 lượt gọi)");
   const { json, text, usage } = await callModel(messages, schema(cardSchema), SYSTEM, activePreset(), onLog);
   const calls = [{ step: "plan", attempt: 1, ...usage }];
-  if (!json?.shots?.length) throw new Error(`AI trả về kịch bản không đọc được. Đoạn đầu: ${text.slice(0, 300)}`);
+  if (!json?.shots?.length) throw Object.assign(new Error(`AI trả về kịch bản không đọc được (toàn văn lưu ở ai_last_response.txt). Đoạn đầu: ${text.slice(0, 300)}`), { raw: text });
   const { plan, labels } = screenplayToPlan(json);
   const errors = check(plan);
   if (errors.length) onLog(`Kịch bản còn ${errors.length} lỗi cần sửa tay trong trình sửa (không gọi lại AI): ${toShotErrors(errors, labels).join("; ").slice(0, 300)}`);
-  return { plan, calls, errors };
+  return { plan, calls, errors, raw: text };
 }
 
 // ---------------------------------------------------------------- mock (no AI)
