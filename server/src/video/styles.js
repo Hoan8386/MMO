@@ -6,37 +6,37 @@
 export const STYLES = {
   documentary: {
     label: "Phim tài liệu",
-    guide: "calm and trustworthy, like a documentary: longer scenes (5–8 s), fades, photos given time with a slow push-in; facts in data frames, few gimmicks. History, science, culture, nature, true stories, serious topics.",
+    guide: "calm and trustworthy, like a documentary: long scenes (7–10 s of narration), fades, photos given time with a slow push-in; facts in data frames, few gimmicks. History, science, culture, nature, true stories, serious topics.",
     fx: { push: 1.03, sparks: 0.5, iconEase: "power3.out", photo: { enter: "fade", dur: 1.0, zoom: [1.02, 1.12], filter: "saturate(0.92) contrast(1.05)" }, overlay: "vignette" },
   },
   news: {
     label: "Bản tin",
-    guide: "a sharp news bulletin: short scenes (3–5 s), wipes between items, headline and stat frames, photos snapping in with a wipe, steady camera. Current events, announcements, product launches, market news.",
+    guide: "a sharp news bulletin: brisk scenes (5–7 s of narration, still full sentences), wipes between items, headline and stat frames, photos snapping in with a wipe, steady camera. Current events, announcements, product launches, market news.",
     fx: { push: 1.012, sparks: 0.25, iconEase: "expo.out", photo: { enter: "wipe", dur: 0.45, zoom: [1.0, 1.05], filter: "contrast(1.04)" }, overlay: "none" },
   },
   kinetic: {
     label: "Chữ động, nhịp nhanh",
-    guide: "fast kinetic energy for social video: very short scenes (2–4 s), punchy on-screen text, a strong hook first, keywords on every beat, photos punching out of a zoom, wipes on every new idea. Viral facts, lists, tips, motivation shorts, vertical formats.",
+    guide: "fast kinetic energy for social video: fast scenes (4–6 s of narration in complete sentences, never fragments), punchy on-screen text, a strong hook first, keywords on every beat, photos punching out of a zoom, wipes on every new idea. Viral facts, lists, tips, motivation shorts, vertical formats.",
     fx: { push: 1.06, sparks: 1, iconEase: "back.out(2.4)", photo: { enter: "zoom", dur: 0.5, zoom: [1.18, 1.02], filter: "contrast(1.1) saturate(1.15)" }, overlay: "none" },
   },
   playful: {
     label: "Vui nhộn",
-    guide: "bright and playful: bouncy pops, icons and characters acting, quiz or question frames, photos opening in a circle; warm, friendly pacing (3–6 s). Fun facts, kids, animals, food, games, entertainment, everyday science.",
+    guide: "bright and playful: bouncy pops, icons and characters acting, quiz or question frames, photos opening in a circle; warm, friendly pacing (5–8 s of narration). Fun facts, kids, animals, food, games, entertainment, everyday science.",
     fx: { push: 1.02, sparks: 1.2, iconEase: "elastic.out(1, 0.5)", photo: { enter: "iris", dur: 0.6, zoom: [1.04, 1.12], filter: "saturate(1.2)" }, overlay: "none" },
   },
   cinematic: {
     label: "Điện ảnh",
-    guide: "cinematic and dramatic: letterbox bars, slow heavy camera moves, photos fading up from dark, moody grade, build tension towards a reveal; scenes 4–8 s, fades, wipes only at big turns. Mysteries, epic history, disasters, space, motivation, emotional true stories.",
+    guide: "cinematic and dramatic: letterbox bars, slow heavy camera moves, photos fading up from dark, moody grade, build tension towards a reveal; scenes of 6–10 s of narration, fades, wipes only at big turns. Mysteries, epic history, disasters, space, motivation, emotional true stories.",
     fx: { push: 1.05, sparks: 0.6, iconEase: "power2.out", photo: { enter: "fade", dur: 1.3, zoom: [1.1, 1.22], filter: "contrast(1.12) saturate(0.82) brightness(0.92)" }, overlay: "vignette", bars: true },
   },
   tech: {
     label: "Công nghệ",
-    guide: "clean tech look: crisp, precise motion, photos cutting in with a flash, cool grade with scanlines, code/spec/chart frames, steady 3–5 s rhythm with wipes between features. Technology, AI, gadgets, gaming hardware, the future.",
+    guide: "clean tech look: crisp, precise motion, photos cutting in with a flash, cool grade with scanlines, code/spec/chart frames, steady 5–7 s rhythm with wipes between features. Technology, AI, gadgets, gaming hardware, the future.",
     fx: { push: 1.025, sparks: 0.8, iconEase: "expo.out", photo: { enter: "flash", dur: 0.35, zoom: [1.02, 1.1], filter: "contrast(1.12) saturate(0.9) hue-rotate(-8deg)" }, overlay: "scanlines" },
   },
   storybook: {
     label: "Truyện kể",
-    guide: "a warm storybook: gentle pacing (5–8 s), characters and icons acting out the story, soft fades, photos with a warm paper-like grade, chapter frames between parts. Fables, family, love, life lessons, philosophy.",
+    guide: "a warm storybook: gentle pacing (7–10 s of narration), characters and icons acting out the story, soft fades, photos with a warm paper-like grade, chapter frames between parts. Fables, family, love, life lessons, philosophy.",
     fx: { push: 1.02, sparks: 0.9, iconEase: "back.out(1.6)", photo: { enter: "fade", dur: 1.1, zoom: [1.03, 1.1], filter: "sepia(0.22) saturate(1.08)" }, overlay: "vignette" },
   },
 };

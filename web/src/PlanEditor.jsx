@@ -188,6 +188,13 @@ function SceneMedia({ scene, images, library, disabled, onChange }) {
           )}
         </div>
       </div>
+      {scene.illustration?.svg && (
+        <div>
+          <span className="field-label">Hình minh hoạ động{scene.illustration.caption ? ` — ${scene.illustration.caption}` : ""}</span>
+          <div className="illus-preview" dangerouslySetInnerHTML={{ __html: scene.illustration.svg }} />
+          <button type="button" className="btn small danger" disabled={disabled} onClick={() => onChange({ illustration: undefined })}>Bỏ hình minh hoạ</button>
+        </div>
+      )}
       <div>
         <span className="field-label">Icon của cảnh</span>
         <div className="scene-icons">

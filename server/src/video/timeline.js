@@ -1,7 +1,9 @@
 // Turns the plan plus real audio timings into an absolute timeline.
 // Scene length always comes from the voiced audio, never from the AI's estimate.
-export const LEAD = 0.35; // silence before the voice starts in each scene
-export const TAIL = 0.5; // breathing room after the voice ends
+// Kept short: the gap between two scenes is TAIL + LEAD, and a long one makes the narration sound
+// chopped into separate lines (it was 0.85 s).
+export const LEAD = 0.15; // silence before the voice starts in each scene
+export const TAIL = 0.3; // breathing room after the voice ends
 
 const r3 = (x) => Math.round(x * 1000) / 1000;
 const norm = (s) => String(s).normalize("NFC").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
@@ -16,7 +18,7 @@ function tokens(words) {
 }
 
 // Start time (scene-local, seconds) of each keyword, searched in spoken order; null when not found.
-function keywordTimes(keywords, words) {
+export function keywordTimes(keywords, words) {
   const toks = tokens(words);
   let from = 0;
   return (keywords || []).map((kw) => {
@@ -71,6 +73,8 @@ export function buildTimeline(plan, vo, frames) {
     const natural = LEAD + audio.duration + TAIL;
     const D = r3(Math.max(frame.duration.min, natural));
     if (D > frame.duration.max) warnings.push(`${sc.id}: lời thoại dài ${D}s, vượt mức tối đa ${frame.duration.max}s của ${sc.frame_id}`);
+    // The frame's minimum length pads a short line with silence, which sounds like the voice was cut.
+    if (frame.duration.min - natural > 1) warnings.push(`${sc.id}: lời đọc chỉ ${r3(audio.duration)}s, ngắn hơn ${frame.duration.min}s tối thiểu của ${sc.frame_id} — ${r3(frame.duration.min - natural)}s im lặng, nên viết thêm lời`);
     const marks = keywordTimes(sc.keywords, audio.words);
     // When each scene photo comes in: at its keyword, else spread evenly over the narration (fx.js).
     const shown = sc.visuals || [];

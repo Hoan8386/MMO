@@ -7,7 +7,7 @@
 // Scene density: how many scenes to aim for.
 export const richGuide = (targetSeconds, kind = "scenes") => `
 RICH MODE (no token budget — make the video as engaging as you can):
-- Aim for about ${Math.round(targetSeconds / 4)} ${kind} (one idea each, 3–6 s of narration), never two similar ${kind} in a row.
+- Aim for about ${Math.round(targetSeconds / 6.5)} ${kind} (one idea each, 5–9 s of narration — 2–3 full sentences, never a fragment), never two similar ${kind} in a row.
 - Use the full variety of frames available — pick for each scene the frame that shows its idea best, not the same few templates; give every scene keywords that land its animation on the spoken words.
 - Open with a hook, build curiosity, end with a clear takeaway.`;
 

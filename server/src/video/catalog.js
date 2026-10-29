@@ -136,7 +136,8 @@ export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [],
 const hasKind = (kind) => loadAssets().some((a) => a.kind === kind);
 
 // One compact line per frame for the prompt: no HTML, no samples.
-export function describeFrames(list) {
+// samples: also show each frame's example scene (unlimited presets: more context, better-filled frames).
+export function describeFrames(list, { samples = false } = {}) {
   return list
     .map((f) => {
       const inputs = Object.entries(f.inputs)
@@ -169,7 +170,9 @@ export function describeFrames(list) {
         })
         .join(", ");
       const same = (f.same_length || []).map(([a, b]) => ` ${a} and ${b} same length.`).join("");
-      return `- ${f.frame_id}: ${f.description} Inputs: ${inputs}.${same} Keywords: ${f.keywords}. Duration ${f.duration.min}-${f.duration.max}s.`;
+      const example = samples && f.sample ? `
+  Example: ${JSON.stringify({ voice_text: f.sample.voice_text, keywords: f.sample.keywords || [], inputs: f.sample.inputs || {} })}` : "";
+      return `- ${f.frame_id}: ${f.description} Inputs: ${inputs}.${same} Keywords: ${f.keywords}. Duration ${f.duration.min}-${f.duration.max}s.${example}`;
     })
     .join("\n");
 }

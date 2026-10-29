@@ -52,6 +52,50 @@ export async function commonsSearch(query, want, { minWidth = 1600, minRatio = 1
   return picked;
 }
 
+// ---- Wikipedia ----
+
+// Files on an article that are decoration rather than a photo of its subject.
+const NOT_SUBJECT = /logo|icon|flag|coat[ _]of[ _]arms|seal[ _]of|symbol|signature|locator|location[ _]map|map[ _]of|blank[ _]map|wikiquote|wiktionary|commons-logo|question[ _]book|edit-clear|ambox|padlock|disambig|\.svg$/i;
+
+// The photos used on the Wikipedia article about `subject` (found by search): they show exactly that
+// subject, unlike a keyword search. English first, then Vietnamese for Vietnamese places and people.
+// Same result shape as commonsSearch; only freely licensed files (non-free "fair use" files are skipped).
+export async function wikipediaImages(subject, { want = 8, langs = ["en", "vi"], minWidth = 800 } = {}) {
+  for (const lang of langs) {
+    const api = `https://${lang}.wikipedia.org/w/api.php?format=json&formatversion=2`;
+    const found = await fetchJson(`${api}&action=query&list=search&srlimit=1&srsearch=${encodeURIComponent(subject)}`).catch(() => null);
+    const page = found?.query?.search?.[0]?.title;
+    if (!page) continue;
+    const data = await fetchJson(
+      `${api}&action=query&generator=images&gimlimit=50&titles=${encodeURIComponent(page)}&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=1600`,
+    ).catch(() => null);
+    const picked = [];
+    for (const p of data?.query?.pages || []) {
+      const ii = p.imageinfo?.[0];
+      const meta = ii?.extmetadata || {};
+      const license = strip(meta.LicenseShortName?.value);
+      if (!ii || !/image\/(jpeg|png)/.test(ii.mime) || NOT_SUBJECT.test(p.title) || ii.width < minWidth || ii.width / ii.height < 0.75) continue;
+      if (!FREE.test(license) || /nonfree|fair use/i.test(license)) continue;
+      const title = p.title.replace(/^(File|Tập tin|Hình):/, "").replace(/\.[^.]+$/, "");
+      picked.push({
+        thumb: ii.thumburl,
+        page: ii.descriptionurl,
+        title,
+        text: [page, title, strip(meta.ImageDescription?.value).slice(0, 300)].join(" | "),
+        license,
+        artist: strip(meta.Artist?.value).slice(0, 80) || "Wikimedia Commons",
+        w: ii.thumbwidth,
+        h: ii.thumbheight,
+        article: `${lang}:${page}`,
+      });
+    }
+    // Wider photos first: they fill a 16:9 scene best.
+    picked.sort((a, b) => b.w / b.h - a.w / a.h);
+    if (picked.length) return picked.slice(0, want);
+  }
+  return [];
+}
+
 // ---- PNGImages.com ----
 
 const PNG_SITE = "https://pngimages.com";

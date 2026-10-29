@@ -5,16 +5,17 @@ import { describeFrames } from "./catalog.js";
 import { validatePlan } from "./validate.js";
 import { motionSchema, motionGuide, cleanMotion } from "./motion.js";
 import { STYLE_IDS, styleGuide } from "./styles.js";
+import { illustrationGuide, cleanIllustration } from "./illustration.js";
 
 const SYSTEM = `You plan short narrated videos that are assembled ONLY from a fixed library of animated templates ("frames"). You never write HTML; you return a JSON plan.
 
 For each scene you write the narration (voice_text) and choose one frame from the list, filling its inputs.
 
 Rules:
-- Narration language: Vietnamese unless told otherwise. Natural spoken style for text-to-speech: 1–2 short sentences per scene. Write numbers in voice_text the way they should be read aloud.
+- Narration language: Vietnamese unless told otherwise. Natural spoken style for text-to-speech. Each scene's voice_text is 2–3 complete, flowing sentences (about 15–35 words) — never a fragment, a bare label or a single short phrase, which sounds cut off when voiced alone. Consecutive scenes read as one continuous script: carry the thought on from the previous scene with natural links ("Không chỉ vậy,", "Trong khi đó,", "Điều thú vị là", "Vì vậy") instead of restarting. Write numbers in voice_text the way they should be read aloud.
 - The first scene uses the intro frame, the last scene uses the outro frame.
 - Choose the frame that fits what the scene says (a number → stat frame, an enumeration → list frame, a comparison → compare frame, a person's words → quote frame). Vary frames: never the same frame twice in a row, and at most twice per video.
-- Each scene's narration must fit its frame's duration range (about 2.6 Vietnamese words per second); split long content across scenes.
+- Each scene's narration must fit its frame's duration range (about 2.6 Vietnamese words per second): long enough to fill at least the frame's minimum duration, short enough for its maximum; split long content across scenes, and give a short idea more context rather than a scene of a few words.
 - On-screen text (inputs) is short and punchy, NOT a copy of the narration. Respect every character limit. Write numbers in inputs with digits.
 - keywords: exact phrases copied verbatim from the same scene's voice_text, in spoken order, used to time the animation as described for each frame. Use [] when the frame needs none.
 - transition_out: "wipe" when the next scene starts a new topic, otherwise "fade".
@@ -79,6 +80,9 @@ export async function planVideo({ material, title, channel, topic, frames, allow
   if (!STYLE_IDS.includes(json.style)) delete json.style;
   const fixed = [...autoFix(json, frames), ...ensureEnds(json, frames, allowed, library)];
   if (fixed.length) onLog(`Tự sửa ${fixed.length} chỗ trong kế hoạch: ${fixed.join("; ").slice(0, 300)}`);
+  // A line of a few words sounds cut off once voiced on its own: point those scenes out.
+  const short = json.scenes.map((sc, i) => [i, String(sc.voice_text || "").trim().split(/s+/).filter(Boolean).length]).filter(([i, n]) => i > 0 && i < json.scenes.length - 1 && n < 10);
+  if (short.length) onLog(`Lời đọc ngắn (dưới 10 từ, nghe dễ bị cụt) ở cảnh ${short.map(([i, n]) => `${i + 1} (${n} từ)`).join(", ")} — có thể viết thêm trong trình sửa kế hoạch`);
   let pictures = images;
   if (req.visuals) pictures = await attachVisuals(json, frames, fetchImages, { images, library, onLog });
   else for (const sc of json.scenes) sc.visuals = [];
@@ -122,6 +126,10 @@ function tidyScenes(plan, library) {
       return item ? { ...item, subject, keyword, n: i + 1 } : null;
     });
     sc.icons = [...new Set((Array.isArray(sc.icons) ? sc.icons : []).filter((x) => icons.has(x)))].slice(0, MAX_SCENE_ICONS);
+    // The drawing is kept only when its SVG is clean (see illustration.js); otherwise the scene has none.
+    const drawing = "illustration" in sc ? cleanIllustration(sc.illustration) : null;
+    if (drawing) sc.illustration = drawing;
+    else delete sc.illustration;
   }
 }
 
@@ -230,6 +238,8 @@ export function planRequest({ material, title, channel, topic, allowed, images =
     characters: motion || uses("character", "characters") ? library.characters || [] : [],
   };
   if (motion) extra += motionGuide;
+  // Unlimited presets (motion on) also get an animated drawing for every scene.
+  if (motion) extra += illustrationGuide;
   if (visuals) extra += visualsGuide;
   extra += styleGuide;
   if (lib.icons.length) extra += iconsGuide;
@@ -242,11 +252,11 @@ export function planRequest({ material, title, channel, topic, allowed, images =
     extra += `
 Background music: in "music" give the id of the track whose mood fits the video best:
 ${tracks.map((t) => `- ${t.id}: ${t.name}${t.mood ? ` — ${t.mood}` : ""}`).join("\n")}`;
-  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name), ...placeholders], lib, { motion, visuals, music: tracks.map((t) => String(t.id)) });
+  const schema = planSchema(allowed, [...images, ...lib.photos.map((p) => p.name), ...placeholders], lib, { motion, visuals, music: tracks.map((t) => String(t.id)), illustrate: motion });
   const words = Math.round(targetSeconds * 2.6);
   const described = (n) => (labels[n] ? `${n} (${labels[n]})` : n);
   const prompt = `Available frames (* = required input):
-${describeFrames(allowed)}
+${describeFrames(allowed, { samples: motion })}
 
 Project images: ${images.length ? images.map(described).join(", ") : visuals ? "(none yet — use visual:<n> for the scene's own photos)" : lib.photos.length ? "(none)" : "(none — do not use image frames)"}
 ${lib.photos.length ? `Library photos (name — what it shows — credit):\n${lib.photos.map((p) => `- ${p.name} — ${p.label} — ${p.credit}`).join("\n")}\n` : ""}${lib.icons.length ? `Icons: ${lib.icons.join(", ")}\n` : ""}${lib.logos.length ? `Logos: ${lib.logos.join(", ")}\n` : ""}${lib.cutouts.length ? `Cutouts (photo of one object, background removed${lib.cutouts.some((n) => labels[n]) ? "; those with a description were found for this video's material, prefer them" : ""}): ${lib.cutouts.map(described).join(", ")}\n` : ""}${Object.entries(groups)
@@ -296,6 +306,13 @@ ${schemaInPrompt(schema)}`,
         onLog(`Gateway đóng kết nối mà không gửi dữ liệu: gọi lại (lần ${empty}/2)`);
         continue;
       }
+      // Cut mid-answer (a gateway time limit, a dropped connection): what was written is kept — the
+      // plan's reader closes it at the last complete scene — instead of losing the whole call.
+      if (err.partialText?.length > 2000) {
+        onLog(`Kết nối bị ngắt giữa chừng (${err.message.slice(0, 160)}) — giữ ${err.partialText.length} ký tự AI đã viết, dùng các cảnh đã hoàn chỉnh`);
+        response = { content: [{ type: "text", text: err.partialText }], stop_reason: "cut", model: preset.model, usage: {} };
+        break;
+      }
       // Cut by the far side after a long wait: our side never gives up, so say where it came from.
       if (err instanceof Anthropic.APIError && Date.now() - started > 240_000)
         err.message = `${err.message} — máy chủ AI/cổng trung gian đã tự ngắt lượt gọi (phía ứng dụng không giới hạn thời gian chờ). Thử hạ effort ở trang Cấu hình AI để AI trả lời nhanh hơn.`;
@@ -304,10 +321,9 @@ ${schemaInPrompt(schema)}`,
   }
   onLog(`AI trả lời xong sau ${since(started)}`);
   if (response.stop_reason === "refusal") throw new Error("AI từ chối lập kế hoạch cho nội dung này");
-  if (response.stop_reason === "max_tokens") {
-    const raw = response.content.map((b) => b.text ?? `[${b.type}]`).join("");
-    throw new Error(`AI trả về bị cắt ngang (max_tokens, ${response.usage?.output_tokens} token ra): …${raw.slice(-300)}`);
-  }
+  // Out of output tokens: like a cut connection, the complete scenes so far are used.
+  if (response.stop_reason === "max_tokens")
+    onLog(`AI chạm giới hạn max_tokens (${response.usage?.output_tokens} token ra) — dùng các cảnh đã hoàn chỉnh; nâng max_tokens ở trang Cấu hình AI nếu thiếu cảnh`);
   const text = response.content.find((b) => b.type === "text")?.text ?? "";
   const json = parseLooseJson(text);
   // `model` is what actually answered (a fallback or gateway may differ from the request).
@@ -420,6 +436,7 @@ async function streamOnce(body, onLog) {
   let lastEvent = 0;
   let chars = 0;
   let thinking = 0;
+  let text = ""; // the answer so far, kept for when the connection is cut mid-way
   stream.on("connect", () => {
     firstByte = lastEvent = Date.now();
     onLog(`AI kết nối sau ${since(started)} (effort ${body.output_config.effort}${body.output_config.format ? "" : ", schema trong prompt"})`);
@@ -428,13 +445,17 @@ async function streamOnce(body, onLog) {
     lastEvent = Date.now();
     if (e.type === "content_block_delta" && e.delta.type === "thinking_delta") thinking += e.delta.thinking.length;
   });
-  stream.on("text", (t) => (chars += t.length));
+  stream.on("text", (t) => {
+    chars += t.length;
+    text += t;
+  });
   const progress = () => (firstByte ? `trả lời ${chars} ký tự, suy nghĩ ${thinking} ký tự, dữ liệu cuối ${since(lastEvent)} trước` : "chưa có phản hồi");
   const timer = setInterval(() => onLog(`⏱ Đang chờ AI: ${since(started)} — ${progress()}`), 30_000);
   try {
     return await stream.finalMessage();
   } catch (err) {
     err.message = `${err.message} (sau ${since(started)}, ${progress()})`;
+    err.partialText = text;
     throw err;
   } finally {
     clearInterval(timer);
@@ -443,7 +464,7 @@ async function streamOnce(body, onLog) {
 
 // One schema branch per allowed frame, so the model can only emit inputs that frame accepts.
 // Length limits live in the prompt and the validator: structured outputs ignore maxLength.
-export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false, visuals = false, music = [] } = {}) {
+export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = false, visuals = false, music = [], illustrate = false } = {}) {
   // Shared enums live in $defs so a long icon list is sent once, not once per frame.
   const $defs = motion ? { motion: motionSchema } : {};
   if (lib.icons.length) $defs.icon = { type: "string", enum: lib.icons };
@@ -464,6 +485,14 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
       },
     };
   const sceneIcons = lib.icons.length ? { type: "array", items: ref("icon"), description: "0-3 icons for this scene" } : null;
+  if (illustrate)
+    $defs.illustration = {
+      type: "object",
+      description: "an animated SVG diagram of the scene's idea",
+      properties: { svg: { type: "string" }, caption: { type: "string" } },
+      required: ["svg", "caption"],
+      additionalProperties: false,
+    };
   const branch = (f) => {
     const props = {};
     const required = [];
@@ -492,9 +521,10 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
         inputs: { type: "object", properties: props, required, additionalProperties: false },
         ...(visuals ? { visuals: { $ref: "#/$defs/visuals" } } : {}),
         ...(sceneIcons ? { icons: sceneIcons } : {}),
+        ...(illustrate ? { illustration: { $ref: "#/$defs/illustration" } } : {}),
         ...(motion ? { motion: { $ref: "#/$defs/motion" } } : {}),
       },
-      required: ["frame_id", "voice_text", "keywords", "transition_out", "inputs", ...(visuals ? ["visuals"] : []), ...(sceneIcons ? ["icons"] : []), ...(motion ? ["motion"] : [])],
+      required: ["frame_id", "voice_text", "keywords", "transition_out", "inputs", ...(visuals ? ["visuals"] : []), ...(sceneIcons ? ["icons"] : []), ...(illustrate ? ["illustration"] : []), ...(motion ? ["motion"] : [])],
       additionalProperties: false,
     };
   };

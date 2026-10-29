@@ -12,6 +12,7 @@
 // A scene's story motion (motion.js, unlimited presets) adds its layers here and replaces the push-in.
 import { motionLayer } from "./motion.js";
 import { STYLES } from "./styles.js";
+import { illustrationLayer } from "./illustration.js";
 
 // How each style's scene photos come in (styles.js photo.enter), as GSAP from → to on the image.
 const PHOTO_ENTER = {
@@ -38,8 +39,9 @@ const BADGE = 180;
 const ICON = 104;
 
 // style: a key of STYLES (styles.js) — camera, photo entrance and grade, overlay, icon pops, sparkles.
-export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks, photos = [], photoAt = [], icons = [], style = "documentary" }) {
+export function sceneFx({ id, duration: D, width: W, height: H, wide, background, badge, motion, marks, photos = [], photoAt = [], icons = [], style = "documentary", illustration = null }) {
   const look = (STYLES[style] || STYLES.documentary).fx;
+  const il = illustration?.svg ? illustrationLayer({ r: `#${id}-root`, svg: illustration.svg, caption: illustration.caption, D, wide, marks }) : null;
   const bar = Math.round(H * 0.055);
   const mo = motionLayer({ id, D, W, H, marks, motion });
   const r = `#${id}-root`;
@@ -84,7 +86,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
         ${r} .fx-icon { position: relative; width: ${ICON}px; height: ${ICON}px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--bg2), var(--bg) 75%); border: 3px solid var(--line); box-shadow: 0 0 40px var(--glow); opacity: 0; }
         ${r} .fx-icon img { position: absolute; left: 50%; top: 50%; width: 66px; height: 66px; margin: -33px 0 0 -33px; }`
             : ""
-        }${mo ? mo.css : ""}`;
+        }${il ? il.css : ""}${mo ? mo.css : ""}`;
 
   const html =
     (photos.length ? `<div class="fx-photos">${photos.map((p) => `<img src="assets/img/${p}" alt="" />`).join("")}<div class="scrim"></div>${look.photo.enter === "flash" ? '<div class="flash"></div>' : ""}</div>` : "") +
@@ -93,6 +95,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
     (mo?.back || "") +
     `<div class="fx-layer">${sparks.map((p) => `<i class="fx-spark ${shape}" style="left:${p.x}px;top:${p.y}px;width:${p.s}px;height:${p.s}px"></i>`).join("")}</div>` +
     (badge ? `<div class="fx-badge"><div class="ring"></div><div class="disc"></div><img src="assets/icons/${badge}.svg" alt="" /></div>` : "") +
+    (il ? il.html : "") +
     (icons.length ? `<div class="fx-icons">${icons.map((n) => `<div class="fx-icon"><img src="assets/icons/${n}.svg" alt="" /></div>`).join("")}</div>` : "") +
     (mo?.front || "");
 
@@ -158,7 +161,7 @@ export function sceneFx({ id, duration: D, width: W, height: H, wide, background
             tl.to(el, { opacity: 0, scale: 0.6, duration: 0.35, ease: "power2.in" }, D - 0.45);
           });`
               : ""
-          }${mo ? mo.script : ""}
+          }${il ? il.script : ""}${mo ? mo.script : ""}
         })();`;
 
   return { css, html, script };

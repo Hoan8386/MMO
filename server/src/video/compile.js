@@ -111,6 +111,8 @@ function withFx(html, sc, { L, wide, style }) {
     photoAt: keep.map((v, i) => (i ? v.at : 0)),
     icons: sc.icons || [],
     style,
+    // AI-designed scenes are drawings already.
+    illustration: sc.frame.engine === "custom" ? null : sc.illustration,
   });
   return html
     .replace("</style>", () => `${fx.css}\n      </style>`)

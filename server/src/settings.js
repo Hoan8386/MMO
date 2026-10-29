@@ -8,7 +8,8 @@ export const EFFORTS = ["low", "medium", "high", "max"];
 
 const PRESET_DEFAULTS = {
   token: { effort: "low", max_tokens: 16000 },
-  request: { effort: "high", max_tokens: 32000 },
+  // Unlimited presets: a plan with per-scene illustrations and custom scenes can run long.
+  request: { effort: "high", max_tokens: 100000 },
 };
 
 export const DEFAULT_SETTINGS = {
@@ -30,7 +31,9 @@ function normalize(s) {
     const billing = p.billing === "request" ? "request" : "token";
     const preset = { ...PRESET_DEFAULTS[billing], ...p, billing };
     preset.effort = EFFORTS.includes(preset.effort) ? preset.effort : PRESET_DEFAULTS[billing].effort;
-    preset.max_tokens = Math.min(64000, Math.max(2000, Number(preset.max_tokens) || PRESET_DEFAULTS[billing].max_tokens));
+    // 32000 was the old unlimited default, not a choice: such presets get the new, larger one.
+    if (billing === "request" && Number(p.max_tokens) === 32000) preset.max_tokens = PRESET_DEFAULTS.request.max_tokens;
+    preset.max_tokens = Math.min(128000, Math.max(2000, Number(preset.max_tokens) || PRESET_DEFAULTS[billing].max_tokens));
     // Options from older versions (unlimited-only planning extras), no longer used.
     for (const k of ["density", "story_motion", "mix_templates", "custom_scenes"]) delete preset[k];
     return preset;

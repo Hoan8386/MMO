@@ -36,7 +36,7 @@ export default function SettingsPage({ onSaved }) {
   const setPreset = (id, patch) => setDraft((d) => ({ ...d, presets: d.presets.map((p) => (p.id === id ? { ...p, ...patch } : p)) }));
   const addPreset = () => {
     const id = `preset-${Date.now().toString(36)}`;
-    setDraft((d) => ({ ...d, presets: [...d.presets, { id, label: "Cấu hình mới", model: "req/claude-opus-5-5", billing: "request", effort: "high", max_tokens: 32000 }] }));
+    setDraft((d) => ({ ...d, presets: [...d.presets, { id, label: "Cấu hình mới", model: "req/claude-opus-5-5", billing: "request", effort: "high", max_tokens: 100000 }] }));
   };
   const removePreset = (id) => setDraft((d) => ({ ...d, presets: d.presets.filter((p) => p.id !== id), active: d.active === id ? d.presets.find((p) => p.id !== id)?.id : d.active }));
 
@@ -113,7 +113,7 @@ export default function SettingsPage({ onSaved }) {
                 </label>
                 <label>
                   Token trả lời tối đa
-                  <input type="number" min={2000} max={64000} step={1000} value={p.max_tokens} onChange={(e) => setPreset(p.id, { max_tokens: Number(e.target.value) })} />
+                  <input type="number" min={2000} max={128000} step={1000} value={p.max_tokens} onChange={(e) => setPreset(p.id, { max_tokens: Number(e.target.value) })} />
                 </label>
               </div>
               <p className="muted small">{b.note}</p>

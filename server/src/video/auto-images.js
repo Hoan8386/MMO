@@ -6,7 +6,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { slugify, readJson, fetchedFile } from "./pipeline.js";
-import { UA, commonsSearch, sleep } from "./image-sources.js";
+import { UA, commonsSearch, wikipediaImages, sleep } from "./image-sources.js";
 
 // The words a photo must mention to count as showing `subject` ("League of Legends" → league, legends):
 // accents dropped, lower case, short and filler words left out.
@@ -24,10 +24,11 @@ const mentions = (text, words) => {
   return words.every((w) => have.has(w) || have.has(`${w}s`) || (w.endsWith("s") && have.has(w.slice(0, -1))));
 };
 
-// One photo per item ({ queries, label, subject? }), its first query first. With a subject (the proper
-// name the article is about) a photo is kept only when its title, categories or description name that
-// subject — a photo of another game, place or person is worse than none. An item whose first query was
-// fetched before reuses that photo. Never throws for one bad image.
+// One photo per item ({ queries, label, subject? }). With a subject (the proper name the material is
+// about) the photos of that subject's own Wikipedia article come first — they show exactly it — the one
+// whose description best matches the item's queries; then a Commons search, keeping only photos whose
+// title, categories or description name the subject (a photo of another game, place or person is worse
+// than none). An item whose first query was fetched before reuses that photo. Never throws for one bad image.
 // Returns { item index: image file name } for every item that has a photo.
 export async function downloadImages(dir, items, { onLog = () => {} } = {}) {
   const record = await readJson(fetchedFile(dir), { items: [] });
@@ -48,11 +49,22 @@ export async function downloadImages(dir, items, { onLog = () => {} } = {}) {
   if (unique.length) onLog(`Tải ảnh cho ${unique.length} địa điểm, cảnh: ${unique.map((i) => items[i].label || items[i].queries[0]).join(", ")}`);
 
   const added = [];
+  const wiki = new Map(); // subject → photos of its Wikipedia article (looked up once per run)
   for (const i of unique) {
     const it = items[i];
     const must = subjectWords(it.subject);
     let ph = null;
-    for (const q of it.queries) {
+    if (must.length) {
+      const key = must.join(" ");
+      if (!wiki.has(key)) {
+        wiki.set(key, await wikipediaImages(it.subject).catch(() => []));
+        await sleep(500);
+      }
+      const want = subjectWords(it.queries.join(" ")).filter((w) => !must.includes(w));
+      const score = (p) => want.filter((w) => mentions(p.text, [w])).length;
+      ph = wiki.get(key).filter((p) => !pages.has(p.page)).sort((a, b) => score(b) - score(a))[0] || null;
+    }
+    for (const q of ph ? [] : it.queries) {
       // A named subject has fewer photos: look at more results and accept smaller, squarer ones.
       const found = await commonsSearch(must.length ? `${q} ${must.filter((w) => !q.includes(w)).join(" ")}`.trim() : q, must.length ? 10 : 3, must.length ? { minWidth: 800, minRatio: 1.0 } : { minWidth: 1200 }).catch(() => []);
       await sleep(1000);
@@ -64,19 +76,21 @@ export async function downloadImages(dir, items, { onLog = () => {} } = {}) {
       continue;
     }
     const name = uniqueName(`p-${slugify(it.queries[0]).slice(0, 40)}`, record.items, added);
+    // Wikipedia photos may be PNG; the file keeps its real type.
+    const ext = /.png$/i.test(new URL(ph.thumb).pathname) ? ".png" : ".jpg";
     try {
       const res = await fetch(ph.thumb, { headers: { "User-Agent": UA } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      await fs.writeFile(path.join(imgDir, `${name}.jpg`), Buffer.from(await res.arrayBuffer()));
+      await fs.writeFile(path.join(imgDir, `${name}${ext}`), Buffer.from(await res.arrayBuffer()));
     } catch (err) {
       onLog(`  ✗ ${it.label}: ${err.message}`);
       continue;
     }
     pages.add(ph.page);
-    known.set(keyOf(it), `${name}.jpg`);
+    known.set(keyOf(it), `${name}${ext}`);
     const credit = `${ph.artist} / ${ph.license}`.slice(0, 120);
-    added.push({ name, query: keyOf(it), label: it.label, kind: "photo", file: `assets/img/${name}.jpg`, source: "Wikimedia Commons", license: ph.license, credit, source_url: ph.page, title: ph.title });
-    onLog(`  ✓ ${it.label}: ${ph.title}`);
+    added.push({ name, query: keyOf(it), label: it.label, kind: "photo", file: `assets/img/${name}${ext}`, source: ph.article ? `Wikipedia (${ph.article})` : "Wikimedia Commons", license: ph.license, credit, source_url: ph.page, title: ph.title });
+    onLog(`  ✓ ${it.label}: ${ph.title}${ph.article ? ` (ảnh trên trang Wikipedia "${ph.article}")` : ""}`);
   }
   // Items sharing a query with one just downloaded get the same photo.
   for (const i of todo) if (known.has(keyOf(items[i]))) files[i] = known.get(keyOf(items[i]));

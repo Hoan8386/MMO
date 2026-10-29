@@ -1,4 +1,5 @@
 import { findAsset, KIND_OF_INPUT } from "./library.js";
+import { sanitizeSvg } from "./illustration.js";
 import { motionErrors } from "./motion.js";
 
 // AI-written scenes (frame engine "custom") run inside the render browser, so they may only
@@ -59,6 +60,8 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [], cutou
       (sc.visuals || []).forEach((v, j) => {
         if (typeof v?.image !== "string" || (!images.includes(v.image) && !findAsset("photo", v.image))) errors.push(`${at}.visuals[${j}]: ảnh "${v?.image}" không có trong ảnh của dự án`);
       });
+    if (sc.illustration != null && (typeof sc.illustration?.svg !== "string" || !sanitizeSvg(sc.illustration.svg)))
+      errors.push(`${at}.illustration: hình minh hoạ không hợp lệ (cần một thẻ <svg viewBox=…> chỉ gồm hình cơ bản) — xoá hình này hoặc sửa lại`);
     if (sc.icons != null && !Array.isArray(sc.icons)) errors.push(`${at}.icons: phải là mảng`);
     else (sc.icons || []).filter((x) => !findAsset("illustration", x)).forEach((x) => errors.push(`${at}.icons: icon "${x}" không có trong thư viện`));
 

@@ -12,6 +12,7 @@ import { loadSettings, activePreset } from "./settings.js";
 import settingsRouter from "./routes/settings.js";
 import newsRouter from "./routes/news.js";
 import musicRouter from "./routes/music.js";
+import longRouter from "./routes/long.js";
 
 fs.mkdirSync(STORAGE_DIR, { recursive: true });
 await initDb();
@@ -37,6 +38,7 @@ app.use("/api/library", libraryRouter);
 app.use("/api/animation", animationRouter);
 app.use("/api/news", newsRouter);
 app.use("/api/music", musicRouter);
+app.use("/api/long", longRouter);
 
 // Serve the built React app when it exists (npm run build in web/).
 const webDist = path.join(ROOT_DIR, "web", "dist");
