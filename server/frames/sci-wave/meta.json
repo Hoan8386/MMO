@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Sóng chuyển động",
+  "description": "Sóng chạy liên tục với nhãn bước sóng, biên độ và hướng truyền. transverse: sóng ngang hình sin, một hạt của môi trường chỉ nhấp nhô tại chỗ (sóng nước, ánh sáng, dây đàn). longitudinal: các hạt nén – giãn (sóng âm, sóng P của động đất).",
+  "category": "science",
+  "scene_type": "wave",
+  "tags": [
+    "science",
+    "physics"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "kind": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "transverse",
+        "longitudinal"
+      ]
+    },
+    "wavelength_label": {
+      "type": "string",
+      "maxLength": 20,
+      "description": "mặc định: Bước sóng λ"
+    },
+    "amplitude_label": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "chỉ với sóng ngang; mặc định: Biên độ A"
+    },
+    "direction_label": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "mặc định: Hướng truyền sóng"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 3,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "mỗi ý trong notes một từ khoá theo thứ tự",
+  "sample": {
+    "voice_text": "Khi sóng nước lan đi, mỗi giọt nước chỉ nhấp nhô lên xuống tại chỗ, còn năng lượng thì truyền đi rất xa.",
+    "keywords": [
+      "nhấp nhô",
+      "năng lượng"
+    ],
+    "inputs": {
+      "title": "Sóng ngang",
+      "kind": "transverse",
+      "notes": [
+        "Phần tử nước dao động lên – xuống",
+        "Năng lượng truyền theo phương ngang"
+      ],
+      "caption": "Ánh sáng cũng là một loại sóng ngang"
+    }
+  },
+  "frame_id": "sci-wave"
+}

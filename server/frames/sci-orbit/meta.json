@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Quỹ đạo quay quanh tâm",
+  "description": "Một vật ở tâm và 1–4 vật bay trên các quỹ đạo elip, vòng ngoài quay chậm hơn. Dùng cho hành tinh quanh Mặt Trời, Mặt Trăng quanh Trái Đất, vệ tinh, electron quanh hạt nhân (mô hình Bohr).",
+  "category": "science",
+  "scene_type": "orbit",
+  "tags": [
+    "science",
+    "physics",
+    "space"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "center": {
+      "type": "string",
+      "required": true,
+      "maxLength": 14,
+      "description": "tên vật ở tâm"
+    },
+    "center_icon": {
+      "type": "icon",
+      "description": "tuỳ chọn: icon vật ở tâm, vd. sun"
+    },
+    "orbiters": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4,
+      "itemMaxLength": 12,
+      "description": "tên các vật bay quanh, từ trong ra ngoài"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "mỗi vật trong orbiters một từ khoá theo thứ tự, rồi mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Bốn hành tinh đá gần Mặt Trời nhất là Sao Thủy, Sao Kim, Trái Đất và Sao Hỏa; càng ở xa, chúng quay càng chậm.",
+    "keywords": [
+      "Sao Thủy",
+      "Sao Kim",
+      "Trái Đất",
+      "Sao Hỏa"
+    ],
+    "inputs": {
+      "title": "Các hành tinh vòng trong",
+      "center": "Mặt Trời",
+      "center_icon": "sun",
+      "orbiters": [
+        "Sao Thủy",
+        "Sao Kim",
+        "Trái Đất",
+        "Sao Hỏa"
+      ],
+      "caption": "Càng xa Mặt Trời, một năm càng dài"
+    }
+  },
+  "frame_id": "sci-orbit"
+}

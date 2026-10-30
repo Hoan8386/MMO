@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Phóng to từng cấp",
+  "description": "Ống kính phóng to dần qua 2–5 cấp kích thước (vd. cơ thể → tế bào → nhân → ADN, hay Trái Đất → thành phố → … ), mỗi cấp có tên, kích thước và icon tuỳ chọn; bên cạnh là thang các cấp đã đi qua. Dùng khi đi từ cái lớn vào cái rất nhỏ (hoặc ngược lại): cấu trúc vật chất, nguyên tử, tế bào, vũ trụ.",
+  "category": "science",
+  "scene_type": "zoom",
+  "tags": [
+    "science",
+    "physics",
+    "chemistry",
+    "biology",
+    "space"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 6,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "levels": {
+      "type": "list",
+      "required": true,
+      "minItems": 2,
+      "maxItems": 5,
+      "itemMaxLength": 16,
+      "description": "các cấp theo thứ tự phóng to"
+    },
+    "sizes": {
+      "type": "list",
+      "maxItems": 5,
+      "itemMaxLength": 10,
+      "description": "kích thước từng cấp, vd. 10 µm"
+    },
+    "icons": {
+      "type": "icons",
+      "maxItems": 5,
+      "description": "tuỳ chọn: một icon cho mỗi cấp"
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "same_length": [
+    [
+      "levels",
+      "sizes"
+    ],
+    [
+      "levels",
+      "icons"
+    ]
+  ],
+  "keywords": "mỗi cấp trong levels một từ khoá theo thứ tự",
+  "sample": {
+    "voice_text": "Phóng to cơ thể người, ta thấy hàng nghìn tỉ tế bào; trong mỗi tế bào là nhân, và trong nhân là những sợi ADN.",
+    "keywords": [
+      "cơ thể",
+      "tế bào",
+      "nhân",
+      "ADN"
+    ],
+    "inputs": {
+      "title": "Từ cơ thể tới ADN",
+      "levels": [
+        "Cơ thể",
+        "Tế bào",
+        "Nhân tế bào",
+        "ADN"
+      ],
+      "sizes": [
+        "1,7 m",
+        "20 µm",
+        "6 µm",
+        "2 nm"
+      ],
+      "icons": [
+        "person-walking",
+        "microbe",
+        "dna",
+        "dna"
+      ],
+      "caption": "ADN nhỏ hơn cơ thể gần một tỉ lần"
+    }
+  },
+  "frame_id": "sci-zoom"
+}

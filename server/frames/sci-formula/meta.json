@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Công thức khoa học",
+  "description": "Công thức lớn ở giữa hiện từng kí tự, rồi từng kí hiệu đổi màu khi được giải thích ở các dòng bên dưới (kí hiệu → ý nghĩa, đơn vị). Dùng cho E = mc², F = ma, V = I·R, PV = nRT, phương trình quang hợp, công thức tính nhanh.",
+  "category": "science",
+  "scene_type": "formula",
+  "tags": [
+    "science",
+    "physics",
+    "chemistry",
+    "biology",
+    "education"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "formula": {
+      "type": "string",
+      "required": true,
+      "maxLength": 24,
+      "description": "dùng kí tự Unicode cho mũ và chỉ số: ², ³, ₂, ·, ×, →, Δ"
+    },
+    "symbols": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 5,
+      "itemMaxLength": 6,
+      "description": "các kí hiệu được giải thích, viết đúng như trong formula"
+    },
+    "meanings": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 5,
+      "itemMaxLength": 40,
+      "description": "ý nghĩa (và đơn vị) của từng kí hiệu"
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "same_length": [
+    [
+      "symbols",
+      "meanings"
+    ]
+  ],
+  "keywords": "mỗi kí hiệu trong symbols một từ khoá theo thứ tự",
+  "sample": {
+    "voice_text": "Công thức nổi tiếng nhất của Einstein: năng lượng bằng khối lượng nhân với bình phương tốc độ ánh sáng.",
+    "keywords": [
+      "năng lượng",
+      "khối lượng",
+      "tốc độ ánh sáng"
+    ],
+    "inputs": {
+      "title": "Năng lượng và khối lượng",
+      "formula": "E = mc²",
+      "symbols": [
+        "E",
+        "m",
+        "c"
+      ],
+      "meanings": [
+        "Năng lượng (J)",
+        "Khối lượng (kg)",
+        "Tốc độ ánh sáng ≈ 300.000 km/s"
+      ],
+      "caption": "Một chút khối lượng chứa năng lượng khổng lồ"
+    }
+  },
+  "frame_id": "sci-formula"
+}

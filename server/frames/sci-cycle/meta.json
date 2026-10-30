@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Vòng tuần hoàn",
+  "description": "3–6 giai đoạn xếp thành vòng tròn, mũi tên nối tiếp nhau khép kín và một chấm sáng chạy quanh vòng; tên chu trình ở giữa, mỗi giai đoạn có thể kèm icon. Dùng cho vòng tuần hoàn nước, chu trình carbon, nitơ, vòng đời sinh vật, chu kỳ tế bào, chu trình Krebs, mùa.",
+  "category": "science",
+  "scene_type": "cycle",
+  "tags": [
+    "science",
+    "physics",
+    "chemistry",
+    "biology",
+    "environment",
+    "nature"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 6,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "center": {
+      "type": "string",
+      "required": true,
+      "maxLength": 22,
+      "description": "tên chu trình, hiện ở giữa vòng"
+    },
+    "stages": {
+      "type": "list",
+      "required": true,
+      "minItems": 3,
+      "maxItems": 6,
+      "itemMaxLength": 18,
+      "description": "các giai đoạn theo chiều kim đồng hồ, bắt đầu từ trên cùng"
+    },
+    "icons": {
+      "type": "icons",
+      "maxItems": 6,
+      "description": "tuỳ chọn: một icon cho mỗi giai đoạn"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "same_length": [
+    [
+      "stages",
+      "icons"
+    ]
+  ],
+  "keywords": "mỗi giai đoạn trong stages một từ khoá theo thứ tự, rồi mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Nắng làm nước bốc hơi, hơi nước ngưng tụ thành mây, mây gây mưa, rồi nước chảy về biển và vòng lặp lại tiếp tục.",
+    "keywords": [
+      "bốc hơi",
+      "ngưng tụ",
+      "mưa",
+      "chảy về biển"
+    ],
+    "inputs": {
+      "title": "Nước đi đâu về đâu?",
+      "center": "Vòng tuần hoàn nước",
+      "stages": [
+        "Bốc hơi",
+        "Ngưng tụ",
+        "Mưa",
+        "Dòng chảy"
+      ],
+      "icons": [
+        "sun",
+        "cloud",
+        "cloud-with-rain",
+        "water-wave"
+      ],
+      "caption": "Một giọt nước có thể quay vòng hàng nghìn năm"
+    }
+  },
+  "frame_id": "sci-cycle"
+}

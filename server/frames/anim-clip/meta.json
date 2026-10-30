@@ -1,0 +1,26 @@
+{
+  "frame_id": "anim-clip",
+  "version": 1,
+  "status": "active",
+  "engine": "motion-canvas",
+  "name": "Hoạt hình mô phỏng (Motion Canvas)",
+  "description": "Một hoạt hình khoa học dựng sẵn trong thư viện Motion Canvas (mô phỏng vật lý, quỹ đạo thiên thể, sinh học, biểu đồ…), render đúng độ dài cảnh và màu chủ đề. Chọn component trong danh sách \"Animation components\" bên dưới và điền props đúng schema của nó. Dùng khi lời thoại giải thích một hiện tượng có chuyển động thật mà frame thường không vẽ được.",
+  "category": "science",
+  "scene_type": "anim",
+  "tags": ["science", "physics", "chemistry", "biology", "space", "explainer"],
+  "aspect_ratios": ["16:9", "9:16", "1:1", "4:5"],
+  "duration": { "min": 4, "max": 30, "recommended": 9 },
+  "inputs": {
+    "component": { "type": "string", "required": true, "enum": "@anim", "description": "id component trong danh sách Animation components" },
+    "props": { "type": "json", "required": true, "maxLength": 2000, "description": "JSON object (dạng chuỗi) props của component, chỉ dùng tham số có trong danh sách; {} = mặc định" }
+  },
+  "keywords": "theo mục Cues của component đã chọn (mỗi mốc một từ khoá theo thứ tự)",
+  "sample": {
+    "voice_text": "Khi ném một quả bóng ở góc bốn mươi lăm độ, nó bay theo đường parabol, lên cao khoảng mười mét rồi rơi xuống cách bốn mươi mét.",
+    "keywords": ["ném", "cao", "rơi xuống"],
+    "inputs": {
+      "component": "projectile_motion",
+      "props": "{\"title\":\"Ném bóng ở góc 45°\",\"v0\":20,\"angle\":45,\"compareAngles\":[30,60],\"objectLabel\":\"Quả bóng\"}"
+    }
+  }
+}

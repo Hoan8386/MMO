@@ -1,0 +1,13 @@
+{
+  "duration": 10,
+  "props": {
+    "title": "Mưa hình thành thế nào?",
+    "steps": [
+      { "label": "Bốc hơi", "detail": "Nắng làm nước biển thành hơi" },
+      { "label": "Ngưng tụ", "detail": "Hơi nước lạnh đi, đọng thành giọt li ti" },
+      { "label": "Tạo mây", "detail": "Hàng tỉ giọt tụ lại" },
+      { "label": "Mưa", "detail": "Giọt lớn dần, nặng và rơi xuống" }
+    ]
+  },
+  "cues": [1, 3, 5, 7]
+}

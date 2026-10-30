@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Tín hiệu thần kinh",
+  "description": "Một nơ-ron (đuôi gai, thân, sợi trục có bao myelin, cúc tận cùng); xung điện chạy liên tục dọc sợi trục và phóng chất dẫn truyền ở đầu tận cùng. Dùng cho phản xạ, cảm giác đau, não truyền lệnh, trí nhớ, vì sao rút tay khi chạm vật nóng.",
+  "category": "science",
+  "scene_type": "neuron",
+  "tags": [
+    "science",
+    "biology",
+    "health",
+    "psychology"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "from_label": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "nơi tín hiệu bắt đầu, vd. Chạm vật nóng"
+    },
+    "to_label": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "nơi tín hiệu tới, vd. Tủy sống"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 3,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "từ khoá 1: lúc xung thần kinh bắt đầu chạy; tiếp theo mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Khi tay chạm vật nóng, tín hiệu điện chạy dọc nơ-ron với tốc độ hơn một trăm mét mỗi giây.",
+    "keywords": [
+      "tín hiệu điện",
+      "một trăm mét"
+    ],
+    "inputs": {
+      "title": "Tín hiệu thần kinh",
+      "from_label": "Chạm vật nóng",
+      "to_label": "Tủy sống",
+      "notes": [
+        "Bao myelin giúp tín hiệu chạy nhanh hơn"
+      ],
+      "caption": "Phản xạ rút tay xảy ra trước cả khi bạn thấy đau"
+    }
+  },
+  "frame_id": "sci-neuron"
+}

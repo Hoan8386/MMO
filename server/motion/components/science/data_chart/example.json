@@ -1,0 +1,12 @@
+{
+  "duration": 9,
+  "props": {
+    "title": "CO₂ trong khí quyển (Mauna Loa)",
+    "type": "line",
+    "unit": "ppm",
+    "data": [{ "label": "1960", "value": 316.9 }, { "label": "1980", "value": 338.7 }, { "label": "2000", "value": 369.7 }, { "label": "2010", "value": 389.9 }, { "label": "2020", "value": 414.2 }, { "label": "2023", "value": 421.1 }],
+    "highlight": 5,
+    "decimals": 1,
+    "source": "NOAA"
+  }
+}

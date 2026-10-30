@@ -1,0 +1,5 @@
+{
+  "duration": 8,
+  "props": { "title": "Sóng âm 440 Hz (nốt La)", "mode": "longitudinal", "frequency": 440, "wavelength": 0.78 },
+  "cues": [2, 4]
+}

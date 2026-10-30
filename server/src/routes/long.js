@@ -11,6 +11,8 @@ import { planLong, continuePlan } from "../longvideo/planner.js";
 import { buildLong } from "../longvideo/build.js";
 import { sceneSvg, KINDS, KIND_NAMES } from "../longvideo/visuals.js";
 import { ICON_NAMES } from "../longvideo/icons.js";
+import { libraryPreview, sceneProblems, mixOf } from "../longvideo/library.js";
+import { loadTopics } from "../video/catalog.js";
 
 const router = Router();
 const LONG_DIR = path.join(STORAGE_DIR, "long");
@@ -34,8 +36,15 @@ const update = (slug, change) =>
     if (s) await writeState({ ...s, ...(typeof change === "function" ? change(s) : change) });
   }));
 
-// The scenes' still previews (final state of each diagram) go with the state.
-const withPreviews = (s) => ({ ...s, busy: running.has(s.slug), plan: s.plan && { ...s.plan, scenes: s.plan.scenes.map((sc) => ({ ...sc, preview: sceneSvg(sc, { brand: s.brand, final: true }) })) } });
+// Still preview of a scene: the final state of a drawing, or a card naming the frame/animation.
+const previewOf = (sc, brand) => (["frame", "anim"].includes(sc.kind) ? libraryPreview(sc) : sceneSvg(sc, { brand, final: true }));
+// The scenes' previews and problems (invalid frame inputs or animation props), and the scene mix.
+const withPreviews = (s) => ({
+  ...s,
+  busy: running.has(s.slug),
+  plan: s.plan && { ...s.plan, mix: mixOf(s.plan.scenes), scenes: s.plan.scenes.map((sc) => ({ ...sc, preview: previewOf(sc, s.brand), problems: sceneProblems(sc) })) },
+});
+const topicOf = (s) => (s.topic ? loadTopics({ all: true }).get(s.topic) || null : null);
 
 // Runs one task at a time (AI calls and renders alike) and mirrors its log into state.json.
 function enqueue(slug, label, task) {
@@ -73,12 +82,12 @@ router.get("/", async (_req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, material = "", minutes = 8, brand = "", voice = DEFAULT_VOICE, rate = "+0%" } = req.body || {};
+  const { title, material = "", minutes = 8, brand = "", voice = DEFAULT_VOICE, rate = "+0%", topic = "" } = req.body || {};
   if (!String(title || "").trim()) return res.status(400).json({ error: "Cần tiêu đề video" });
   let slug = slugify(title) || `video-${Date.now()}`;
   while (await readState(slug)) slug = `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`;
   await fs.mkdir(dirOf(slug), { recursive: true });
-  const s = { slug, title: title.trim(), material, minutes: Math.min(30, Math.max(1, Number(minutes) || 8)), brand, voice, rate, status: "draft", plan: null, calls: [], log: [], updated: new Date().toISOString() };
+  const s = { slug, title: title.trim(), material, minutes: Math.min(30, Math.max(1, Number(minutes) || 8)), brand, voice, rate, topic: String(topic || ""), status: "draft", plan: null, calls: [], log: [], updated: new Date().toISOString() };
   await writeState(s);
   res.json(s);
 });
@@ -102,8 +111,8 @@ router.put("/:slug", async (req, res) => {
   const b = req.body || {};
   await update(slug, (s) => {
     const out = { updated: new Date().toISOString() };
-    for (const k of ["title", "material", "minutes", "brand", "voice", "rate"]) if (b[k] != null) out[k] = b[k];
-    if (b.scenes) out.plan = { ...(s.plan || { title: s.title }), scenes: b.scenes.map(({ preview, ...sc }, i) => ({ ...sc, id: `s${String(i + 1).padStart(2, "0")}` })) };
+    for (const k of ["title", "material", "minutes", "brand", "voice", "rate", "topic"]) if (b[k] != null) out[k] = b[k];
+    if (b.scenes) out.plan = { ...(s.plan || { title: s.title }), scenes: b.scenes.map(({ preview, problems, ...sc }, i) => ({ ...sc, id: `s${String(i + 1).padStart(2, "0")}` })) };
     return out;
   });
   res.json(withPreviews(await readState(slug)));
@@ -112,8 +121,9 @@ router.put("/:slug", async (req, res) => {
 // Preview of one scene being edited, without saving.
 router.post("/preview", (req, res) => {
   const { scene = {}, brand } = req.body || {};
-  const { preview, ...rest } = scene;
-  res.json({ preview: sceneSvg({ ...rest, id: rest.id || "s00" }, { brand, final: true }) });
+  const { preview, problems, ...rest } = scene;
+  const sc = { ...rest, id: rest.id || "s00" };
+  res.json({ preview: previewOf(sc, brand), problems: sceneProblems(sc) });
 });
 
 const action = (label, task) => async (req, res) => {
@@ -133,7 +143,7 @@ router.post(
   action("Lập kịch bản bằng AI", async (slug, _b, { log }) => {
     const s = await readState(slug);
     await update(slug, { status: "planning" });
-    const { plan, usage, raw } = await planLong({ title: s.title, material: s.material, minutes: s.minutes, brand: s.brand, onLog: log });
+    const { plan, usage, raw } = await planLong({ title: s.title, material: s.material, minutes: s.minutes, brand: s.brand, topic: topicOf(s), onLog: log });
     if (raw) await fs.writeFile(path.join(dirOf(slug), "ai_last_response.txt"), raw);
     await update(slug, (now) => ({ plan, status: "planned", calls: recordUsage(now, "plan", usage), updated: new Date().toISOString() }));
   }),
@@ -144,7 +154,7 @@ router.post(
   action("AI viết tiếp kịch bản", async (slug, _b, { log }) => {
     const s = await readState(slug);
     if (!s.plan?.scenes.length) throw new Error("Chưa có kịch bản để viết tiếp");
-    const { plan, usage } = await continuePlan({ title: s.title, material: s.material, minutes: s.minutes, brand: s.brand, plan: s.plan, onLog: log });
+    const { plan, usage } = await continuePlan({ title: s.title, material: s.material, minutes: s.minutes, brand: s.brand, plan: s.plan, topic: topicOf(s), onLog: log });
     await update(slug, (now) => ({ plan, status: "planned", calls: recordUsage(now, "continue", usage), updated: new Date().toISOString() }));
   }),
 );
@@ -155,6 +165,9 @@ router.post(
   action("Dựng & render video", async (slug, b, { log }) => {
     const s = await readState(slug);
     if (!s.plan?.scenes.length) throw new Error("Chưa có kịch bản");
+    // Frame and animation scenes edited by hand are checked before anything is rendered.
+    const bad = s.plan.scenes.map((sc, i) => [i, sceneProblems(sc)]).filter(([, p]) => p.length);
+    if (bad.length) throw new Error(`Sửa các cảnh trước khi render: ${bad.map(([i, p]) => `cảnh ${i + 1} — ${p.join("; ")}`).join(" | ")}`);
     await update(slug, { status: "rendering" });
     let last = -1;
     const onProgress = (p) => {

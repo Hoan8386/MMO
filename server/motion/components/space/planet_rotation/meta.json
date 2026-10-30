@@ -1,0 +1,145 @@
+{
+  "id": "planet_rotation",
+  "name": "Hành tinh tự quay",
+  "category": "space",
+  "description": "Hành tinh tự quay quanh trục nghiêng (số liệu thật: ngày sao, độ nghiêng trục; Sao Kim và Sao Thiên Vương quay ngược), nhìn ngang với Mặt Trời bên trái: kinh tuyến chạy qua, nửa đêm cố định, một điểm đánh dấu (vd. Hà Nội) đi qua ngày và đêm, đồng hồ giờ trôi qua. Dùng cho ngày và đêm, vì sao có múi giờ, trục nghiêng.",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "thiên văn",
+    "astronomy",
+    "tự quay",
+    "rotation",
+    "ngày và đêm",
+    "day night",
+    "trục Trái Đất",
+    "axial tilt"
+  ],
+  "keywords": [
+    "tự quay quanh trục",
+    "quay quanh trục",
+    "ngày và đêm",
+    "ngày đêm",
+    "một ngày",
+    "24 giờ",
+    "trục nghiêng",
+    "múi giờ",
+    "bình minh",
+    "earth rotation",
+    "spins on its axis",
+    "day and night"
+  ],
+  "duration": {
+    "default": 9,
+    "min": 4,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Trái Đất tự quay",
+      "description": "tiêu đề góc trên"
+    },
+    "planet": {
+      "type": "string",
+      "enum": [
+        "mercury",
+        "venus",
+        "earth",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune"
+      ],
+      "default": "earth",
+      "description": "hành tinh (lấy ngày sao và độ nghiêng thật)"
+    },
+    "tilt": {
+      "type": "number",
+      "min": -1,
+      "max": 180,
+      "default": -1,
+      "description": "độ nghiêng trục tự chọn (độ); -1 = số liệu thật"
+    },
+    "hoursPerSecond": {
+      "type": "number",
+      "min": 0,
+      "max": 2000,
+      "default": 0,
+      "description": "số giờ trôi qua mỗi giây video; 0 = tự chọn (1 vòng trong 5 giây)"
+    },
+    "tiltTowardSun": {
+      "type": "boolean",
+      "default": true,
+      "description": "true: bán cầu Bắc ngả về Mặt Trời (hạ chí); false: ngả ra xa (đông chí)"
+    },
+    "showAxis": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện trục quay"
+    },
+    "showDayNight": {
+      "type": "boolean",
+      "default": true,
+      "description": "tô tối nửa đêm"
+    },
+    "showLatitudes": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện xích đạo, chí tuyến, vòng cực"
+    },
+    "marker": {
+      "type": "object",
+      "description": "điểm đánh dấu trên bề mặt; label rỗng = không hiện",
+      "default": {
+        "label": "Hà Nội",
+        "lat": 21,
+        "lon": 0
+      },
+      "properties": {
+        "label": {
+          "type": "string",
+          "maxLength": 20,
+          "default": "",
+          "description": "tên điểm"
+        },
+        "lat": {
+          "type": "number",
+          "min": -85,
+          "max": 85,
+          "default": 0,
+          "description": "vĩ độ"
+        },
+        "lon": {
+          "type": "number",
+          "min": -180,
+          "max": 180,
+          "default": 0,
+          "description": "kinh độ lúc bắt đầu (0 = giữa mặt hướng về người xem)"
+        }
+      }
+    },
+    "sunLabel": {
+      "type": "string",
+      "maxLength": 30,
+      "default": "Ánh sáng Mặt Trời",
+      "description": "nhãn tia nắng"
+    }
+  },
+  "cues": "2 mốc: 1 = nói tới ánh sáng Mặt Trời / ngày đêm (tia nắng hiện ra), 2 = nói tới trục quay (trục nhấn mạnh)",
+  "accuracy": "Phép chiếu trực giao, trục nằm trong mặt phẳng hình (tư thế hạ chí/đông chí); tốc độ quay theo ngày sao thật nhân hệ số thời gian in trên hình. Bề mặt hành tinh là màu trơn, không phải bản đồ.",
+  "combines_with": [
+    "solar_orbit",
+    "earth_seasons",
+    "moon_phases"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

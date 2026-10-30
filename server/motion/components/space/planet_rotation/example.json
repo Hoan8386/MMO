@@ -1,0 +1,5 @@
+{
+  "duration": 9,
+  "props": { "title": "Vì sao có ngày và đêm?", "planet": "earth", "marker": { "label": "Hà Nội", "lat": 21, "lon": -60 } },
+  "cues": [1.5, 4]
+}

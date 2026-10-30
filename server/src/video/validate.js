@@ -1,6 +1,7 @@
 import { findAsset, KIND_OF_INPUT } from "./library.js";
 import { sanitizeSvg } from "./illustration.js";
 import { motionErrors } from "./motion.js";
+import { parseAnimInputs, ANIM_ENGINE } from "./anim.js";
 
 // AI-written scenes (frame engine "custom") run inside the render browser, so they may only
 // animate their own markup: no network, no timers or randomness (renders must repeat exactly),
@@ -65,78 +66,86 @@ export function validatePlan(plan, frames, { allowedFrameIds, images = [], cutou
     if (sc.icons != null && !Array.isArray(sc.icons)) errors.push(`${at}.icons: phải là mảng`);
     else (sc.icons || []).filter((x) => !findAsset("illustration", x)).forEach((x) => errors.push(`${at}.icons: icon "${x}" không có trong thư viện`));
 
-    const inputs = sc.inputs || {};
-    for (const key of Object.keys(inputs)) {
-      if (!frame.inputs[key]) errors.push(`${at}.inputs: "${key}" không phải biến của ${sc.frame_id}`);
-    }
-    for (const [key, spec] of Object.entries(frame.inputs)) {
-      const v = inputs[key];
-      const p = `${at}.inputs.${key}`;
-      if (v == null || v === "" || (Array.isArray(v) && !v.length)) {
-        if (spec.required) errors.push(`${p}: bắt buộc`);
-        continue;
-      }
-      if (spec.enum && (spec.type === "string" || spec.type === "list")) {
-        const bad = [v].flat().filter((x) => !spec.enum.includes(x));
-        if (bad.length) errors.push(`${p}: "${bad.join('", "')}" không hợp lệ — chọn một trong: ${spec.enum.join(", ")}`);
-      }
-      if (spec.type === "string" || spec.type === "code") {
-        if (typeof v !== "string") errors.push(`${p}: phải là chuỗi`);
-        else if (spec.maxLength && v.length > spec.maxLength)
-          errors.push(`${p}: "${v}" dài ${v.length} ký tự, tối đa ${spec.maxLength} — viết lại ngắn hơn`);
-      } else if (spec.type === "number") {
-        if (typeof v !== "number" || !Number.isFinite(v)) errors.push(`${p}: phải là số`);
-      } else if (spec.type === "list") {
-        if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng chuỗi`);
-        else {
-          if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} ý`);
-          if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} ý`);
-          v.forEach((x, j) => {
-            if (spec.itemMaxLength && x.length > spec.itemMaxLength)
-              errors.push(`${p}[${j}]: "${x}" dài ${x.length} ký tự, tối đa ${spec.itemMaxLength} — viết lại ngắn hơn`);
-          });
-        }
-      } else if (spec.type === "numbers") {
-        if (!Array.isArray(v) || v.some((x) => typeof x !== "number" || !Number.isFinite(x))) errors.push(`${p}: phải là mảng số`);
-        else {
-          if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} số`);
-          if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} số`);
-        }
-      } else if (spec.type === "image") {
-        if (!images.includes(v) && !findAsset("photo", v)) errors.push(`${p}: ảnh "${v}" không có trong ảnh của dự án hay thư viện ảnh`);
-      } else if (["icon", "logo", "cutout", "character"].includes(spec.type)) {
-        const kind = KIND_OF_INPUT[spec.type];
-        if (typeof v !== "string" || (!findAsset(kind, v) && !(spec.type === "cutout" && cutouts.includes(v)))) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
-      } else if (spec.type === "icons" || spec.type === "characters") {
-        const noun = spec.type === "icons" ? "icon" : "nhân vật";
-        if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên ${noun}`);
-        else {
-          if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} ${noun}`);
-          if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} ${noun}`);
-          v.filter((x) => !findAsset(KIND_OF_INPUT[spec.type], x)).forEach((x) => errors.push(`${p}: ${noun} "${x}" không có trong thư viện`));
-        }
-      }
-    }
-    for (const [k, list] of Object.entries(frame.index_of || {})) {
-      const n = Array.isArray(inputs[list]) ? inputs[list].length : 0;
-      if (inputs[k] != null && (!Number.isInteger(inputs[k]) || inputs[k] < 1 || inputs[k] > n))
-        errors.push(`${at}.inputs.${k}: phải là số thứ tự từ 1 đến ${n} trong ${list}`);
-    }
-    if (frame.engine === "custom") errors.push(...customSceneErrors(at, inputs));
-    // e.g. the speaker of an animation shot must be one of the characters in that shot.
-    for (const [k, list] of Object.entries(frame.member_of || {})) {
-      const v = inputs[k];
-      if (v != null && v !== "narrator" && !(inputs[list] || []).includes(v)) errors.push(`${at}.inputs.${k}: "${v}" phải là một trong ${list} (${(inputs[list] || []).join(", ")})`);
-    }
-    for (const [a, b] of frame.same_length || []) {
-      if (Array.isArray(inputs[a]) && Array.isArray(inputs[b]) && inputs[a].length !== inputs[b].length)
-        errors.push(`${at}.inputs: ${a} (${inputs[a].length}) và ${b} (${inputs[b].length}) phải có cùng số phần tử`);
-    }
+    errors.push(...inputErrors(at, frame, sc.inputs || {}, { images, cutouts }));
   });
 
   const first = plan.scenes[0]?.frame_id;
   const last = plan.scenes.at(-1)?.frame_id;
   if (frames.get(first)?.scene_type !== "intro") errors.push("cảnh đầu tiên phải là một frame intro");
   if (frames.get(last)?.scene_type !== "outro") errors.push("cảnh cuối cùng phải là một frame outro");
+  return errors;
+}
+
+// Checks one scene's inputs against its frame (also used by long videos, scene by scene).
+export function inputErrors(at, frame, inputs, { images = [], cutouts = [] } = {}) {
+  const errors = [];
+  for (const key of Object.keys(inputs)) {
+    if (!frame.inputs[key]) errors.push(`${at}.inputs: "${key}" không phải biến của ${frame.frame_id}`);
+  }
+  for (const [key, spec] of Object.entries(frame.inputs)) {
+    const v = inputs[key];
+    const p = `${at}.inputs.${key}`;
+    if (v == null || v === "" || (Array.isArray(v) && !v.length)) {
+      if (spec.required) errors.push(`${p}: bắt buộc`);
+      continue;
+    }
+    if (spec.enum && (spec.type === "string" || spec.type === "list")) {
+      const bad = [v].flat().filter((x) => !spec.enum.includes(x));
+      if (bad.length) errors.push(`${p}: "${bad.join('", "')}" không hợp lệ — chọn một trong: ${spec.enum.join(", ")}`);
+    }
+    if (spec.type === "string" || spec.type === "code" || spec.type === "json") {
+      if (typeof v !== "string") errors.push(`${p}: phải là chuỗi`);
+      else if (spec.maxLength && v.length > spec.maxLength)
+        errors.push(`${p}: "${v}" dài ${v.length} ký tự, tối đa ${spec.maxLength} — viết lại ngắn hơn`);
+    } else if (spec.type === "number") {
+      if (typeof v !== "number" || !Number.isFinite(v)) errors.push(`${p}: phải là số`);
+    } else if (spec.type === "list") {
+      if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng chuỗi`);
+      else {
+        if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} ý`);
+        if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} ý`);
+        v.forEach((x, j) => {
+          if (spec.itemMaxLength && x.length > spec.itemMaxLength)
+            errors.push(`${p}[${j}]: "${x}" dài ${x.length} ký tự, tối đa ${spec.itemMaxLength} — viết lại ngắn hơn`);
+        });
+      }
+    } else if (spec.type === "numbers") {
+      if (!Array.isArray(v) || v.some((x) => typeof x !== "number" || !Number.isFinite(x))) errors.push(`${p}: phải là mảng số`);
+      else {
+        if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} số`);
+        if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} số`);
+      }
+    } else if (spec.type === "image") {
+      if (!images.includes(v) && !findAsset("photo", v)) errors.push(`${p}: ảnh "${v}" không có trong ảnh của dự án hay thư viện ảnh`);
+    } else if (["icon", "logo", "cutout", "character"].includes(spec.type)) {
+      const kind = KIND_OF_INPUT[spec.type];
+      if (typeof v !== "string" || (!findAsset(kind, v) && !(spec.type === "cutout" && cutouts.includes(v)))) errors.push(`${p}: ${spec.type} "${v}" không có trong thư viện`);
+    } else if (spec.type === "icons" || spec.type === "characters") {
+      const noun = spec.type === "icons" ? "icon" : "nhân vật";
+      if (!Array.isArray(v) || v.some((x) => typeof x !== "string")) errors.push(`${p}: phải là mảng tên ${noun}`);
+      else {
+        if (spec.minItems && v.length < spec.minItems) errors.push(`${p}: cần ít nhất ${spec.minItems} ${noun}`);
+        if (spec.maxItems && v.length > spec.maxItems) errors.push(`${p}: tối đa ${spec.maxItems} ${noun}`);
+        v.filter((x) => !findAsset(KIND_OF_INPUT[spec.type], x)).forEach((x) => errors.push(`${p}: ${noun} "${x}" không có trong thư viện`));
+      }
+    }
+  }
+  for (const [k, list] of Object.entries(frame.index_of || {})) {
+    const n = Array.isArray(inputs[list]) ? inputs[list].length : 0;
+    if (inputs[k] != null && (!Number.isInteger(inputs[k]) || inputs[k] < 1 || inputs[k] > n))
+      errors.push(`${at}.inputs.${k}: phải là số thứ tự từ 1 đến ${n} trong ${list}`);
+  }
+  if (frame.engine === "custom") errors.push(...customSceneErrors(at, inputs));
+  // Motion Canvas clip: the props must follow the chosen component's own schema.
+  if (frame.engine === ANIM_ENGINE && inputs.component) errors.push(...parseAnimInputs(inputs).errors.map((e) => `${at}.inputs.props (${inputs.component}): ${e}`));
+  // e.g. the speaker of an animation shot must be one of the characters in that shot.
+  for (const [k, list] of Object.entries(frame.member_of || {})) {
+    const v = inputs[k];
+    if (v != null && v !== "narrator" && !(inputs[list] || []).includes(v)) errors.push(`${at}.inputs.${k}: "${v}" phải là một trong ${list} (${(inputs[list] || []).join(", ")})`);
+  }
+  for (const [a, b] of frame.same_length || []) {
+    if (Array.isArray(inputs[a]) && Array.isArray(inputs[b]) && inputs[a].length !== inputs[b].length)
+      errors.push(`${at}.inputs: ${a} (${inputs[a].length}) và ${b} (${inputs[b].length}) phải có cùng số phần tử`);
+  }
   return errors;
 }

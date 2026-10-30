@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Phân tử 3D (quả cầu – que)",
+  "description": "Mô hình quả cầu – que của một phân tử: nguyên tử trung tâm và 1–4 nguyên tử liên kết (màu theo nguyên tố), liên kết đơn/đôi/ba, hình học thẳng, gấp khúc, tam giác hoặc tứ diện; phân tử lắc nhẹ. Dùng cho H₂O, CO₂, CH₄, NH₃, O₂, HCl, NaCl…",
+  "category": "science",
+  "scene_type": "molecule",
+  "tags": [
+    "science",
+    "chemistry"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 14,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40,
+      "description": "tên phân tử, vd. Phân tử nước"
+    },
+    "formula": {
+      "type": "string",
+      "required": true,
+      "maxLength": 12,
+      "description": "công thức, dùng chữ số nhỏ: H₂O, CO₂, CH₄"
+    },
+    "center": {
+      "type": "string",
+      "required": true,
+      "maxLength": 2,
+      "description": "kí hiệu nguyên tử trung tâm"
+    },
+    "ligands": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4,
+      "itemMaxLength": 2,
+      "description": "kí hiệu các nguyên tử liên kết với nguyên tử trung tâm"
+    },
+    "geometry": {
+      "type": "string",
+      "enum": [
+        "single",
+        "linear",
+        "bent",
+        "trigonal",
+        "tetrahedral"
+      ],
+      "description": "hình dạng; mặc định theo số nguyên tử: 1 single, 2 linear, 3 trigonal, 4 tetrahedral. Nước là bent"
+    },
+    "bonds": {
+      "type": "list",
+      "maxItems": 4,
+      "enum": [
+        "single",
+        "double",
+        "triple"
+      ],
+      "description": "loại liên kết với từng nguyên tử trong ligands; mặc định đơn"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 3,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "mỗi nguyên tử trong ligands một từ khoá theo thứ tự, rồi mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Mỗi phân tử nước gồm một nguyên tử oxy liên kết với hai nguyên tử hydro, tạo thành hình chữ V.",
+    "keywords": [
+      "hai nguyên tử hydro",
+      "chữ V"
+    ],
+    "inputs": {
+      "title": "Phân tử nước",
+      "formula": "H₂O",
+      "center": "O",
+      "ligands": [
+        "H",
+        "H"
+      ],
+      "geometry": "bent",
+      "notes": [
+        "Góc liên kết khoảng 104,5°"
+      ],
+      "caption": "Hình chữ V khiến nước có cực, hoà tan được nhiều chất"
+    }
+  },
+  "frame_id": "sci-molecule"
+}

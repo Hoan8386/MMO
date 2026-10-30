@@ -5,6 +5,7 @@ import { query } from "../db.js";
 import { loadAssets, refreshAssets, KIND_OF_INPUT } from "./library.js";
 import { RIG_IDS, ACTIONS, EMOTIONS } from "../animation/rigs.js";
 import { SETTING_IDS, TIMES } from "../animation/settings.js";
+import { animIds, ANIM_ENGINE } from "./anim.js";
 
 // Named value lists that animation frames reference as "enum": "@name", so adding a character
 // or a setting never needs a meta.json edit.
@@ -15,6 +16,8 @@ const ENUMS = {
   "@times": Object.keys(TIMES),
   "@actions": Object.keys(ACTIONS),
   "@emotions": EMOTIONS,
+  // Motion Canvas components that passed their tests (server/motion/).
+  "@anim": animIds(),
 };
 
 export const FRAMES_DIR = path.join(SERVER_DIR, "frames");
@@ -108,7 +111,8 @@ export function selectFrames(frames, { topic, aspectRatio = "16:9", images = [],
   const usable = [...frames.values()].filter(
     (f) =>
       f.status === "active" &&
-      (f.engine || null) === engine &&
+      // Motion Canvas clips are ordinary scenes of explainer videos.
+      (f.engine === ANIM_ENGINE ? engine === null && animIds().length > 0 : (f.engine || null) === engine) &&
       f.aspect_ratios.includes(aspectRatio) &&
       // A frame that needs an image (or a library icon/logo) is useless when there is none.
       (images.length > 0 || !Object.values(f.inputs).some((i) => i.type === "image" && i.required)) &&
@@ -144,7 +148,7 @@ export function describeFrames(list, { samples = false } = {}) {
         .map(([k, i]) => {
           const lim =
             i.type === "list"
-              ? `list ${i.minItems ?? 1}-${i.maxItems ?? 5} items ≤${i.itemMaxLength ?? 60} chars`
+              ? `list ${i.minItems ?? 1}-${i.maxItems ?? 5} items ${i.enum ? `each one of: ${i.enum.join("|")}` : `≤${i.itemMaxLength ?? 60} chars`}`
               : i.type === "numbers"
                 ? `numbers ${i.minItems ?? 1}-${i.maxItems ?? 6}`
               : i.type === "icons"
@@ -163,6 +167,8 @@ export function describeFrames(list, { samples = false } = {}) {
                 ? `one of: ${i.enum.join("|")}`
               : i.type === "code"
                 ? `code ≤${i.maxLength} chars`
+              : i.type === "json"
+                ? "JSON object written as a string"
               : i.type === "string"
                 ? `≤${i.maxLength ?? 80} chars`
                 : i.type;

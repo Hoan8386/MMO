@@ -1,0 +1,160 @@
+{
+  "id": "wave_propagation",
+  "name": "Sóng lan truyền",
+  "category": "physics",
+  "description": "Sóng chạy y = A·sin(kx − ωt) theo đúng tần số và bước sóng nhập vào, in v = f·λ; sóng ngang hoặc sóng dọc (hạt nén – giãn), một phần tử môi trường được đánh dấu chỉ dao động tại chỗ. Có thể chồng thêm sóng thứ hai cùng chiều (giao thoa, phách) hoặc ngược chiều (sóng dừng). Sóng nhanh (âm thanh, ánh sáng) được chiếu chậm và ghi hệ số chậm.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "sóng",
+    "wave",
+    "dao động",
+    "oscillation",
+    "tần số",
+    "frequency",
+    "bước sóng",
+    "wavelength",
+    "giao thoa",
+    "interference",
+    "sóng dừng",
+    "standing wave"
+  ],
+  "keywords": [
+    "sóng lan truyền",
+    "sóng ngang",
+    "sóng dọc",
+    "bước sóng",
+    "tần số",
+    "biên độ",
+    "sóng âm",
+    "sóng nước",
+    "dây đàn",
+    "sóng dừng",
+    "giao thoa sóng",
+    "hiện tượng phách",
+    "wave propagation",
+    "sound wave",
+    "standing wave"
+  ],
+  "duration": {
+    "default": 8,
+    "min": 4,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Sóng lan truyền",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "transverse",
+        "longitudinal"
+      ],
+      "default": "transverse",
+      "description": "transverse: sóng ngang (dây, nước, ánh sáng); longitudinal: sóng dọc (âm thanh)"
+    },
+    "frequency": {
+      "type": "number",
+      "min": 0.05,
+      "max": 1000000000000000,
+      "default": 1,
+      "description": "tần số (Hz)"
+    },
+    "wavelength": {
+      "type": "number",
+      "min": 1e-10,
+      "max": 100000,
+      "default": 2,
+      "description": "bước sóng (theo đơn vị unitLabel, mặc định mét)"
+    },
+    "amplitude": {
+      "type": "number",
+      "min": 0.1,
+      "max": 1,
+      "default": 1,
+      "description": "biên độ tương đối (0,1–1) khi so sánh hai sóng"
+    },
+    "unitLabel": {
+      "type": "string",
+      "maxLength": 4,
+      "default": "m",
+      "description": "đơn vị độ dài in trên nhãn (m, cm, nm)"
+    },
+    "showParticle": {
+      "type": "boolean",
+      "default": true,
+      "description": "đánh dấu một phần tử môi trường"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện nhãn λ và A"
+    },
+    "second": {
+      "type": "object",
+      "description": "sóng thứ hai chồng lên (enabled = true để bật)",
+      "default": {
+        "enabled": false,
+        "frequency": 1,
+        "wavelength": 2,
+        "amplitude": 1,
+        "direction": "opposite"
+      },
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "bật sóng thứ hai"
+        },
+        "frequency": {
+          "type": "number",
+          "min": 0.05,
+          "max": 1000000000000000,
+          "default": 1,
+          "description": "tần số (Hz)"
+        },
+        "wavelength": {
+          "type": "number",
+          "min": 1e-10,
+          "max": 100000,
+          "default": 2,
+          "description": "bước sóng"
+        },
+        "amplitude": {
+          "type": "number",
+          "min": 0.1,
+          "max": 1,
+          "default": 1,
+          "description": "biên độ tương đối"
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "same",
+            "opposite"
+          ],
+          "default": "opposite",
+          "description": "same: cùng chiều (giao thoa, phách); opposite: ngược chiều (sóng dừng)"
+        }
+      }
+    }
+  },
+  "cues": "2 mốc: 1 = nói tới bước sóng (nhãn λ hiện), 2 = nói tới biên độ (nhãn A hiện)",
+  "accuracy": "Sóng điều hoà lý tưởng không tắt dần; vị trí mỗi điểm tính đúng từ phương trình ở mọi khung hình. Thời gian chiếu chậm theo hệ số ghi trên hình khi f > 1 Hz.",
+  "combines_with": [
+    "sound_wave",
+    "light_reflection_refraction",
+    "data_chart"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

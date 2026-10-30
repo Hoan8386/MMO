@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Tia sáng: phản xạ, khúc xạ, tán sắc",
+  "description": "Tia sáng tự vẽ ra kèm pháp tuyến, góc tới và các hạt sáng chạy dọc tia. reflection: phản xạ trên gương; refraction: bị bẻ cong khi đi vào môi trường khác (thìa trong cốc nước, ảo ảnh); prism: lăng kính tách ánh sáng trắng thành 7 màu (cầu vồng).",
+  "category": "science",
+  "scene_type": "optics",
+  "tags": [
+    "science",
+    "physics"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "mode": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "reflection",
+        "refraction",
+        "prism"
+      ]
+    },
+    "top_label": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "môi trường phía trên (mặc định Không khí); với prism là tên tia tới (mặc định Ánh sáng trắng)"
+    },
+    "bottom_label": {
+      "type": "string",
+      "maxLength": 16,
+      "description": "môi trường phía dưới (mặc định Nước, hoặc Gương khi phản xạ)"
+    },
+    "index": {
+      "type": "number",
+      "description": "chỉ với refraction: chiết suất tỉ đối của môi trường dưới, mặc định 1.33 (nước); thuỷ tinh 1.5, kim cương 2.42"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "từ khoá 1: tia sáng tới; từ khoá 2: tia phản xạ / khúc xạ / bảy màu tách ra; tiếp theo mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Ánh sáng đi từ không khí vào nước bị bẻ cong, nên chiếc thìa trong cốc nước trông như bị gãy.",
+    "keywords": [
+      "không khí",
+      "bẻ cong"
+    ],
+    "inputs": {
+      "title": "Khúc xạ ánh sáng",
+      "mode": "refraction",
+      "top_label": "Không khí",
+      "bottom_label": "Nước",
+      "index": 1.33,
+      "notes": [
+        "Ánh sáng đi chậm hơn trong nước"
+      ],
+      "caption": "Chiết suất của nước khoảng 1,33"
+    }
+  },
+  "frame_id": "sci-light"
+}

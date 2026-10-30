@@ -1,0 +1,5 @@
+{
+  "duration": 10,
+  "props": { "title": "Các hành tinh vòng trong", "planets": ["mercury", "venus", "earth", "mars"], "highlight": "earth", "orbitSpeed": 1, "cameraMode": "tilted" },
+  "cues": [0.8, 1.6, 2.4, 3.2]
+}

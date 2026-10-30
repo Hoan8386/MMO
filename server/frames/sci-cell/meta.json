@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Cấu tạo tế bào",
+  "description": "Tế bào động vật, thực vật hoặc vi khuẩn vẽ đầy đủ bào quan; từng bộ phận được đánh số, sáng lên và giải thích bên cạnh khi được nhắc tới. Dùng cho cấu tạo tế bào, nhân và ADN, ti thể tạo năng lượng, lục lạp quang hợp, vi khuẩn khác tế bào người ra sao.",
+  "category": "science",
+  "scene_type": "cell",
+  "tags": [
+    "science",
+    "biology",
+    "health"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 6,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "kind": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "animal",
+        "plant",
+        "bacteria"
+      ]
+    },
+    "parts": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 5,
+      "enum": [
+        "membrane",
+        "cytoplasm",
+        "nucleus",
+        "dna",
+        "mitochondria",
+        "ribosome",
+        "er",
+        "golgi",
+        "vacuole",
+        "chloroplast",
+        "wall",
+        "flagellum",
+        "plasmid"
+      ],
+      "description": "bộ phận được giải thích, theo thứ tự nói. animal: membrane, cytoplasm, nucleus, dna, mitochondria, ribosome, er, golgi, vacuole; plant: wall, membrane, cytoplasm, nucleus, dna, chloroplast, mitochondria, vacuole, ribosome; bacteria: wall, membrane, cytoplasm, dna, ribosome, plasmid, flagellum"
+    },
+    "labels": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 5,
+      "itemMaxLength": 36,
+      "description": "tên + vai trò của từng bộ phận, vd. Ti thể – nhà máy năng lượng"
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "same_length": [
+    [
+      "parts",
+      "labels"
+    ]
+  ],
+  "keywords": "mỗi bộ phận trong parts một từ khoá theo thứ tự",
+  "sample": {
+    "voice_text": "Tế bào động vật có màng bao bọc, nhân chứa ADN điều khiển mọi hoạt động, và ti thể tạo ra năng lượng.",
+    "keywords": [
+      "màng",
+      "nhân",
+      "ti thể"
+    ],
+    "inputs": {
+      "title": "Bên trong tế bào động vật",
+      "kind": "animal",
+      "parts": [
+        "membrane",
+        "nucleus",
+        "mitochondria"
+      ],
+      "labels": [
+        "Màng tế bào – kiểm soát ra vào",
+        "Nhân – chứa ADN",
+        "Ti thể – nhà máy năng lượng"
+      ],
+      "caption": "Cơ thể người có khoảng 37 nghìn tỉ tế bào"
+    }
+  },
+  "frame_id": "sci-cell"
+}

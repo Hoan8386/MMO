@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Phản ứng hoá học",
+  "description": "Chất tham gia (bên trái) va chạm, mũi tên phản ứng kèm điều kiện, chất sản phẩm bật ra bên phải; có thể kèm hiệu ứng toả nhiệt (sóng nhiệt) hoặc thu nhiệt. Dùng cho phương trình phản ứng: đốt cháy, quang hợp, gỉ sắt, trung hoà axit – bazơ, sủi bọt baking soda + giấm.",
+  "category": "science",
+  "scene_type": "reaction",
+  "tags": [
+    "science",
+    "chemistry"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 6,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "reactants": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 10,
+      "description": "chất tham gia kèm hệ số, vd. 2H₂"
+    },
+    "products": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 3,
+      "itemMaxLength": 10,
+      "description": "chất sản phẩm kèm hệ số"
+    },
+    "condition": {
+      "type": "string",
+      "maxLength": 14,
+      "description": "điều kiện trên mũi tên, vd. t°, ánh sáng, xúc tác"
+    },
+    "energy": {
+      "type": "string",
+      "enum": [
+        "exo",
+        "endo",
+        "none"
+      ],
+      "description": "exo toả nhiệt, endo thu nhiệt"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "đúng 3 từ khoá: lúc nói tới chất tham gia, lúc phản ứng xảy ra, lúc nói tới sản phẩm; tiếp theo mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Khí hydro cháy trong oxy, phản ứng tạo ra nước và toả rất nhiều nhiệt.",
+    "keywords": [
+      "hydro",
+      "cháy",
+      "nước"
+    ],
+    "inputs": {
+      "title": "Hydro cháy trong oxy",
+      "reactants": [
+        "2H₂",
+        "O₂"
+      ],
+      "products": [
+        "2H₂O"
+      ],
+      "condition": "t°",
+      "energy": "exo",
+      "caption": "Đây là nhiên liệu của nhiều tên lửa đẩy"
+    }
+  },
+  "frame_id": "sci-reaction"
+}

@@ -1,0 +1,98 @@
+{
+  "id": "process_flow",
+  "name": "Sơ đồ quy trình",
+  "category": "science",
+  "description": "2–6 bước dạng thẻ đánh số nối bằng mũi tên, mỗi bước hiện ra đúng lúc được nhắc tới, các hạt sáng chạy dọc mũi tên như dòng chảy của quy trình. Tự xếp thành hàng ngang, hai hàng zigzag (nhiều bước) hoặc cột (khung dọc). Dùng cho chuỗi nguyên nhân – kết quả, các giai đoạn, cách một hệ thống hoạt động.",
+  "tags": [
+    "khoa học",
+    "science",
+    "quy trình",
+    "process",
+    "các bước",
+    "steps",
+    "sơ đồ",
+    "diagram",
+    "giai đoạn",
+    "stages"
+  ],
+  "keywords": [
+    "quy trình",
+    "các bước",
+    "bước 1",
+    "đầu tiên",
+    "tiếp theo",
+    "cuối cùng",
+    "giai đoạn",
+    "chuỗi phản ứng",
+    "dẫn đến",
+    "process",
+    "step by step",
+    "pipeline"
+  ],
+  "duration": {
+    "default": 9,
+    "min": 4,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Quy trình",
+      "description": "tiêu đề góc trên"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "description": "các bước theo thứ tự",
+      "default": [
+        {
+          "label": "Bước 1",
+          "detail": ""
+        },
+        {
+          "label": "Bước 2",
+          "detail": ""
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "một bước",
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 28,
+            "required": true,
+            "description": "tên bước"
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 50,
+            "default": "",
+            "description": "giải thích ngắn"
+          }
+        }
+      }
+    },
+    "flow": {
+      "type": "boolean",
+      "default": true,
+      "description": "hạt chạy dọc mũi tên"
+    }
+  },
+  "cues": "mỗi bước một mốc theo thứ tự",
+  "accuracy": "Sơ đồ khái niệm, không mô phỏng định lượng.",
+  "combines_with": [
+    "cause_effect",
+    "data_chart",
+    "magnification"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 110px; right: 110px; top: 80px; bottom: 280px; display: flex; align-items: center; gap: 70px; }
+        {{__r}} .viz { position: relative; flex: none; width: 1000px; height: 680px; }
+        {{__r}} .stage { position: absolute; left: 0; top: 0; width: 1000px; height: 680px; transform-origin: 0 0; }
+        {{__r}} .stage > svg { position: absolute; inset: 0; overflow: visible; }
+        {{__r}} .layer { position: absolute; inset: 0; }
+        {{__r}} .stage text { fill: var(--ink); font-size: 30px; }
+        {{__r}} .stage text.sm { font-size: 25px; fill: var(--muted); }
+        {{__r}} .side { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+        {{__r}} .title { font-size: 60px; line-height: 1.12; }
+        {{__r}} .tag { align-self: flex-start; padding: 12px 26px; border-radius: 18px; background: var(--panel); border: 3px solid var(--accent); font-size: 44px; }
+        {{__r}} .notes { display: flex; flex-direction: column; gap: 16px; }
+        {{__r}} .note { display: flex; gap: 18px; align-items: baseline; font-size: 34px; line-height: 1.3; }
+        {{__r}} .note b { flex: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); translate: 0 -5px; }
+        {{__r}} .caption { font-size: 30px; line-height: 1.35; color: var(--muted); padding-top: 16px; border-top: 3px solid var(--line); }
+        /* Other formats: the drawing keeps its 1000×680 design and is scaled; tall ones stack it above the text. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column; justify-content: center; gap: 40px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .side { flex: none; align-self: stretch; }
+        {{__r}}[data-aspect="9x16"] .viz { width: 1130px; height: 768px; }
+        {{__r}}[data-aspect="9x16"] .stage { scale: 1.13; }
+        {{__r}}[data-aspect="4x5"] .viz { width: 1280px; height: 870px; }
+        {{__r}}[data-aspect="4x5"] .stage { scale: 1.28; }
+        {{__r}}[data-aspect="1x1"] .viz { width: 760px; height: 517px; }
+        {{__r}}[data-aspect="1x1"] .stage { scale: 0.76; }
+        {{__r}} .elem { display: flex; align-items: center; gap: 34px; }
+        {{__r}} .tile { position: relative; flex: none; width: 210px; height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; border: 5px solid var(--accent); background: var(--panel); }
+        {{__r}} .tile .z { position: absolute; left: 18px; top: 10px; font-size: 32px; color: var(--accent); }
+        {{__r}} .tile .sym { font-size: 110px; line-height: 1; }
+        {{__r}} .tile .nm { font-size: 30px; color: var(--muted); margin-top: 8px; }
+        {{__r}} .cfg { font-size: 40px; color: var(--accent2); }
+        {{__r}} .ring { fill: none; stroke: var(--line); stroke-width: 3; }
+        {{__r}} .el { fill: var(--accent2); stroke: var(--bg2); stroke-width: 3; }
+        {{__r}} .ball { stroke: rgba(0, 0, 0, 0.25); stroke-width: 2; }
+        {{__r}} .shine { fill: #FFFFFF; opacity: 0.4; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="viz"><div class="stage"><svg viewBox="0 0 1000 680" width="1000" height="680"></svg><div class="layer"></div></div></div>
+        <div class="side">
+        {{#title}}<div class="title">{{title}}</div>{{/title}}
+                <div class="elem"><div class="tile"><span class="z"></span><span class="sym">{{symbol}}</span><span class="nm">{{name}}</span></div><div class="cfg"></div></div>
+        {{?notes}}<div class="notes">{{#notes}}<div class="note"><b></b><span>{{.}}</span></div>{{/notes}}</div>{{/?notes}}
+        {{#caption}}<div class="caption">{{caption}}</div>{{/caption}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for keyword i of n: when it is spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          // New SVG element under parent; T adds a text.
+          const S = (tag, attrs, parent) => {
+            const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            for (const k in attrs) el.setAttribute(k, attrs[k]);
+            parent.appendChild(el);
+            return el;
+          };
+          const T = (x, y, text, cls, parent, extra = {}) => {
+            const el = S("text", { x, y, class: cls, ...extra }, parent);
+            el.textContent = text;
+            return el;
+          };
+          // Continuous motion (orbits, waves, flowing particles): f(t) runs whenever the timeline renders, so seeking stays exact.
+          const clock = (f) => {
+            const c = { t: 0 };
+            f(0);
+            tl.fromTo(c, { t: 0 }, { t: P.D, duration: P.D, ease: "none", onUpdate: () => f(c.t) }, 0);
+          };
+          // Draws a line or path from its start, like a pen.
+          const draw = (el, t, duration = 0.7) => {
+            const len = el.getTotalLength();
+            tl.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration, ease: "power2.inOut" }, t);
+          };
+          // Pops an element in; origin = "x y" in SVG units for SVG elements.
+          const pop = (el, t, origin) => {
+            const o = origin ? { svgOrigin: origin } : {};
+            tl.fromTo(el, { opacity: 0, scale: 0, ...o }, { opacity: 1, scale: 1, ...o, duration: 0.5, ease: "back.out(1.7)" }, t);
+          };
+          const svg = $(".stage svg");
+          const nNotes = $$(".note").length;
+          // Notes come in at keywords k, k+1… of n.
+          const notesAt = (k, n) => $$(".note").forEach((el, i) => tl.fromTo(el, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, at(k + i, n)));
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          const shells = (P.shells || []).slice(0, 4).map((n) => Math.max(0, Math.min(32, Math.round(n))));
+          const total = shells.reduce((a, b) => a + b, 0);
+          const Z = P.protons > 0 ? Math.round(P.protons) : total;
+          const NN = P.neutrons != null && P.neutrons >= 0 ? Math.round(P.neutrons) : Z;
+          $(".z").textContent = Z;
+          $(".cfg").textContent = `e⁻: ${shells.join(" · ")}`;
+          tl.fromTo($(".tile"), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 0.3);
+          tl.fromTo($(".cfg"), { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5 }, 0.6);
+          const CX = 500, CY = 340, RAD = [110, 172, 234, 296];
+          const N = shells.length + nNotes;
+          // Nucleus: up to 30 balls on a sunflower spiral, protons spread evenly among neutrons.
+          const nuc = S("g", {}, svg);
+          const balls = Math.max(1, Math.min(Z + NN, 30));
+          const pShown = Math.max(1, Math.round((balls * Z) / Math.max(1, Z + NN)));
+          const br = balls > 12 ? 11 : 14;
+          for (let k = balls - 1; k >= 0; k--) {
+            const r = br * 1.05 * Math.sqrt(k), a = k * 2.39996;
+            const x = CX + r * Math.cos(a), y = CY + r * Math.sin(a);
+            const proton = Math.floor(((k + 1) * pShown) / balls) > Math.floor((k * pShown) / balls);
+            S("circle", { cx: x, cy: y, r: br, fill: proton ? "#EF476F" : "#8D99AE", class: "ball" }, nuc);
+            S("circle", { cx: x - br * 0.3, cy: y - br * 0.35, r: br * 0.3, class: "shine" }, nuc);
+          }
+          pop(nuc, 0.3, `${CX} ${CY}`);
+          const rings = shells.map((n, i) => {
+            const r = RAD[i];
+            const ring = S("circle", { cx: CX, cy: CY, r, class: "ring" }, svg);
+            const es = Array.from({ length: Math.min(n, 18) }, () => S("circle", { r: 11, class: "el" }, svg));
+            const t = at(i, N);
+            tl.fromTo(ring, { opacity: 0, scale: 0.7, svgOrigin: `${CX} ${CY}` }, { opacity: 1, scale: 1, svgOrigin: `${CX} ${CY}`, duration: 0.6, ease: "power2.out" }, t - 0.15);
+            if (es.length) tl.fromTo(es, { opacity: 0 }, { opacity: 1, duration: 0.4, stagger: 0.03 }, t);
+            return { r, es, w: ((i % 2 ? -1 : 1) * 2 * Math.PI) / (4 + 2.5 * i) };
+          });
+          clock((t) => {
+            nuc.setAttribute("transform", `rotate(${(4 * Math.sin(t * 3)).toFixed(2)} ${CX} ${CY})`);
+            for (const { r, es, w } of rings)
+              es.forEach((el, j) => {
+                const a = (2 * Math.PI * j) / es.length + w * t;
+                el.setAttribute("cx", (CX + r * Math.cos(a)).toFixed(1));
+                el.setAttribute("cy", (CY + r * Math.sin(a)).toFixed(1));
+              });
+          });
+          notesAt(shells.length, N);
+          if ($(".caption")) tl.fromTo($(".caption"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, Math.max(1.2, Math.min(P.D - 1.4, (P.vo + P.voEnd) / 2)));
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

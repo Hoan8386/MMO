@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 110px; right: 110px; top: 80px; bottom: 280px; display: flex; align-items: center; gap: 70px; }
+        {{__r}} .viz { position: relative; flex: none; width: 1000px; height: 680px; }
+        {{__r}} .stage { position: absolute; left: 0; top: 0; width: 1000px; height: 680px; transform-origin: 0 0; }
+        {{__r}} .stage > svg { position: absolute; inset: 0; overflow: visible; }
+        {{__r}} .layer { position: absolute; inset: 0; }
+        {{__r}} .stage text { fill: var(--ink); font-size: 30px; }
+        {{__r}} .stage text.sm { font-size: 25px; fill: var(--muted); }
+        {{__r}} .side { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+        {{__r}} .title { font-size: 60px; line-height: 1.12; }
+        {{__r}} .tag { align-self: flex-start; padding: 12px 26px; border-radius: 18px; background: var(--panel); border: 3px solid var(--accent); font-size: 44px; }
+        {{__r}} .notes { display: flex; flex-direction: column; gap: 16px; }
+        {{__r}} .note { display: flex; gap: 18px; align-items: baseline; font-size: 34px; line-height: 1.3; }
+        {{__r}} .note b { flex: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); translate: 0 -5px; }
+        {{__r}} .caption { font-size: 30px; line-height: 1.35; color: var(--muted); padding-top: 16px; border-top: 3px solid var(--line); }
+        /* Other formats: the drawing keeps its 1000×680 design and is scaled; tall ones stack it above the text. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column; justify-content: center; gap: 40px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .side { flex: none; align-self: stretch; }
+        {{__r}}[data-aspect="9x16"] .viz { width: 1130px; height: 768px; }
+        {{__r}}[data-aspect="9x16"] .stage { scale: 1.13; }
+        {{__r}}[data-aspect="4x5"] .viz { width: 1280px; height: 870px; }
+        {{__r}}[data-aspect="4x5"] .stage { scale: 1.28; }
+        {{__r}}[data-aspect="1x1"] .viz { width: 760px; height: 517px; }
+        {{__r}}[data-aspect="1x1"] .stage { scale: 0.76; }
+        {{__r}} .base { stroke: var(--line); stroke-width: 3; stroke-dasharray: 10 10; }
+        {{__r}} .wave { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+        {{__r}} .track { stroke: var(--accent2); stroke-width: 3; stroke-dasharray: 6 8; opacity: 0.7; }
+        {{__r}} .bead { fill: var(--accent2); stroke: var(--bg2); stroke-width: 5; }
+        {{__r}} .pt { fill: var(--accent); }
+        {{__r}} .brk { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+        {{__r}} .dir { stroke: var(--accent2); stroke-width: 6; stroke-linecap: round; }
+        {{__r}} .dirhead { fill: var(--accent2); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="viz"><div class="stage"><svg viewBox="0 0 1000 680" width="1000" height="680"></svg><div class="layer"></div></div></div>
+        <div class="side">
+        {{#title}}<div class="title">{{title}}</div>{{/title}}
+        {{?notes}}<div class="notes">{{#notes}}<div class="note"><b></b><span>{{.}}</span></div>{{/notes}}</div>{{/?notes}}
+        {{#caption}}<div class="caption">{{caption}}</div>{{/caption}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for keyword i of n: when it is spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          // New SVG element under parent; T adds a text.
+          const S = (tag, attrs, parent) => {
+            const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            for (const k in attrs) el.setAttribute(k, attrs[k]);
+            parent.appendChild(el);
+            return el;
+          };
+          const T = (x, y, text, cls, parent, extra = {}) => {
+            const el = S("text", { x, y, class: cls, ...extra }, parent);
+            el.textContent = text;
+            return el;
+          };
+          // Continuous motion (orbits, waves, flowing particles): f(t) runs whenever the timeline renders, so seeking stays exact.
+          const clock = (f) => {
+            const c = { t: 0 };
+            f(0);
+            tl.fromTo(c, { t: 0 }, { t: P.D, duration: P.D, ease: "none", onUpdate: () => f(c.t) }, 0);
+          };
+          // Draws a line or path from its start, like a pen.
+          const draw = (el, t, duration = 0.7) => {
+            const len = el.getTotalLength();
+            tl.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration, ease: "power2.inOut" }, t);
+          };
+          // Pops an element in; origin = "x y" in SVG units for SVG elements.
+          const pop = (el, t, origin) => {
+            const o = origin ? { svgOrigin: origin } : {};
+            tl.fromTo(el, { opacity: 0, scale: 0, ...o }, { opacity: 1, scale: 1, ...o, duration: 0.5, ease: "back.out(1.7)" }, t);
+          };
+          const svg = $(".stage svg");
+          const nNotes = $$(".note").length;
+          // Notes come in at keywords k, k+1… of n.
+          const notesAt = (k, n) => $$(".note").forEach((el, i) => tl.fromTo(el, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, at(k + i, n)));
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          const LONG = P.kind === "longitudinal";
+          const X0 = 40, X1 = 880, Y = 320, LAM = 280, AMP = 120;
+          const k = (2 * Math.PI) / LAM, w = (2 * Math.PI) / 1.6;
+          // The wave grows from flat water over its first second. Worked out from t inside the clock
+          // (not a tween), so a frame rendered on its own still sees the right amplitude.
+          const grow = { a: 0 };
+          const lam = S("g", {}, svg);
+          const ly = LONG ? Y - 150 : Y - AMP - 50;
+          const lx = X0 + LAM * 0.75 + (LONG ? LAM * 0.25 : 0);
+          S("path", { d: `M${lx},${ly + 16} V${ly} H${lx + LAM} V${ly + 16}`, class: "brk" }, lam);
+          T(lx + LAM / 2, ly - 18, P.wavelength_label || "Bước sóng λ", "", lam, { "text-anchor": "middle" });
+          tl.fromTo(lam, { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.5 }, 1.3);
+          const dir = S("g", {}, svg);
+          S("line", { x1: 330, y1: 610, x2: 590, y2: 610, class: "dir" }, dir);
+          S("polygon", { points: "626,610 590,592 590,628", class: "dirhead" }, dir);
+          T(460, 665, P.direction_label || "Hướng truyền sóng", "sm", dir, { "text-anchor": "middle" });
+          tl.fromTo(dir, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5 }, 1.6);
+          let frame;
+          if (!LONG) {
+            S("line", { x1: X0, y1: Y, x2: X1, y2: Y, class: "base" }, svg);
+            const wave = S("path", { class: "wave" }, svg);
+            // One particle of the medium: it only moves up and down while the wave runs past.
+            const PX = X0 + LAM * 2;
+            S("line", { x1: PX, y1: Y - AMP - 14, x2: PX, y2: Y + AMP + 14, class: "track" }, svg);
+            const bead = S("circle", { cx: PX, r: 18, class: "bead" }, svg);
+            const amp = S("g", {}, svg);
+            S("path", { d: `M${X1 + 26},${Y} h22 M${X1 + 37},${Y} V${Y - AMP} M${X1 + 26},${Y - AMP} h22`, class: "brk" }, amp);
+            T(X1 + 84, Y - AMP / 2, P.amplitude_label || "Biên độ A", "sm", amp, { "text-anchor": "middle", transform: `rotate(-90 ${X1 + 84} ${Y - AMP / 2})` });
+            tl.fromTo(amp, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 1.9);
+            const yAt = (x, t) => Y - grow.a * AMP * Math.sin(k * (x - X0) - w * t);
+            frame = (t) => {
+              let d = "";
+              for (let x = X0; x <= X1; x += 6) d += `${d ? "L" : "M"}${x},${yAt(x, t).toFixed(1)}`;
+              wave.setAttribute("d", d);
+              bead.setAttribute("cy", yAt(PX, t).toFixed(1));
+            };
+          } else {
+            const dots = [];
+            for (let x0 = X0 + 10; x0 <= X1; x0 += 20) for (let r = 0; r < 6; r++) dots.push([x0, Y - 100 + r * 40, S("circle", { r: 8, class: "pt" }, svg)]);
+            const comp = T(0, Y + 165, "Nén", "", svg, { "text-anchor": "middle" });
+            const rare = T(0, Y + 165, "Giãn", "sm", svg, { "text-anchor": "middle" });
+            // A label rides on one compression (and one rarefaction) and fades out before it wraps around.
+            const ride = (el, phase, t) => {
+              const s = (((phase + w * t) / k) % LAM + LAM) % LAM;
+              el.setAttribute("x", (X0 + LAM + s).toFixed(1));
+              el.setAttribute("opacity", (grow.a * Math.sin((Math.PI * s) / LAM)).toFixed(2));
+            };
+            frame = (t) => {
+              for (const [x0, y0, el] of dots) {
+                const ph = k * (x0 - X0) - w * t;
+                el.setAttribute("cx", (x0 + grow.a * 13 * Math.sin(ph)).toFixed(1));
+                el.setAttribute("cy", y0);
+                el.setAttribute("opacity", (0.55 - 0.45 * grow.a * Math.cos(ph)).toFixed(2));
+              }
+              ride(comp, Math.PI, t);
+              ride(rare, 0, t);
+            };
+          }
+          clock((t) => {
+            grow.a = 1 - (1 - Math.min(1, Math.max(0, t - 0.3))) ** 2;
+            frame(t);
+          });
+          notesAt(0, Math.max(1, nNotes));
+          if ($(".caption")) tl.fromTo($(".caption"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, Math.max(1.2, Math.min(P.D - 1.4, (P.vo + P.voEnd) / 2)));
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

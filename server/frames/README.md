@@ -126,3 +126,27 @@ template tự chỉnh bố cục, vd. xếp chồng hai cột ở khung dọc:
 
 `aspect_ratios` trong meta.json liệt kê các khung frame hỗ trợ; AI chỉ được chọn frame hợp với khung của dự án.
 Sau khi sửa, kiểm tra bằng `npm --prefix server run preview:frames -- --aspect all`.
+
+## Thư viện khoa học (`sci-*`)
+
+17 frame vẽ sơ đồ SVG chuyển động để giải thích hiện tượng vật lý, hoá học, sinh học. Ưu tiên ở 3 chủ đề
+**Vật lý** (`physics`), **Hoá học** (`chemistry`), **Sinh học** (`biology`) và dùng được ở mọi chủ đề có tag `science`.
+
+| Môn | Frame |
+|---|---|
+| Vật lý | `sci-force` (lực, Newton), `sci-wave` (sóng ngang / sóng dọc), `sci-orbit` (quỹ đạo, mô hình Bohr), `sci-circuit` (mạch điện), `sci-light` (phản xạ, khúc xạ, lăng kính) |
+| Hoá học | `sci-atom` (nguyên tử + ô nguyên tố), `sci-molecule` (phân tử quả cầu – que), `sci-reaction` (phương trình, toả/thu nhiệt), `sci-ph` (thang pH), `sci-states` (rắn – lỏng – khí bằng hạt) |
+| Sinh học | `sci-cell` (tế bào động vật / thực vật / vi khuẩn), `sci-dna` (xoắn kép), `sci-neuron` (xung thần kinh) |
+| Chung | `sci-formula` (công thức, kí hiệu sáng lên khi giải thích), `sci-graph` (đồ thị định luật), `sci-cycle` (vòng tuần hoàn), `sci-zoom` (phóng to từng cấp) |
+
+Cùng một khung: hình vẽ 1000×680 bên trái (khung dọc: ở trên, được phóng theo tỉ lệ), tiêu đề / ghi chú / chú thích bên phải.
+Hình vẽ dựng bằng JS từ input lúc nạp cảnh. Chuyển động liên tục (quỹ đạo, sóng, electron, xoắn ADN) chạy qua `clock(f)`:
+một tween duy nhất gọi `f(t)` mỗi khi timeline render, và mọi giá trị (kể cả pha "lớn dần") được tính trực tiếp từ `t`
+chứ không đọc từ tween khác — GSAP ghi giá trị tween trễ ở lần render đầu, nên một khung hình tua tới sẽ đọc sai.
+
+## Hoạt hình Motion Canvas (`anim-clip`, `engine: "motion-canvas"`)
+
+Frame `anim-clip` phát một component của thư viện `server/motion/` (mô phỏng vật lý, quỹ đạo thiên thể, sinh học,
+biểu đồ) đã render thành WebM có kênh alpha đúng độ dài cảnh, kích thước canvas và màu chủ đề. Input:
+`component` (`"enum": "@anim"` = các component trạng thái `tested`/`ready`) và `props` (chuỗi JSON, kiểm tra theo
+schema của component). Planner chỉ gửi metadata của những component khớp với kịch bản. Chi tiết: `server/motion/README.md`.

@@ -1,0 +1,136 @@
+{
+  "id": "solar_orbit",
+  "name": "Hành tinh quay quanh Mặt Trời",
+  "category": "space",
+  "description": "Các hành tinh chạy trên quỹ đạo elip thật (số liệu J2000, giải phương trình Kepler): chu kỳ đúng tỉ lệ với nhau nên hành tinh xa quay chậm hơn hẳn; có bộ đếm ngày, nhãn tên + chu kỳ, làm nổi một hành tinh. Khoảng cách nén theo căn bậc hai và kích thước không theo tỉ lệ (ghi chú trên hình).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "thiên văn",
+    "astronomy",
+    "hệ Mặt Trời",
+    "solar system",
+    "quỹ đạo",
+    "orbit",
+    "hành tinh",
+    "planet",
+    "Kepler"
+  ],
+  "keywords": [
+    "quay quanh Mặt Trời",
+    "quỹ đạo của Trái Đất",
+    "một năm",
+    "hệ Mặt Trời",
+    "các hành tinh",
+    "chu kỳ quỹ đạo",
+    "định luật Kepler",
+    "orbit around the sun",
+    "solar system",
+    "Sao Hỏa",
+    "Sao Kim",
+    "Sao Mộc",
+    "Sao Thổ",
+    "Sao Thủy"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 4,
+    "max": 40
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Hệ Mặt Trời",
+      "description": "tiêu đề góc trên"
+    },
+    "planets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "enum": [
+          "mercury",
+          "venus",
+          "earth",
+          "mars",
+          "jupiter",
+          "saturn",
+          "uranus",
+          "neptune"
+        ]
+      },
+      "default": [
+        "mercury",
+        "venus",
+        "earth",
+        "mars"
+      ],
+      "description": "các hành tinh hiện ra, theo thứ tự nói"
+    },
+    "highlight": {
+      "type": "string",
+      "enum": [
+        "",
+        "mercury",
+        "venus",
+        "earth",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune"
+      ],
+      "default": "earth",
+      "description": "hành tinh được làm nổi (vòng sáng, quỹ đạo màu); rỗng = không"
+    },
+    "orbitSpeed": {
+      "type": "number",
+      "min": 0.05,
+      "max": 50,
+      "default": 1,
+      "description": "tốc độ thời gian: 1 = một năm Trái Đất trong 8 giây; tăng lên khi có hành tinh vòng ngoài"
+    },
+    "cameraMode": {
+      "type": "string",
+      "enum": [
+        "overview",
+        "tilted"
+      ],
+      "default": "tilted",
+      "description": "overview nhìn thẳng từ trên xuống; tilted nhìn nghiêng (quỹ đạo dẹt lại)"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện tên hành tinh"
+    },
+    "showPeriods": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện chu kỳ quỹ đạo (ngày) cạnh tên"
+    },
+    "scaleNote": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "Khoảng cách và kích thước không theo tỉ lệ thật",
+      "description": "ghi chú tỉ lệ ở góc dưới phải"
+    }
+  },
+  "cues": "mỗi hành tinh trong planets một mốc (lúc hành tinh đó được nhắc tới)",
+  "accuracy": "Quỹ đạo Kepler hai vật từ phần tử J2000 (a, e, kinh độ điểm cận nhật, kinh độ trung bình); chu kỳ và hướng đúng, khoảng cách nén theo √r, kích thước theo thang log.",
+  "combines_with": [
+    "planet_rotation",
+    "moon_phases",
+    "earth_seasons",
+    "planet_comparison"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

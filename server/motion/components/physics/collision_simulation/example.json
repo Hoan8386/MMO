@@ -1,0 +1,5 @@
+{
+  "duration": 9,
+  "props": { "title": "Bi-a: va chạm đàn hồi", "a": { "name": "Bi trắng", "mass": 0.17, "velocity": 2 }, "b": { "name": "Bi đỏ", "mass": 0.17, "velocity": 0 }, "restitution": 1 },
+  "cues": [3, 5]
+}

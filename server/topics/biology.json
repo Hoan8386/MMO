@@ -1,0 +1,35 @@
+{
+  "topic_id": "biology",
+  "order": 43,
+  "name": "Sinh học",
+  "description": "Tế bào, ADN và di truyền, cơ thể người, thần kinh, vi sinh vật, tiến hoá và hệ sinh thái.",
+  "tone": "gần gũi, kể cơ thể và sự sống như một cỗ máy kỳ diệu, chính xác về thuật ngữ",
+  "kicker": "Sinh học",
+  "icon": "dna",
+  "default_tags": [
+    "biology",
+    "science"
+  ],
+  "related_tags": [
+    "explainer",
+    "health",
+    "nature",
+    "comparison"
+  ],
+  "background": "dots",
+  "theme": {
+    "bg": "#EEF7F0",
+    "bg2": "#FFFFFF",
+    "ink": "#16302B",
+    "muted": "#55736B",
+    "accent": "#16A34A",
+    "accent2": "#DB2777",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(22, 48, 43, 0.05)",
+    "line": "rgba(22, 48, 43, 0.14)",
+    "glow": "rgba(22, 163, 74, 0.14)",
+    "cap-bg": "rgba(22, 48, 43, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

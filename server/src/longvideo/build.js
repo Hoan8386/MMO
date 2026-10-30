@@ -1,4 +1,12 @@
-// Turns a long-video plan into a HyperFrames project and an MP4.
+// Turns a long-video plan into a HyperFrames project and an MP4. A scene is one of:
+//   drawn (kind "ai"/"title"/library kinds) — the AI's SVG, played by the RUNTIME below;
+//   "frame" — a HyperFrames frame template of server/frames/, filled with the AI's inputs and
+//             coloured by LONG_THEME (CSS custom properties on the page);
+//   "anim"  — a Motion Canvas clip (server/motion/), rendered at the scene's exact length with alpha
+//             and played by a <video> over the starfield.
+// A frame or animation scene may also carry the AI's drawing (sc.svg): it plays as an overlay
+// composition above the scene (labels, arrows, highlights on the beats), without the camera move so
+// it stays registered with what is under it.
 // Voice: the shared TTS (video/tts.js), reused per line by hash. Timing: each scene lasts its
 // narration and overlaps the next by OVERLAP seconds, so scenes cross-fade. Inside a scene each
 // diagram step (data-step) starts at its spoken keyword, and everything keeps moving between
@@ -6,12 +14,16 @@
 // seek-safe GSAP timeline. Around the scenes, layers.js adds a Three.js starfield, Anime.js titles
 // and a CSS grain, all rendered together by HyperFrames.
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from "node:path";
 import { ASSETS_DIR } from "../config.js";
 import { voiceScenes, DEFAULT_VOICE } from "../video/tts.js";
 import { keywordTimes, LEAD } from "../video/timeline.js";
 import { renderProject } from "../video/render.js";
-import { scriptJson } from "../video/template.js";
+import { scriptJson, fill } from "../video/template.js";
+import { templatePath } from "../video/catalog.js";
+import { renderAnimClips, getAnimation, parseAnimInputs } from "../video/anim.js";
+import { LONG_THEME } from "./library.js";
 import { sceneSvg, stepsOf, W, H } from "./visuals.js";
 import { spaceLayer, titlesLayer, grainLayer } from "./layers.js";
 
@@ -40,7 +52,10 @@ export function buildTimeline(plan, vo) {
     const timing = sceneTiming(sc, audio);
     const start = r3(t);
     t = start + timing.D - (i < plan.scenes.length - 1 ? OVERLAP : 0);
-    return { ...sc, start, duration: timing.D, audio: { start: r3(start + LEAD), duration: r3(audio.duration) }, props: { ...timing, vo: LEAD, first: i === 0 } };
+    // marks/voEnd: when each keyword is spoken and when the voice ends (frames and clips use them).
+    // An animation scene keeps its component props under props.anim (props now holds timing).
+    const props = { ...timing, vo: LEAD, voEnd: r3(LEAD + audio.duration), marks: keywordTimes(sc.beats, audio.words), first: i === 0, ...(sc.kind === "anim" ? { anim: sc.props } : {}) };
+    return { ...sc, start, duration: timing.D, audio: { start: r3(start + LEAD), duration: r3(audio.duration) }, props };
   });
   return { scenes, total: r3(t) };
 }
@@ -57,9 +72,9 @@ const RUNTIME = `
   const vis = R.querySelector(".vis");
   // Cross-fade in and out (the next scene starts while this one fades), with a gentle camera.
   if (!P.first) tl.fromTo(R, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 0);
-  tl.fromTo(svg, { scale: 0.965, transformOrigin: "50% 52%" }, { scale: 1, duration: 1.2, ease: "power3.out" }, 0);
+  if (!P.overlay) tl.fromTo(svg, { scale: 0.965, transformOrigin: "50% 52%" }, { scale: 1, duration: 1.2, ease: "power3.out" }, 0);
   tl.to(R, { opacity: 0, duration: 0.5, ease: "power1.inOut" }, P.D - 0.52);
-  tl.to(svg, { scale: 1.025, duration: 0.6, ease: "power2.in" }, P.D - 0.6);
+  if (!P.overlay) tl.to(svg, { scale: 1.025, duration: 0.6, ease: "power2.in" }, P.D - 0.6);
   R.querySelectorAll("[data-step]").forEach((el) => {
     const at = beat(Number(el.dataset.step)) + Number(el.dataset.delay || 0);
     if (el.hasAttribute("data-draw")) tl.fromTo(el, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.3, ease: "power2.inOut" }, at);
@@ -114,13 +129,84 @@ const RUNTIME = `
       const v = c.v[0] + (c.v[1] - c.v[0]) * smooth(interpolate(t, [c.at, c.at + 1.6], [0, 1]));
       c.el.textContent = v.toFixed(c.dec).replace(".", ",") + c.suffix;
     }
-    // Slow camera: a push-in and a small pan across the whole scene.
-    vis.setAttribute("transform", "translate(" + (960 + Math.sin(t * 0.25) * 10).toFixed(1) + " " + (560 + Math.cos(t * 0.2) * 6).toFixed(1) + ") scale(" + (1 + 0.05 * t / P.D).toFixed(4) + ") translate(-960 -560)");
+    // Slow camera: a push-in and a small pan across the whole scene (not on an overlay, which must
+    // stay aligned with the frame or clip under it).
+    if (!P.overlay) vis.setAttribute("transform", "translate(" + (960 + Math.sin(t * 0.25) * 10).toFixed(1) + " " + (560 + Math.cos(t * 0.2) * 6).toFixed(1) + ") scale(" + (1 + 0.05 * t / P.D).toFixed(4) + ") translate(-960 -560)");
   };
   tl.to(clock, { t: P.D, duration: P.D, ease: "none", onUpdate: paint }, 0);
   paint();`;
 
+const FONT_FACE = `@font-face { font-family: "Be Vietnam Pro"; src: url("assets/fonts/${FONT}") format("truetype"); font-weight: 600; }`;
+
+// A library frame, filled like in explainer videos (video/compile.js). Long videos have no caption
+// band, so the frame (laid out above one) is moved down a little to sit in the middle.
+function frameSceneHtml(sc) {
+  const tpl = fsSync.readFileSync(templatePath(sc.frame_id), "utf8");
+  const props = { ...sc.inputs, D: sc.duration, vo: sc.props.vo, voEnd: sc.props.voEnd, marks: sc.props.marks };
+  return fill(tpl, { ...sc.inputs, __id: sc.id, __dur: sc.duration, __r: `#${sc.id}-root`, __w: W, __h: H, __fontface: FONT_FACE, __props: scriptJson(props) })
+    .replace(`id="${sc.id}-root"`, `id="${sc.id}-root" data-aspect="16x9"`)
+    .replace("</style>", () => `  #${sc.id}-root { translate: 0 70px; }\n      </style>`);
+}
+
+// A Motion Canvas clip (rendered by renderAnimClips into assets/anim/<id>.webm), cross-faded like
+// the drawn scenes.
+function animSceneHtml(sc) {
+  return `<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        #${sc.id}-root { position: absolute; inset: 0; }
+        #${sc.id}-root .wrap { position: absolute; inset: 0; }
+        #${sc.id}-root video { position: absolute; inset: 0; width: 100%; height: 100%; }
+      </style>
+      <div id="${sc.id}-root" data-composition-id="${sc.id}" data-width="${W}" data-height="${H}">
+        <div class="wrap">
+          <video id="${sc.id}-anim" class="clip" src="assets/anim/${sc.id}.webm" muted playsinline data-start="0" data-duration="${sc.duration}" data-track-index="0"></video>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = ${scriptJson({ D: sc.duration, first: sc.props.first })};
+          const W = document.getElementById("${sc.id}-root").querySelector(".wrap");
+          const tl = gsap.timeline({ paused: true });
+          tl.fromTo(W, { opacity: P.first ? 1 : 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 0);
+          tl.to(W, { opacity: 0, duration: 0.5, ease: "power1.inOut" }, P.D - 0.52);
+          window.__timelines["${sc.id}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
+`;
+}
+
+// The clip jobs of the animation scenes: the heading layer shows the title, so the component's own
+// title is left empty and its drawing keeps clear of the heading (top) and the footnote (bottom).
+function animJobs(scenes) {
+  return scenes
+    .filter((sc) => sc.kind === "anim")
+    .map((sc) => {
+      const raw = { ...(sc.props.anim || {}) };
+      if (getAnimation(sc.component)?.inputs.title) raw.title = "";
+      const { props, errors } = parseAnimInputs({ component: sc.component, props: JSON.stringify(raw) });
+      if (errors.length) throw new Error(`Cảnh ${sc.id} (${sc.component}): ${errors.join("; ")}`);
+      return { id: sc.id, component: sc.component, props, duration: sc.duration, width: W, height: H, theme: LONG_THEME, safe: { top: 210, right: 100, bottom: 130, left: 100 }, cues: sc.props.marks, speech: [sc.props.vo, sc.props.voEnd] };
+    });
+}
+
 function sceneHtml(sc) {
+  if (sc.kind === "frame") return frameSceneHtml(sc);
+  if (sc.kind === "anim") return animSceneHtml(sc);
+  return drawnSceneHtml(sc);
+}
+
+// The AI's drawing over a frame or animation scene, as its own composition ("<scene>-ov").
+const hasOverlay = (sc) => ["frame", "anim"].includes(sc.kind) && !!String(sc.svg || "").trim();
+const overlayOf = (sc) => ({ ...sc, id: `${sc.id}-ov`, props: { ...sc.props, overlay: true } });
+
+function drawnSceneHtml(sc) {
   return `<!doctype html>
 <html>
   <head><meta charset="UTF-8" /></head>
@@ -151,9 +237,11 @@ function hostHtml(title, timeline, brand) {
   const space = spaceLayer(timeline.total);
   const titles = titlesLayer(timeline, brand);
   const grain = grainLayer(timeline.total);
-  // Alternate tracks so overlapping scenes sit on separate rows in Studio.
+  // Alternate tracks so overlapping scenes sit on separate rows in Studio; overlays get rows of their own.
+  const host = (id, s, track, cls) =>
+    `      <div id="h-${id}" class="${cls}" data-composition-id="${id}" data-composition-src="compositions/${id}.html" data-start="${s.start}" data-duration="${s.duration}" data-track-index="${track}" data-width="${W}" data-height="${H}"></div>`;
   const hosts = timeline.scenes
-    .map((s, i) => `      <div id="h-${s.id}" class="scene" data-composition-id="${s.id}" data-composition-src="compositions/${s.id}.html" data-start="${s.start}" data-duration="${s.duration}" data-track-index="${1 + (i % 2)}" data-width="${W}" data-height="${H}"></div>`)
+    .flatMap((s, i) => [host(s.id, s, 1 + (i % 2), "scene"), ...(hasOverlay(s) ? [host(`${s.id}-ov`, s, 6 + (i % 2), "scene ov")] : [])])
     .join("\n");
   const audios = timeline.scenes
     .map((s) => `      <audio id="vo-${s.id}" src="assets/vo/${s.id}.mp3" data-start="${s.audio.start}" data-duration="${s.audio.duration}" data-track-index="4" data-volume="1"></audio>`)
@@ -169,8 +257,11 @@ function hostHtml(title, timeline, brand) {
       @font-face { font-family: "Be Vietnam Pro"; src: url("assets/fonts/${FONT}") format("truetype"); font-weight: 600; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body, #main { width: 100%; height: 100%; overflow: hidden; background: #000; }
+      /* Theme tokens of library frames (server/frames/), in the long-video colours. */
+      #main { ${Object.entries(LONG_THEME).map(([k, v]) => `--${k}: ${v};`).join(" ")} }
       #main { position: relative; }
       #main > .scene { position: absolute; inset: 0; z-index: 2; }
+      #main > .scene.ov { z-index: 3; pointer-events: none; }
 ${space.css}
 ${titles.css}
 ${grain.css}
@@ -211,7 +302,17 @@ export async function buildLong(dir, state, { limit = 0, render = true, onLog = 
   await fs.copyFile(path.join(ASSETS_DIR, "fonts", FONT), path.join(dir, "assets", "fonts", FONT));
   await fs.writeFile(path.join(dir, "hyperframes.json"), JSON.stringify({ paths: { blocks: "compositions", components: "compositions/components", assets: "assets" }, media: { autoProxy: true } }, null, 2));
   await fs.writeFile(path.join(dir, "meta.json"), JSON.stringify({ id: path.basename(dir), name: plan.title }, null, 2));
-  for (const sc of timeline.scenes) await fs.writeFile(path.join(dir, "compositions", `${sc.id}.html`), sceneHtml(sc));
+  const jobs = animJobs(timeline.scenes);
+  if (jobs.length) {
+    onLog(`Render ${jobs.length} animation Motion Canvas (dùng lại bản đã render nếu không đổi)`);
+    await renderAnimClips(dir, jobs, { onLog });
+  }
+  for (const sc of timeline.scenes) {
+    await fs.writeFile(path.join(dir, "compositions", `${sc.id}.html`), sceneHtml(sc));
+    if (hasOverlay(sc)) await fs.writeFile(path.join(dir, "compositions", `${sc.id}-ov.html`), drawnSceneHtml(overlayOf(sc)));
+  }
+  const overlays = timeline.scenes.filter(hasOverlay).length;
+  if (overlays) onLog(`${overlays} cảnh frame/animation có thêm lớp SVG vẽ đè (chú thích, mũi tên, điểm nhấn)`);
   await fs.writeFile(path.join(dir, "index.html"), hostHtml(plan.title, timeline, state.brand));
   await fs.writeFile(path.join(dir, "timeline.json"), JSON.stringify(timeline, null, 2));
   onLog(`Dựng dự án HyperFrames: ${timeline.scenes.length} cảnh, ${Math.floor(timeline.total / 60)}:${String(Math.round(timeline.total % 60)).padStart(2, "0")} (GSAP + Three.js + Anime.js + CSS)`);

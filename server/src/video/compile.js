@@ -7,6 +7,7 @@ import { fill, scriptJson } from "./template.js";
 import { layoutFor, aspectKey, DEFAULT_ASPECT } from "./aspects.js";
 import { sceneFx } from "./fx.js";
 import { motionAssets } from "./motion.js";
+import { renderAnimScenes } from "./anim.js";
 import { shotLayout, shotProps, stageHtml, ENGINE_JS } from "../animation/stage.js";
 
 const FONT = "BeVietnamPro-SemiBold.ttf";
@@ -39,6 +40,9 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
   );
   await fs.writeFile(path.join(dir, "meta.json"), JSON.stringify({ id: path.basename(dir), name: title }, null, 2));
 
+  // Motion Canvas clips are rendered (or taken from the cache) before the scenes that play them.
+  await renderAnimScenes(dir, timeline.scenes, { width: L.scene.w, height: L.scene.h, theme: THEME });
+
   const used = {};
   for (const [i, sc] of timeline.scenes.entries()) {
     const tpl = await fs.readFile(templatePath(sc.frame_id), "utf8");
@@ -58,6 +62,7 @@ export async function compileProject(dir, { title, aspectRatio = DEFAULT_ASPECT,
       ...(anim ? { __stage: stageHtml(sc, layout), __engine: ENGINE_JS } : {}),
       ...(custom ? { __html: sc.inputs.html, __css: sc.inputs.css, __script: sc.inputs.script } : {}),
       __id: sc.id,
+      __dur: Math.round(sc.duration * 1000) / 1000,
       __r: `#${sc.id}-root`,
       __w: L.scene.w,
       __h: L.scene.h,

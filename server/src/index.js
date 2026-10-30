@@ -13,6 +13,8 @@ import settingsRouter from "./routes/settings.js";
 import newsRouter from "./routes/news.js";
 import musicRouter from "./routes/music.js";
 import longRouter from "./routes/long.js";
+import motionRouter from "./routes/motion.js";
+import { MOTION_DIR } from "./video/anim.js";
 
 fs.mkdirSync(STORAGE_DIR, { recursive: true });
 await initDb();
@@ -25,6 +27,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 app.use("/storage", express.static(STORAGE_DIR));
+// Preview stills and clips of the Motion Canvas components (server/motion/previews).
+app.use("/motion-previews", express.static(path.join(MOTION_DIR, "previews")));
 
 app.get("/api/health", (_req, res) => {
   const p = activePreset();
@@ -39,12 +43,13 @@ app.use("/api/animation", animationRouter);
 app.use("/api/news", newsRouter);
 app.use("/api/music", musicRouter);
 app.use("/api/long", longRouter);
+app.use("/api/motion", motionRouter);
 
 // Serve the built React app when it exists (npm run build in web/).
 const webDist = path.join(ROOT_DIR, "web", "dist");
 if (fs.existsSync(webDist)) {
   app.use(express.static(webDist));
-  app.get(/^\/(?!api|storage).*/, (_req, res) => res.sendFile(path.join(webDist, "index.html")));
+  app.get(/^\/(?!api|storage|motion-previews).*/, (_req, res) => res.sendFile(path.join(webDist, "index.html")));
 }
 
 app.use((err, _req, res, _next) => {

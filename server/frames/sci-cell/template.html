@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 110px; right: 110px; top: 80px; bottom: 280px; display: flex; align-items: center; gap: 70px; }
+        {{__r}} .viz { position: relative; flex: none; width: 1000px; height: 680px; }
+        {{__r}} .stage { position: absolute; left: 0; top: 0; width: 1000px; height: 680px; transform-origin: 0 0; }
+        {{__r}} .stage > svg { position: absolute; inset: 0; overflow: visible; }
+        {{__r}} .layer { position: absolute; inset: 0; }
+        {{__r}} .stage text { fill: var(--ink); font-size: 30px; }
+        {{__r}} .stage text.sm { font-size: 25px; fill: var(--muted); }
+        {{__r}} .side { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+        {{__r}} .title { font-size: 60px; line-height: 1.12; }
+        {{__r}} .tag { align-self: flex-start; padding: 12px 26px; border-radius: 18px; background: var(--panel); border: 3px solid var(--accent); font-size: 44px; }
+        {{__r}} .notes { display: flex; flex-direction: column; gap: 16px; }
+        {{__r}} .note { display: flex; gap: 18px; align-items: baseline; font-size: 34px; line-height: 1.3; }
+        {{__r}} .note b { flex: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); translate: 0 -5px; }
+        {{__r}} .caption { font-size: 30px; line-height: 1.35; color: var(--muted); padding-top: 16px; border-top: 3px solid var(--line); }
+        /* Other formats: the drawing keeps its 1000×680 design and is scaled; tall ones stack it above the text. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column; justify-content: center; gap: 40px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .side { flex: none; align-self: stretch; }
+        {{__r}}[data-aspect="9x16"] .viz { width: 1130px; height: 768px; }
+        {{__r}}[data-aspect="9x16"] .stage { scale: 1.13; }
+        {{__r}}[data-aspect="4x5"] .viz { width: 1280px; height: 870px; }
+        {{__r}}[data-aspect="4x5"] .stage { scale: 1.28; }
+        {{__r}}[data-aspect="1x1"] .viz { width: 760px; height: 517px; }
+        {{__r}}[data-aspect="1x1"] .stage { scale: 0.76; }
+        {{__r}} .note.n { align-items: center; }
+        {{__r}} .note.n b { width: 54px; height: 54px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); font-size: 28px; translate: none; }
+        {{__r}} .memA { fill: #FDE2E4; stroke: #E07A93; stroke-width: 10; }
+        {{__r}} .wall { fill: #E9F5DB; stroke: #6A994E; stroke-width: 22; }
+        {{__r}} .memP { fill: none; stroke: #A7C957; stroke-width: 6; }
+        {{__r}} .wallB { fill: #FEFAE0; stroke: #BC6C25; stroke-width: 16; }
+        {{__r}} .memB { fill: none; stroke: #DDA15E; stroke-width: 6; }
+        {{__r}} .nuc { fill: #CDB4F6; stroke: #7B61C4; stroke-width: 6; }
+        {{__r}} .nucleolus { fill: #7B61C4; }
+        {{__r}} .mito { fill: #F4A261; stroke: #E76F51; stroke-width: 5; }
+        {{__r}} .cristae { fill: none; stroke: #E76F51; stroke-width: 4; stroke-linejoin: round; }
+        {{__r}} .chloro { fill: #80B918; stroke: #55A630; stroke-width: 5; }
+        {{__r}} .grana { fill: #2B9348; }
+        {{__r}} .er { fill: none; stroke: #9D8DF1; stroke-width: 7; stroke-linecap: round; }
+        {{__r}} .golgi { fill: none; stroke: #F28482; stroke-width: 9; stroke-linecap: round; }
+        {{__r}} .ribo { fill: #6D597A; }
+        {{__r}} .vac { fill: #BDE0FE; stroke: #90BDE6; stroke-width: 5; }
+        {{__r}} .nucleoid { fill: none; stroke: #9D4EDD; stroke-width: 6; stroke-linejoin: round; }
+        {{__r}} .plasmid { fill: none; stroke: #9D4EDD; stroke-width: 5; }
+        {{__r}} .flag { fill: none; stroke: #BC6C25; stroke-width: 7; stroke-linecap: round; }
+        {{__r}} .badge { fill: var(--accent); stroke: #FFFFFF; stroke-width: 5; }
+        {{__r}} .stage text.bnum { font-size: 30px; fill: var(--on-accent); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="viz"><div class="stage"><svg viewBox="0 0 1000 680" width="1000" height="680"></svg><div class="layer"></div></div></div>
+        <div class="side">
+        <div class="title">{{title}}</div>
+        <div class="notes">{{#labels}}<div class="note n"><b>{{@n}}</b><span>{{.}}</span></div>{{/labels}}</div>
+        {{#caption}}<div class="caption">{{caption}}</div>{{/caption}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for keyword i of n: when it is spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          // New SVG element under parent; T adds a text.
+          const S = (tag, attrs, parent) => {
+            const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            for (const k in attrs) el.setAttribute(k, attrs[k]);
+            parent.appendChild(el);
+            return el;
+          };
+          const T = (x, y, text, cls, parent, extra = {}) => {
+            const el = S("text", { x, y, class: cls, ...extra }, parent);
+            el.textContent = text;
+            return el;
+          };
+          // Continuous motion (orbits, waves, flowing particles): f(t) runs whenever the timeline renders, so seeking stays exact.
+          const clock = (f) => {
+            const c = { t: 0 };
+            f(0);
+            tl.fromTo(c, { t: 0 }, { t: P.D, duration: P.D, ease: "none", onUpdate: () => f(c.t) }, 0);
+          };
+          // Draws a line or path from its start, like a pen.
+          const draw = (el, t, duration = 0.7) => {
+            const len = el.getTotalLength();
+            tl.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration, ease: "power2.inOut" }, t);
+          };
+          // Pops an element in; origin = "x y" in SVG units for SVG elements.
+          const pop = (el, t, origin) => {
+            const o = origin ? { svgOrigin: origin } : {};
+            tl.fromTo(el, { opacity: 0, scale: 0, ...o }, { opacity: 1, scale: 1, ...o, duration: 0.5, ease: "back.out(1.7)" }, t);
+          };
+          const svg = $(".stage svg");
+          const nNotes = $$(".note").length;
+          // Notes come in at keywords k, k+1… of n.
+          const notesAt = (k, n) => $$(".note").forEach((el, i) => tl.fromTo(el, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, at(k + i, n)));
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          const KIND = ["animal", "plant", "bacteria"].includes(P.kind) ? P.kind : "animal";
+          const cell = S("g", {}, svg);
+          // part → [element to pulse, badge x, badge y]
+          const EL = {};
+          const put = (part, el, x, y) => (EL[part] ??= [el, x, y]);
+          const blob = (cx, cy, rx, ry, wob) => {
+            let d = "";
+            for (let i = 0; i <= 72; i++) {
+              const a = (i / 72) * 2 * Math.PI;
+              const k = 1 + wob * (Math.sin(3 * a) * 0.6 + Math.sin(5 * a + 1) * 0.4);
+              d += `${i ? "L" : "M"}${(cx + rx * k * Math.cos(a)).toFixed(1)},${(cy + ry * k * Math.sin(a)).toFixed(1)}`;
+            }
+            return d + "Z";
+          };
+          // Organelles sit in a plain outer group so pulsing never fights their own rotation.
+          const mito = (x, y, rot) => {
+            const o = S("g", {}, cell);
+            const g = S("g", { transform: `rotate(${rot} ${x} ${y})` }, o);
+            S("ellipse", { cx: x, cy: y, rx: 66, ry: 30, class: "mito" }, g);
+            S("path", { d: `M${x - 48},${y} l12,-16 l12,32 l12,-32 l12,32 l12,-32 l12,32 l12,-16`, class: "cristae" }, g);
+            return o;
+          };
+          const chloro = (x, y, rot) => {
+            const o = S("g", {}, cell);
+            const g = S("g", { transform: `rotate(${rot} ${x} ${y})` }, o);
+            S("ellipse", { cx: x, cy: y, rx: 72, ry: 36, class: "chloro" }, g);
+            for (let j = -1; j <= 1; j++) S("rect", { x: x + j * 34 - 10, y: y - 17, width: 20, height: 34, rx: 6, class: "grana" }, g);
+            return o;
+          };
+          const ribos = (list) => {
+            const g = S("g", {}, cell);
+            list.forEach(([x, y]) => S("circle", { cx: x, cy: y, r: 7, class: "ribo" }, g));
+            return g;
+          };
+          const nucleus = (x, y, r) => {
+            const g = S("g", {}, cell);
+            S("circle", { cx: x, cy: y, r, class: "nuc" }, g);
+            S("circle", { cx: x + r * 0.28, cy: y - r * 0.18, r: r * 0.33, class: "nucleolus" }, g);
+            return g;
+          };
+          let flag = null;
+          if (KIND === "animal") {
+            const mem = S("path", { d: blob(500, 340, 440, 300, 0.035), class: "memA" }, cell);
+            put("membrane", mem, 935, 340);
+            put("cytoplasm", mem, 640, 560);
+            const nuc = nucleus(440, 320, 110);
+            put("nucleus", nuc, 440, 320);
+            put("dna", nuc, 471, 300);
+            put("mitochondria", mito(720, 450, -20), 720, 450);
+            mito(230, 470, 25);
+            const er = S("g", {}, cell);
+            for (let j = 0; j < 3; j++) S("path", { d: `M${590 + j * 26},${200 + j * 6} q40,40 0,80 q-40,40 0,80`, class: "er" }, er);
+            put("er", er, 640, 280);
+            const golgi = S("g", {}, cell);
+            for (let j = 0; j < 4; j++) S("path", { d: `M${205 + j * 6},${205 + j * 22} q45,-26 ${90 - j * 12},0`, class: "golgi" }, golgi);
+            put("golgi", golgi, 250, 240);
+            put("ribosome", ribos([[330, 180], [360, 540], [600, 430], [680, 160], [800, 300], [180, 350], [520, 570], [300, 600]]), 680, 160);
+            const vac = S("circle", { cx: 780, cy: 220, r: 34, class: "vac" }, cell);
+            put("vacuole", vac, 780, 220);
+          } else if (KIND === "plant") {
+            const wall = S("rect", { x: 70, y: 50, width: 860, height: 580, rx: 44, class: "wall" }, cell);
+            const mem = S("rect", { x: 92, y: 72, width: 816, height: 536, rx: 30, class: "memP" }, cell);
+            put("wall", wall, 70, 200);
+            put("membrane", mem, 96, 470);
+            put("cytoplasm", mem, 300, 430);
+            const vac = S("ellipse", { cx: 590, cy: 360, rx: 230, ry: 160, class: "vac" }, cell);
+            put("vacuole", vac, 590, 360);
+            const nuc = nucleus(250, 230, 85);
+            put("nucleus", nuc, 250, 230);
+            put("dna", nuc, 274, 215);
+            put("chloroplast", chloro(760, 150, -10), 760, 150);
+            chloro(220, 500, 15);
+            chloro(820, 540, 20);
+            chloro(470, 135, 5);
+            put("mitochondria", mito(390, 560, 0), 390, 560);
+            put("ribosome", ribos([[150, 380], [330, 330], [880, 330], [640, 580], [170, 130]]), 150, 380);
+          } else {
+            const wall = S("rect", { x: 150, y: 190, width: 650, height: 300, rx: 150, class: "wallB" }, cell);
+            const mem = S("rect", { x: 168, y: 208, width: 614, height: 264, rx: 132, class: "memB" }, cell);
+            put("wall", wall, 475, 190);
+            put("membrane", mem, 300, 472);
+            put("cytoplasm", mem, 560, 430);
+            let d = "";
+            for (let i = 0; i <= 120; i++) {
+              const a = (i / 120) * 2 * Math.PI, r = 80 + 22 * Math.sin(7 * a);
+              d += `${i ? "L" : "M"}${(460 + 1.7 * r * Math.cos(a)).toFixed(1)},${(340 + 0.9 * r * Math.sin(a)).toFixed(1)}`;
+            }
+            const dna = S("path", { d: d + "Z", class: "nucleoid" }, cell);
+            put("dna", dna, 460, 340);
+            put("nucleus", dna, 460, 340);
+            put("plasmid", S("circle", { cx: 680, cy: 300, r: 26, class: "plasmid" }, cell), 680, 300);
+            put("ribosome", ribos([[260, 300], [300, 400], [620, 410], [720, 380], [380, 250], [560, 250]]), 260, 300);
+            flag = S("path", { class: "flag" }, cell);
+            put("flagellum", flag, 900, 340);
+          }
+          tl.fromTo(cell, { opacity: 0, scale: 0.9, svgOrigin: "500 340" }, { opacity: 1, scale: 1, svgOrigin: "500 340", duration: 0.7, ease: "power2.out" }, 0.2);
+          const parts = (P.parts || []).slice(0, 5);
+          const N = Math.max(1, parts.length);
+          const notes = $$(".note");
+          parts.forEach((part, i) => {
+            const [el, x, y] = EL[part] || EL.cytoplasm;
+            const b = S("g", {}, svg);
+            S("circle", { cx: x, cy: y, r: 30, class: "badge" }, b);
+            T(x, y + 11, String(i + 1), "bnum", b, { "text-anchor": "middle" });
+            const t = at(i, N);
+            pop(b, t, `${x} ${y}`);
+            tl.fromTo(el, { scale: 1, svgOrigin: `${x} ${y}` }, { scale: 1.06, svgOrigin: `${x} ${y}`, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" }, t);
+            if (notes[i]) tl.fromTo(notes[i], { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, t);
+          });
+          // The bacterium's flagellum keeps whipping.
+          if (flag)
+            clock((t) => {
+              let d = "";
+              for (let x = 800; x <= 990; x += 5) d += `${d ? "L" : "M"}${x},${(340 + 24 * ((x - 800) / 190) * Math.sin((x - 800) * 0.06 - t * 8)).toFixed(1)}`;
+              flag.setAttribute("d", d);
+            });
+          if ($(".caption")) tl.fromTo($(".caption"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, Math.max(1.2, Math.min(P.D - 1.4, (P.vo + P.voEnd) / 2)));
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

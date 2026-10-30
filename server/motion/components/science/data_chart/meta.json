@@ -1,0 +1,127 @@
+{
+  "id": "data_chart",
+  "name": "Biểu đồ số liệu",
+  "category": "science",
+  "description": "Biểu đồ cột hoặc đường từ số liệu thật: trục có vạch chia tròn, từng cột/điểm hiện ra đúng lúc được nhắc tới với số đếm tăng dần, làm nổi một mục, ghi đơn vị và nguồn. Dùng cho so sánh số đo, nhiệt độ theo năm, dân số, nồng độ CO₂, kết quả thí nghiệm.",
+  "tags": [
+    "khoa học",
+    "science",
+    "biểu đồ",
+    "chart",
+    "số liệu",
+    "data",
+    "thống kê",
+    "statistics",
+    "đồ thị",
+    "graph"
+  ],
+  "keywords": [
+    "biểu đồ",
+    "số liệu",
+    "tăng lên",
+    "giảm xuống",
+    "so với",
+    "theo thời gian",
+    "qua các năm",
+    "nồng độ",
+    "phần trăm",
+    "bar chart",
+    "line chart",
+    "data"
+  ],
+  "duration": {
+    "default": 8,
+    "min": 4,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 50,
+      "default": "Số liệu",
+      "description": "tiêu đề góc trên"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "bar",
+        "line"
+      ],
+      "default": "bar",
+      "description": "bar: so sánh các mục; line: biến đổi theo thời gian"
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 20,
+      "default": "",
+      "description": "đơn vị, vd. ppm, °C, triệu người"
+    },
+    "data": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 12,
+      "description": "các mục theo thứ tự trên trục ngang",
+      "default": [
+        {
+          "label": "A",
+          "value": 1
+        },
+        {
+          "label": "B",
+          "value": 2
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "một mục",
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 14,
+            "required": true,
+            "description": "nhãn trục ngang"
+          },
+          "value": {
+            "type": "number",
+            "required": true,
+            "description": "giá trị"
+          }
+        }
+      }
+    },
+    "highlight": {
+      "type": "integer",
+      "min": -1,
+      "max": 11,
+      "default": -1,
+      "description": "chỉ số (từ 0) của mục được làm nổi; -1 = không"
+    },
+    "decimals": {
+      "type": "integer",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "description": "số chữ số thập phân hiển thị"
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "",
+      "description": "nguồn số liệu"
+    }
+  },
+  "cues": "mỗi mục trong data một mốc theo thứ tự (với nhiều mục có thể chỉ cho vài mốc, các mục còn lại rải đều)",
+  "accuracy": "Vẽ đúng tỉ lệ số liệu nhập vào: biểu đồ cột tính từ 0, biểu đồ đường có trục dọc bắt đầu gần giá trị nhỏ nhất (ghi số trên trục).",
+  "combines_with": [
+    "scientific_timeline",
+    "comparison_scene",
+    "process_flow"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

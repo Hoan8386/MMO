@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Chuỗi xoắn kép ADN",
+  "description": "Chuỗi xoắn kép ADN xoay liên tục, các cặp base A–T, G–C tô màu, kèm chú giải. Dùng cho di truyền, gen, đột biến, giải trình tự, xét nghiệm ADN, vì sao con giống bố mẹ.",
+  "category": "science",
+  "scene_type": "dna",
+  "tags": [
+    "science",
+    "biology",
+    "health"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 18,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 4,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "mỗi ý trong notes một từ khoá theo thứ tự",
+  "sample": {
+    "voice_text": "ADN là một chuỗi xoắn kép; bốn loại base A, T, G, C ghép cặp với nhau và lưu giữ toàn bộ thông tin di truyền.",
+    "keywords": [
+      "xoắn kép",
+      "ghép cặp",
+      "thông tin di truyền"
+    ],
+    "inputs": {
+      "title": "Phân tử ADN",
+      "notes": [
+        "Hai mạch xoắn quanh nhau",
+        "A luôn đi với T, G đi với C",
+        "Mỗi tế bào chứa khoảng 2 m ADN"
+      ]
+    }
+  },
+  "frame_id": "sci-dna"
+}

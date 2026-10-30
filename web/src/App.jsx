@@ -5,6 +5,7 @@ import ProjectDetail from "./pages/ProjectDetail.jsx";
 import FramesPage from "./pages/FramesPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import MusicPage from "./pages/MusicPage.jsx";
+import MotionPage from "./pages/MotionPage.jsx";
 import LongVideoPage, { LongVideoDetail } from "./pages/LongVideoPage.jsx";
 import { api } from "./api.js";
 
@@ -29,6 +30,7 @@ export default function App() {
           <NavLink to="/" end>Dự án video</NavLink>
           <NavLink to="/long">Video dài</NavLink>
           <NavLink to="/frames">Thư viện frame</NavLink>
+          <NavLink to="/motion">Thư viện animation</NavLink>
           <NavLink to="/music">Nhạc nền</NavLink>
           <NavLink to="/settings">Cấu hình AI</NavLink>
         </nav>
@@ -50,6 +52,7 @@ export default function App() {
           <Route path="/long" element={<LongVideoPage />} />
           <Route path="/long/:slug" element={<LongVideoDetail />} />
           <Route path="/frames" element={<FramesPage />} />
+          <Route path="/motion" element={<MotionPage />} />
           <Route path="/music" element={<MusicPage />} />
           <Route path="/settings" element={<SettingsPage onSaved={loadHealth} />} />
         </Routes>

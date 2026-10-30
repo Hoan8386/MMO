@@ -1,0 +1,35 @@
+{
+  "topic_id": "chemistry",
+  "order": 42,
+  "name": "Hoá học",
+  "description": "Nguyên tử, phân tử, phản ứng hoá học, axit – bazơ và hoá học trong đời sống hằng ngày.",
+  "tone": "tò mò như trong phòng thí nghiệm, gọi đúng tên chất và phương trình, nhắc an toàn khi cần",
+  "kicker": "Hoá học",
+  "icon": "test-tube",
+  "default_tags": [
+    "chemistry",
+    "science"
+  ],
+  "related_tags": [
+    "explainer",
+    "physics",
+    "health",
+    "statistics"
+  ],
+  "background": "bokeh",
+  "theme": {
+    "bg": "#F3F0FA",
+    "bg2": "#FFFFFF",
+    "ink": "#25203A",
+    "muted": "#6B6485",
+    "accent": "#7C3AED",
+    "accent2": "#10B981",
+    "on-accent": "#FFFFFF",
+    "panel": "rgba(37, 32, 58, 0.05)",
+    "line": "rgba(37, 32, 58, 0.14)",
+    "glow": "rgba(124, 58, 237, 0.14)",
+    "cap-bg": "rgba(37, 32, 58, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

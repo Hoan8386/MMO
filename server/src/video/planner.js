@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
 import { activePreset, getSettings } from "../settings.js";
 import { describeFrames } from "./catalog.js";
+import { animCatalog, ANIM_ENGINE } from "./anim.js";
 import { validatePlan } from "./validate.js";
 import { motionSchema, motionGuide, cleanMotion } from "./motion.js";
 import { STYLE_IDS, styleGuide } from "./styles.js";
@@ -228,6 +229,20 @@ Icons for each scene: in "icons" pick 0–${MAX_SCENE_ICONS} icons from the Icon
 // visuals: each scene also lists its photos (see planVideo); music: the topic's tracks to choose from.
 export function planRequest({ material, title, channel, topic, allowed, images = [], labels = {}, library = EMPTY_LIBRARY, targetSeconds = 90, extra = "", motion = false, music = [], visuals = false }) {
   // Story motion casts icons and characters as actors, so their lists go in even when no frame uses them.
+  // Motion Canvas clips: only the components of the topic's type reach the prompt, those the material
+  // talks about first (metadata, never code); with none, the clip frame is dropped instead of
+  // tempting the AI to invent one.
+  const anim = allowed.some((f) => f.engine === ANIM_ENGINE) ? animCatalog(`${title || ""}
+${material}`, topic) : null;
+  if (anim) {
+    allowed = anim.ids.length
+      ? allowed.map((f) => (f.engine === ANIM_ENGINE ? { ...f, inputs: { ...f.inputs, component: { ...f.inputs.component, enum: anim.ids } } } : f))
+      : allowed.filter((f) => f.engine !== ANIM_ENGINE);
+    if (anim.ids.length)
+      extra += `
+Animation components for frame anim-clip (pre-rendered Motion Canvas animations). Use only these ids and only the props listed for each; write props as a JSON object string, e.g. "{\"v0\":20}". Give the scene one keyword per cue of the component. Use a clip where the narration explains motion or a mechanism, at most one clip in every three scenes:
+${anim.prompt}`;
+  }
   const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
   const lib = {
     icons: library.icons,
@@ -504,6 +519,7 @@ export function planSchema(allowed, images, lib = EMPTY_LIBRARY, { motion = fals
         props[k] = { type: "array", items: { type: "string", description: `at most ${i.itemMaxLength ?? 60} characters` }, description: `${i.minItems ?? 1}-${i.maxItems ?? 5} items` };
       else if (i.type === "string" && i.enum) props[k] = { type: "string", enum: i.enum };
       else if (i.type === "code") props[k] = { type: "string", description: `${i.description || "code"}, at most ${i.maxLength} characters` };
+      else if (i.type === "json") props[k] = { type: "string", description: i.description || "JSON object as a string" };
       else if (i.type === "image") props[k] = images.length ? { type: "string", enum: images } : { type: "string" };
       else if (["icon", "logo", "cutout", "character"].includes(i.type)) props[k] = ref(i.type);
       else if (i.type === "characters") props[k] = { type: "array", items: ref("character"), description: `${i.minItems ?? 1}-${i.maxItems ?? 5} character names` };

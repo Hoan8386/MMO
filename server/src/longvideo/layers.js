@@ -111,21 +111,26 @@ const letters = (text) =>
 
 export function titlesLayer(timeline, brand) {
   const ms = (s) => Math.round(s * 1000);
+  // A library frame shows its own title, so its scene only gets the footnote here.
+  const headed = (s) => s.kind !== "frame";
   const blocks = timeline.scenes.map((s) => {
     const big = s.kind === "title";
     const head = big ? s.heading : String(s.heading || "").toLocaleUpperCase("vi");
-    return `        <div class="t${big ? " big" : ""}" id="t-${s.id}"><div class="h">${letters(head)}</div>${s.sub && !big ? `<div class="sub">${esc(s.sub)}</div>` : ""}${big && brand ? `<div class="sub">${esc(brand)}</div>` : ""}${s.note && !big ? `<div class="note">${esc(s.note)}</div>` : ""}</div>`;
+    return `        <div class="t${big ? " big" : ""}" id="t-${s.id}">${headed(s) ? `<div class="h">${letters(head)}</div>` : ""}${s.sub && !big && headed(s) ? `<div class="sub">${esc(s.sub)}</div>` : ""}${big && brand ? `<div class="sub">${esc(brand)}</div>` : ""}${s.note && !big ? `<div class="note">${esc(s.note)}</div>` : ""}</div>`;
   });
   const steps = timeline.scenes
     .map((s) => {
       const t0 = ms(s.start + (s.kind === "title" ? 1.1 : 0.25));
       const out = ms(s.start + s.duration - 0.55);
+      const hasSub = (s.kind === "title" && brand) || (s.sub && s.kind !== "title" && headed(s));
       return [
-        `tl.add("#t-${s.id} .ch", { opacity: [0, 1], y: [${s.kind === "title" ? 40 : 22}, 0], duration: 520, delay: anime.stagger(${s.kind === "title" ? 45 : 22}) }, ${t0});`,
-        `tl.add("#t-${s.id} .sub", { opacity: [0, 1], y: [10, 0], duration: 700 }, ${t0 + 450});`,
-        `tl.add("#t-${s.id} .note", { opacity: [0, 0.9], duration: 800 }, ${t0 + 900});`,
+        headed(s) && `tl.add("#t-${s.id} .ch", { opacity: [0, 1], y: [${s.kind === "title" ? 40 : 22}, 0], duration: 520, delay: anime.stagger(${s.kind === "title" ? 45 : 22}) }, ${t0});`,
+        hasSub && `tl.add("#t-${s.id} .sub", { opacity: [0, 1], y: [10, 0], duration: 700 }, ${t0 + 450});`,
+        s.note && s.kind !== "title" && `tl.add("#t-${s.id} .note", { opacity: [0, 0.9], duration: 800 }, ${t0 + 900});`,
         `tl.add("#t-${s.id}", { opacity: [1, 0], y: [0, -14], duration: 420, ease: "inQuad" }, ${out});`,
-      ].join("\n      ");
+      ]
+        .filter(Boolean)
+        .join("\n      ");
     })
     .join("\n      ");
   const second = timeline.scenes[1]?.start ?? 0;

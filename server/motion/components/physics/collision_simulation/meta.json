@@ -1,0 +1,132 @@
+{
+  "id": "collision_simulation",
+  "name": "Va chạm hai vật",
+  "category": "physics",
+  "description": "Hai vật trượt trên một đường thẳng rồi va chạm; vận tốc sau va chạm tính đúng theo bảo toàn động lượng với hệ số phục hồi e (1 = đàn hồi, 0 = dính vào nhau). Vector vận tốc đổi ngay lúc chạm, kích thước vật theo khối lượng, bảng so sánh tổng động lượng (luôn bảo toàn) và động năng (mất một phần nếu e < 1).",
+  "tags": [
+    "vật lý",
+    "physics",
+    "va chạm",
+    "collision",
+    "động lượng",
+    "momentum",
+    "định luật bảo toàn",
+    "conservation",
+    "động năng",
+    "kinetic energy"
+  ],
+  "keywords": [
+    "va chạm",
+    "hai xe đâm vào nhau",
+    "bảo toàn động lượng",
+    "va chạm đàn hồi",
+    "va chạm mềm",
+    "bi-a",
+    "con lắc Newton",
+    "động lượng",
+    "elastic collision",
+    "inelastic collision",
+    "momentum"
+  ],
+  "duration": {
+    "default": 9,
+    "min": 4,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Va chạm và động lượng",
+      "description": "tiêu đề góc trên"
+    },
+    "a": {
+      "type": "object",
+      "description": "vật bên trái",
+      "default": {
+        "name": "Vật A",
+        "mass": 2,
+        "velocity": 3
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 14,
+          "default": "Vật A",
+          "description": "tên"
+        },
+        "mass": {
+          "type": "number",
+          "min": 0.01,
+          "max": 100000,
+          "default": 2,
+          "description": "khối lượng (kg)"
+        },
+        "velocity": {
+          "type": "number",
+          "min": -100,
+          "max": 100,
+          "default": 3,
+          "description": "vận tốc ban đầu (m/s), dương = sang phải"
+        }
+      }
+    },
+    "b": {
+      "type": "object",
+      "description": "vật bên phải",
+      "default": {
+        "name": "Vật B",
+        "mass": 1,
+        "velocity": 0
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 14,
+          "default": "Vật B",
+          "description": "tên"
+        },
+        "mass": {
+          "type": "number",
+          "min": 0.01,
+          "max": 100000,
+          "default": 1,
+          "description": "khối lượng (kg)"
+        },
+        "velocity": {
+          "type": "number",
+          "min": -100,
+          "max": 100,
+          "default": 0,
+          "description": "vận tốc ban đầu (m/s)"
+        }
+      }
+    },
+    "restitution": {
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "description": "hệ số phục hồi e: 1 đàn hồi hoàn toàn, 0 mềm (dính nhau)"
+    },
+    "showTable": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện bảng động lượng, động năng trước – sau"
+    }
+  },
+  "cues": "2 mốc: 1 = lúc va chạm, 2 = nói về kết quả (bảng hiện ra)",
+  "accuracy": "Va chạm xuyên tâm một chiều, bỏ qua ma sát; vận tốc sau va chạm theo công thức hệ số phục hồi, thời gian thực (không chiếu chậm), thang khoảng cách tự co giãn để vừa khung.",
+  "combines_with": [
+    "force_vectors",
+    "data_chart",
+    "energy_transfer"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Mạch điện",
+  "description": "Mạch kín gồm nguồn điện, công tắc và bóng đèn; khi công tắc đóng, các electron chạy quanh dây dẫn và đèn sáng lên. Dùng cho dòng điện, mạch kín – mạch hở, pin, điện trở, cầu chì, cách đèn/thiết bị điện hoạt động.",
+  "category": "science",
+  "scene_type": "circuit",
+  "tags": [
+    "science",
+    "physics",
+    "technology"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "source": {
+      "type": "string",
+      "required": true,
+      "maxLength": 12,
+      "description": "nguồn điện, vd. Pin 9V"
+    },
+    "load": {
+      "type": "string",
+      "required": true,
+      "maxLength": 14,
+      "description": "thiết bị tiêu thụ, vd. Bóng đèn"
+    },
+    "switch_label": {
+      "type": "string",
+      "maxLength": 12,
+      "description": "mặc định: Công tắc"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 3,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "từ khoá 1: lúc công tắc đóng (đèn sáng, electron bắt đầu chạy); tiếp theo mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Khi đóng công tắc, mạch kín lại, các electron chạy qua dây tóc làm bóng đèn nóng lên và phát sáng.",
+    "keywords": [
+      "đóng công tắc",
+      "nóng lên"
+    ],
+    "inputs": {
+      "title": "Mạch điện kín",
+      "source": "Pin 9V",
+      "load": "Bóng đèn",
+      "notes": [
+        "Dây tóc nóng tới khoảng 2.500°C"
+      ],
+      "caption": "Hở mạch ở bất kỳ đâu, đèn sẽ tắt"
+    }
+  },
+  "frame_id": "sci-circuit"
+}

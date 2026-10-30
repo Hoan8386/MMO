@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Thang pH",
+  "description": "Thang pH 0–14 nhiều màu (axit – trung tính – bazơ), kim chỉ trượt tới giá trị pH của chất đang nói và đếm số, kèm tối đa 4 chất ví dụ cắm trên thang. Dùng cho độ chua, axit – bazơ, đất chua, mưa axit, dạ dày, xà phòng.",
+  "category": "science",
+  "scene_type": "phscale",
+  "tags": [
+    "science",
+    "chemistry",
+    "health"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 15,
+    "recommended": 8
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40,
+      "description": "chất đang nói, vd. Nước chanh có tính axit"
+    },
+    "value": {
+      "type": "number",
+      "required": true,
+      "description": "pH của chất chính, 0–14"
+    },
+    "examples": {
+      "type": "list",
+      "maxItems": 4,
+      "itemMaxLength": 16,
+      "description": "các chất để so sánh"
+    },
+    "example_values": {
+      "type": "numbers",
+      "maxItems": 4,
+      "description": "pH của từng chất trong examples"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "same_length": [
+    [
+      "examples",
+      "example_values"
+    ]
+  ],
+  "keywords": "từ khoá 1: lúc đọc giá trị pH chính; tiếp theo mỗi chất trong examples một từ khoá, rồi mỗi ý trong notes",
+  "sample": {
+    "voice_text": "Nước chanh có độ pH khoảng 2, rất chua; nước tinh khiết là 7, còn xà phòng lên tới 10.",
+    "keywords": [
+      "khoảng 2",
+      "tinh khiết",
+      "xà phòng"
+    ],
+    "inputs": {
+      "title": "Nước chanh có tính axit",
+      "value": 2,
+      "examples": [
+        "Nước tinh khiết",
+        "Xà phòng"
+      ],
+      "example_values": [
+        7,
+        10
+      ],
+      "caption": "pH giảm 1 đơn vị là axit mạnh gấp 10 lần"
+    }
+  },
+  "frame_id": "sci-ph"
+}

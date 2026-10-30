@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Mô hình nguyên tử",
+  "description": "Hạt nhân (proton đỏ, nơtron xám) và các lớp electron quay quanh, kèm ô nguyên tố kiểu bảng tuần hoàn và cấu hình electron. Dùng khi giới thiệu một nguyên tố, cấu tạo nguyên tử, vì sao một chất dễ phản ứng, ion, đồng vị.",
+  "category": "science",
+  "scene_type": "atom",
+  "tags": [
+    "science",
+    "chemistry",
+    "physics"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "symbol": {
+      "type": "string",
+      "required": true,
+      "maxLength": 3,
+      "description": "kí hiệu hoá học, vd. Na"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 14,
+      "description": "tên nguyên tố, vd. Natri"
+    },
+    "shells": {
+      "type": "numbers",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4,
+      "description": "số electron từng lớp từ trong ra, vd. [2, 8, 1]"
+    },
+    "protons": {
+      "type": "number",
+      "description": "số proton (số hiệu nguyên tử Z); mặc định = tổng electron"
+    },
+    "neutrons": {
+      "type": "number",
+      "description": "số nơtron; mặc định = số proton"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "mỗi lớp electron một từ khoá theo thứ tự (thường là số electron của lớp đó), rồi mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Nguyên tử natri có mười một electron, xếp thành ba lớp: hai, tám và một electron ở lớp ngoài cùng.",
+    "keywords": [
+      "hai",
+      "tám",
+      "một electron"
+    ],
+    "inputs": {
+      "title": "Nguyên tử natri",
+      "symbol": "Na",
+      "name": "Natri",
+      "shells": [
+        2,
+        8,
+        1
+      ],
+      "protons": 11,
+      "neutrons": 12,
+      "notes": [
+        "Chỉ 1 electron ngoài cùng → dễ nhường đi"
+      ],
+      "caption": "Vì vậy natri phản ứng rất mạnh với nước"
+    }
+  },
+  "frame_id": "sci-atom"
+}

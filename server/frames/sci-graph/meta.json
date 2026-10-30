@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Đồ thị định luật",
+  "description": "Trục toạ độ, đường cong tự vẽ ra kèm chấm chạy dọc đường và đường gióng về hai trục. Dùng khi giải thích một định luật hay quan hệ giữa hai đại lượng: tỉ lệ thuận, tỉ lệ nghịch (Boyle), hàm mũ (tăng trưởng vi khuẩn), phân rã phóng xạ, dao động, bão hoà, phân bố chuông.",
+  "category": "science",
+  "scene_type": "graph",
+  "tags": [
+    "science",
+    "physics",
+    "chemistry",
+    "biology"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 6,
+    "max": 18,
+    "recommended": 10
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "curve": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "linear",
+        "square",
+        "exponential",
+        "decay",
+        "inverse",
+        "saturation",
+        "sine",
+        "bell"
+      ],
+      "description": "dạng đường: linear tỉ lệ thuận, square bậc hai, exponential tăng theo hàm mũ, decay giảm theo hàm mũ/phân rã, inverse tỉ lệ nghịch, saturation tăng rồi bão hoà, sine dao động, bell hình chuông"
+    },
+    "x_label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 20,
+      "description": "đại lượng trục ngang, vd. Thể tích V"
+    },
+    "y_label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 20,
+      "description": "đại lượng trục đứng"
+    },
+    "formula": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "công thức ngắn, vd. p · V = const"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 3,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "keywords": "từ khoá 1: lúc đường cong bắt đầu vẽ; tiếp theo mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Theo định luật Boyle, khi nén khí lại thì áp suất tăng: thể tích giảm một nửa, áp suất tăng gấp đôi.",
+    "keywords": [
+      "định luật Boyle",
+      "giảm một nửa"
+    ],
+    "inputs": {
+      "title": "Định luật Boyle",
+      "curve": "inverse",
+      "x_label": "Thể tích V",
+      "y_label": "Áp suất p",
+      "formula": "p · V = hằng số",
+      "notes": [
+        "Nhiệt độ giữ không đổi"
+      ],
+      "caption": "Vì thế bơm xe đạp càng nén càng nặng tay"
+    }
+  },
+  "frame_id": "sci-graph"
+}

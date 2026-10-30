@@ -1,0 +1,90 @@
+{
+  "id": "moon_phases",
+  "name": "Các pha của Mặt Trăng",
+  "category": "space",
+  "description": "Hai góc nhìn cùng lúc: bên trái nhìn từ trên xuống (Mặt Trời chiếu từ trái, Mặt Trăng chạy trên quỹ đạo, nửa sáng luôn hướng về Mặt Trời), bên phải là hình Mặt Trăng nhìn từ Trái Đất đổi dần theo góc lệch; kèm tên pha, phần trăm được chiếu sáng và ngày trong tháng âm lịch.",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "thiên văn",
+    "astronomy",
+    "Mặt Trăng",
+    "moon",
+    "pha",
+    "phase",
+    "trăng tròn",
+    "lunar"
+  ],
+  "keywords": [
+    "pha của Mặt Trăng",
+    "trăng tròn",
+    "trăng khuyết",
+    "trăng lưỡi liềm",
+    "trăng non",
+    "thượng huyền",
+    "hạ huyền",
+    "rằm",
+    "mùng một",
+    "tháng âm lịch",
+    "moon phases",
+    "full moon",
+    "crescent"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 4,
+    "max": 40
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Vì sao Mặt Trăng đổi hình?",
+      "description": "tiêu đề góc trên"
+    },
+    "daysPerSecond": {
+      "type": "number",
+      "min": 0.2,
+      "max": 30,
+      "default": 3,
+      "description": "số ngày trôi qua mỗi giây video (3 = cả tháng trong ~10 giây)"
+    },
+    "startDay": {
+      "type": "number",
+      "min": 0,
+      "max": 29.5,
+      "default": 0,
+      "description": "ngày bắt đầu trong chu kỳ (0 = trăng mới, 14,8 = trăng tròn)"
+    },
+    "showNames": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện tên pha"
+    },
+    "showFraction": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện phần trăm được chiếu sáng"
+    },
+    "scaleNote": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "Khoảng cách và kích thước không theo tỉ lệ thật",
+      "description": "ghi chú tỉ lệ"
+    }
+  },
+  "cues": "không dùng mốc: chuyển động liên tục suốt cảnh",
+  "accuracy": "Pha tính từ góc lệch Mặt Trăng – Mặt Trời: phần sáng = (1 − cos α)/2, tháng giao hội 29,53 ngày; hình nhìn từ bán cầu Bắc. Quỹ đạo vẽ tròn, bỏ qua độ nghiêng 5° của quỹ đạo.",
+  "combines_with": [
+    "solar_orbit",
+    "lunar_eclipse",
+    "solar_eclipse"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

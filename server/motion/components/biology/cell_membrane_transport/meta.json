@@ -1,0 +1,121 @@
+{
+  "id": "cell_membrane_transport",
+  "name": "Vận chuyển chất qua màng tế bào",
+  "category": "biology",
+  "description": "Mô phỏng hạt (cố định theo seed) hai bên màng tế bào lipid kép: khuếch tán (phân tử nhỏ đi xuyên màng, dòng tổng xuôi gradient), khuếch tán qua kênh protein, hoặc vận chuyển chủ động (bơm protein dùng ATP đẩy chất vào trong, ngược gradient); số phân tử mỗi bên cập nhật liên tục. Có ghi chú đây là mô hình giản lược.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "tế bào",
+    "cell",
+    "màng tế bào",
+    "membrane",
+    "khuếch tán",
+    "diffusion",
+    "vận chuyển chủ động",
+    "active transport",
+    "kênh protein"
+  ],
+  "keywords": [
+    "màng tế bào",
+    "khuếch tán",
+    "thẩm thấu",
+    "vận chuyển chủ động",
+    "vận chuyển thụ động",
+    "kênh protein",
+    "bơm natri kali",
+    "ATP",
+    "nồng độ",
+    "gradient nồng độ",
+    "diffusion",
+    "active transport",
+    "cell membrane"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 5,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Vận chuyển qua màng tế bào",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "diffusion",
+        "facilitated",
+        "active"
+      ],
+      "default": "diffusion",
+      "description": "diffusion khuếch tán qua lớp lipid; facilitated qua kênh protein; active bơm protein dùng ATP"
+    },
+    "particleLabel": {
+      "type": "string",
+      "maxLength": 10,
+      "default": "O₂",
+      "description": "tên phân tử, vd. O₂, glucose, Na⁺"
+    },
+    "outsideLabel": {
+      "type": "string",
+      "maxLength": 20,
+      "default": "Ngoài tế bào",
+      "description": "nhãn bên trái"
+    },
+    "insideLabel": {
+      "type": "string",
+      "maxLength": 20,
+      "default": "Trong tế bào",
+      "description": "nhãn bên phải"
+    },
+    "outside": {
+      "type": "integer",
+      "min": 0,
+      "max": 50,
+      "default": 30,
+      "description": "số phân tử ban đầu bên ngoài"
+    },
+    "inside": {
+      "type": "integer",
+      "min": 0,
+      "max": 50,
+      "default": 4,
+      "description": "số phân tử ban đầu bên trong"
+    },
+    "showCounts": {
+      "type": "boolean",
+      "default": true,
+      "description": "đếm phân tử mỗi bên"
+    },
+    "seed": {
+      "type": "integer",
+      "min": 1,
+      "max": 999999,
+      "default": 7,
+      "description": "hạt giống ngẫu nhiên (đổi để có chuyển động khác)"
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "Mô hình giản lược, không theo tỉ lệ",
+      "description": "ghi chú góc dưới phải"
+    }
+  },
+  "cues": "không dùng mốc: mô phỏng chạy suốt cảnh",
+  "accuracy": "Chuyển động Brown giản lược (bước ngẫu nhiên có giới hạn tốc độ), xác suất xuyên màng cố định; cho thấy đúng xu hướng định tính (cân bằng nồng độ, hoặc dồn về một phía khi có bơm), không mô phỏng định lượng tốc độ khuếch tán.",
+  "combines_with": [
+    "cell_structure",
+    "magnification",
+    "process_flow"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

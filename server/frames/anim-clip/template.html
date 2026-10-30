@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; }
+        {{__r}} .wrap { position: absolute; inset: 0; }
+        {{__r}} .anim { position: absolute; inset: 0; width: 100%; height: 100%; }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <!-- Rendered by server/motion (Motion Canvas) at this scene's length and canvas size, with alpha. -->
+        <div class="wrap">
+          <video id="{{__id}}-anim" class="clip anim" src="assets/anim/{{__id}}.webm" muted playsinline data-start="0" data-duration="{{__dur}}" data-track-index="0"></video>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const tl = gsap.timeline({ paused: true });
+          // The clip animates itself; the scene only fades in and out like every other frame.
+          tl.fromTo(R.querySelector(".wrap"), { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
+          tl.to(R.querySelector(".wrap"), { opacity: 0, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

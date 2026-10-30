@@ -1,0 +1,108 @@
+{
+  "id": "projectile_motion",
+  "name": "Chuyển động ném xiên",
+  "category": "physics",
+  "description": "Vật ném xiên bay theo quỹ đạo parabol tính đúng công thức (không lực cản): thước đo mét, đồng hồ thời gian, vector vận tốc (thành phần ngang không đổi, thành phần đứng giảm dần), độ cao cực đại H và tầm xa R; có thể vẽ thêm quỹ đạo của các góc khác để so sánh.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "ném xiên",
+    "projectile",
+    "parabol",
+    "quỹ đạo",
+    "trọng lực",
+    "gravity",
+    "động học",
+    "kinematics"
+  ],
+  "keywords": [
+    "ném xiên",
+    "ném một vật",
+    "quả bóng bay",
+    "đường parabol",
+    "tầm xa",
+    "độ cao cực đại",
+    "góc ném",
+    "góc 45 độ",
+    "đạn bay",
+    "projectile motion",
+    "launch angle",
+    "cú sút",
+    "ném bóng"
+  ],
+  "duration": {
+    "default": 9,
+    "min": 5,
+    "max": 30
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "Chuyển động ném xiên",
+      "description": "tiêu đề góc trên"
+    },
+    "v0": {
+      "type": "number",
+      "min": 1,
+      "max": 120,
+      "default": 20,
+      "description": "vận tốc ban đầu (m/s)"
+    },
+    "angle": {
+      "type": "number",
+      "min": 5,
+      "max": 85,
+      "default": 45,
+      "description": "góc ném so với phương ngang (độ)"
+    },
+    "g": {
+      "type": "number",
+      "min": 0.5,
+      "max": 30,
+      "default": 9.81,
+      "description": "gia tốc trọng trường (m/s²); Mặt Trăng 1.62, Sao Hỏa 3.71"
+    },
+    "compareAngles": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "number",
+        "min": 5,
+        "max": 85
+      },
+      "default": [],
+      "description": "các góc khác vẽ quỹ đạo nét đứt để so sánh, vd. [30, 60]"
+    },
+    "showVectors": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện vector vận tốc và hai thành phần"
+    },
+    "showValues": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện H và R sau khi vật chạm đất"
+    },
+    "objectLabel": {
+      "type": "string",
+      "maxLength": 20,
+      "default": "",
+      "description": "nhãn tại điểm ném, vd. Quả bóng"
+    }
+  },
+  "cues": "3 mốc: 1 = lúc ném, 2 = nói về độ cao cực đại, 3 = nói về tầm xa",
+  "accuracy": "Động học chất điểm không lực cản không khí; vị trí tính đúng theo x = v0·cosθ·t, y = v0·sinθ·t − gt²/2 ở mọi khung hình. Nếu thời gian bay khác thời lượng cảnh, clip phát nhanh/chậm và in tốc độ phát lên hình.",
+  "combines_with": [
+    "force_vectors",
+    "gravity_simulation",
+    "data_chart"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

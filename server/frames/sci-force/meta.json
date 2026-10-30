@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "status": "active",
+  "name": "Lực tác dụng lên vật",
+  "description": "Một vật ở giữa, 1–4 mũi tên lực bật ra theo hướng lên/xuống/trái/phải kèm tên lực; cuối cảnh vật có thể trượt theo hướng hợp lực. Dùng cho định luật Newton, cân bằng lực, ma sát, lực đẩy Ác-si-mét, lực nâng của máy bay.",
+  "category": "science",
+  "scene_type": "force",
+  "tags": [
+    "science",
+    "physics"
+  ],
+  "aspect_ratios": [
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5"
+  ],
+  "duration": {
+    "min": 5,
+    "max": 16,
+    "recommended": 9
+  },
+  "inputs": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "object": {
+      "type": "string",
+      "required": true,
+      "maxLength": 14,
+      "description": "tên vật, vd. Quyển sách"
+    },
+    "forces": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4,
+      "itemMaxLength": 16,
+      "description": "tên từng lực, vd. Trọng lực P"
+    },
+    "directions": {
+      "type": "list",
+      "required": true,
+      "minItems": 1,
+      "maxItems": 4,
+      "enum": [
+        "up",
+        "down",
+        "left",
+        "right"
+      ],
+      "description": "hướng của từng lực trong forces"
+    },
+    "motion": {
+      "type": "string",
+      "enum": [
+        "none",
+        "up",
+        "down",
+        "left",
+        "right"
+      ],
+      "description": "vật chuyển động theo hướng hợp lực sau khi các lực hiện ra; none = đứng yên"
+    },
+    "result": {
+      "type": "string",
+      "maxLength": 36,
+      "description": "kết luận, vd. Hợp lực = 0 → đứng yên"
+    },
+    "notes": {
+      "type": "list",
+      "maxItems": 2,
+      "itemMaxLength": 40
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 90
+    }
+  },
+  "same_length": [
+    [
+      "forces",
+      "directions"
+    ]
+  ],
+  "keywords": "mỗi lực một từ khoá theo thứ tự forces, rồi mỗi ý trong notes một từ khoá",
+  "sample": {
+    "voice_text": "Quyển sách nằm yên trên bàn vì trọng lực kéo xuống và lực đỡ của mặt bàn đẩy lên cân bằng nhau.",
+    "keywords": [
+      "trọng lực",
+      "lực đỡ"
+    ],
+    "inputs": {
+      "title": "Vì sao vật đứng yên?",
+      "object": "Quyển sách",
+      "forces": [
+        "Trọng lực P",
+        "Phản lực N"
+      ],
+      "directions": [
+        "down",
+        "up"
+      ],
+      "motion": "none",
+      "result": "Hợp lực = 0 → đứng yên"
+    }
+  },
+  "frame_id": "sci-force"
+}

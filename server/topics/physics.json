@@ -1,0 +1,35 @@
+{
+  "topic_id": "physics",
+  "order": 41,
+  "name": "Vật lý",
+  "description": "Giải thích hiện tượng vật lý: lực và chuyển động, sóng, âm thanh, ánh sáng, điện, nhiệt, vũ trụ.",
+  "tone": "rõ ràng, trực quan, đi từ hiện tượng quen thuộc tới định luật đứng sau nó, có số liệu và công thức khi cần",
+  "kicker": "Vật lý",
+  "icon": "atom-symbol",
+  "default_tags": [
+    "physics",
+    "science"
+  ],
+  "related_tags": [
+    "explainer",
+    "statistics",
+    "comparison",
+    "space"
+  ],
+  "background": "grid",
+  "theme": {
+    "bg": "#0B1730",
+    "bg2": "#13264A",
+    "ink": "#E6F0FF",
+    "muted": "#93A9CC",
+    "accent": "#4FC3F7",
+    "accent2": "#FFB74D",
+    "on-accent": "#0B1730",
+    "panel": "rgba(230, 240, 255, 0.06)",
+    "line": "rgba(230, 240, 255, 0.16)",
+    "glow": "rgba(79, 195, 247, 0.18)",
+    "cap-bg": "rgba(5, 12, 28, 0.9)",
+    "cap-ink": "#FFFFFF",
+    "cap-hi": "#FFD54A"
+  }
+}

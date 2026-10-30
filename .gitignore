@@ -5,3 +5,6 @@ server/.env
 server/.venv/
 .hyperframes/
 *.log
+server/motion/renderer/dist/
+server/motion/previews/*.webm
+server/motion/.cache/

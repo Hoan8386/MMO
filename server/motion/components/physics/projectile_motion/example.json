@@ -1,0 +1,5 @@
+{
+  "duration": 9,
+  "props": { "title": "Ném bóng ở góc 45°", "v0": 20, "angle": 45, "compareAngles": [30, 60], "objectLabel": "Quả bóng" },
+  "cues": [1.2, 5.5, 7]
+}

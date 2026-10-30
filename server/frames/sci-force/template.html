@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        {{{__fontface}}}
+        {{__r}} { position: absolute; inset: 0; font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; color: var(--ink); }
+        {{__r}} .wrap { position: absolute; left: 110px; right: 110px; top: 80px; bottom: 280px; display: flex; align-items: center; gap: 70px; }
+        {{__r}} .viz { position: relative; flex: none; width: 1000px; height: 680px; }
+        {{__r}} .stage { position: absolute; left: 0; top: 0; width: 1000px; height: 680px; transform-origin: 0 0; }
+        {{__r}} .stage > svg { position: absolute; inset: 0; overflow: visible; }
+        {{__r}} .layer { position: absolute; inset: 0; }
+        {{__r}} .stage text { fill: var(--ink); font-size: 30px; }
+        {{__r}} .stage text.sm { font-size: 25px; fill: var(--muted); }
+        {{__r}} .side { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+        {{__r}} .title { font-size: 60px; line-height: 1.12; }
+        {{__r}} .tag { align-self: flex-start; padding: 12px 26px; border-radius: 18px; background: var(--panel); border: 3px solid var(--accent); font-size: 44px; }
+        {{__r}} .notes { display: flex; flex-direction: column; gap: 16px; }
+        {{__r}} .note { display: flex; gap: 18px; align-items: baseline; font-size: 34px; line-height: 1.3; }
+        {{__r}} .note b { flex: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); translate: 0 -5px; }
+        {{__r}} .caption { font-size: 30px; line-height: 1.35; color: var(--muted); padding-top: 16px; border-top: 3px solid var(--line); }
+        /* Other formats: the drawing keeps its 1000×680 design and is scaled; tall ones stack it above the text. */
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .wrap { flex-direction: column; justify-content: center; gap: 40px; }
+        {{__r}}:is([data-aspect="9x16"], [data-aspect="4x5"]) .side { flex: none; align-self: stretch; }
+        {{__r}}[data-aspect="9x16"] .viz { width: 1130px; height: 768px; }
+        {{__r}}[data-aspect="9x16"] .stage { scale: 1.13; }
+        {{__r}}[data-aspect="4x5"] .viz { width: 1280px; height: 870px; }
+        {{__r}}[data-aspect="4x5"] .stage { scale: 1.28; }
+        {{__r}}[data-aspect="1x1"] .viz { width: 760px; height: 517px; }
+        {{__r}}[data-aspect="1x1"] .stage { scale: 0.76; }
+        {{__r}} .obj { fill: var(--panel); stroke: var(--ink); stroke-width: 5; }
+        {{__r}} .stage text.objtxt { font-size: 34px; }
+        {{__r}} .shaft { stroke-width: 14; stroke-linecap: round; }
+        {{__r}} .result { border-color: var(--accent2); }
+      </style>
+      <div id="{{__id}}-root" data-composition-id="{{__id}}" data-width="{{__w}}" data-height="{{__h}}">
+        <div class="wrap">
+        <div class="viz"><div class="stage"><svg viewBox="0 0 1000 680" width="1000" height="680"></svg><div class="layer"></div></div></div>
+        <div class="side">
+        {{#title}}<div class="title">{{title}}</div>{{/title}}
+        {{?notes}}<div class="notes">{{#notes}}<div class="note"><b></b><span>{{.}}</span></div>{{/notes}}</div>{{/?notes}}
+                {{#result}}<div class="tag result">{{result}}</div>{{/result}}
+        {{#caption}}<div class="caption">{{caption}}</div>{{/caption}}
+        </div>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const P = {{{__props}}};
+          const R = document.getElementById("{{__id}}-root");
+          const $ = (s) => R.querySelector(s);
+          const $$ = (s) => [...R.querySelectorAll(s)];
+          const tl = gsap.timeline({ paused: true });
+          // Moment for keyword i of n: when it is spoken, else an even spread over the narration.
+          const at = (i, n) => Math.min(P.D - 1, Math.max(0.5, P.marks[i] ?? P.vo + (Math.max(1, P.voEnd - P.vo) * (i + 0.15)) / n));
+          // New SVG element under parent; T adds a text.
+          const S = (tag, attrs, parent) => {
+            const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            for (const k in attrs) el.setAttribute(k, attrs[k]);
+            parent.appendChild(el);
+            return el;
+          };
+          const T = (x, y, text, cls, parent, extra = {}) => {
+            const el = S("text", { x, y, class: cls, ...extra }, parent);
+            el.textContent = text;
+            return el;
+          };
+          // Continuous motion (orbits, waves, flowing particles): f(t) runs whenever the timeline renders, so seeking stays exact.
+          const clock = (f) => {
+            const c = { t: 0 };
+            f(0);
+            tl.fromTo(c, { t: 0 }, { t: P.D, duration: P.D, ease: "none", onUpdate: () => f(c.t) }, 0);
+          };
+          // Draws a line or path from its start, like a pen.
+          const draw = (el, t, duration = 0.7) => {
+            const len = el.getTotalLength();
+            tl.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration, ease: "power2.inOut" }, t);
+          };
+          // Pops an element in; origin = "x y" in SVG units for SVG elements.
+          const pop = (el, t, origin) => {
+            const o = origin ? { svgOrigin: origin } : {};
+            tl.fromTo(el, { opacity: 0, scale: 0, ...o }, { opacity: 1, scale: 1, ...o, duration: 0.5, ease: "back.out(1.7)" }, t);
+          };
+          const svg = $(".stage svg");
+          const nNotes = $$(".note").length;
+          // Notes come in at keywords k, k+1… of n.
+          const notesAt = (k, n) => $$(".note").forEach((el, i) => tl.fromTo(el, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, at(k + i, n)));
+          if ($(".title")) tl.fromTo($(".title"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+          const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+          const COLORS = ["var(--accent)", "var(--accent2)", "#E4572E", "#2A9D8F"];
+          const CX = 500, CY = 340, BW = 250, BH = 150;
+          // Object and arrows move together when the net force sets it moving.
+          const body = S("g", {}, svg);
+          const obj = S("g", {}, body);
+          S("rect", { x: CX - BW / 2, y: CY - BH / 2, width: BW, height: BH, rx: 24, class: "obj" }, obj);
+          T(CX, CY + 12, P.object || "", "objtxt", obj, { "text-anchor": "middle" });
+          pop(obj, 0.3, `${CX} ${CY}`);
+          const forces = P.forces || [];
+          const N = forces.length + nNotes;
+          const used = {};
+          forces.forEach((name, i) => {
+            const d = DIRS[P.directions?.[i]] ? P.directions[i] : "right";
+            const [dx, dy] = DIRS[d];
+            // A second arrow on the same side sits beside the first.
+            const k = (used[d] = (used[d] ?? -1) + 1);
+            const off = k ? (k % 2 ? 1 : -1) * 50 * Math.ceil(k / 2) : 0;
+            const sx = CX + (dx * BW) / 2 + (dy ? off : 0);
+            const sy = CY + (dy * BH) / 2 + (dx ? off : 0);
+            const L = dx ? 230 : 190;
+            const ex = sx + dx * L, ey = sy + dy * L;
+            const col = COLORS[i % COLORS.length];
+            const g = S("g", {}, body);
+            S("line", { x1: sx, y1: sy, x2: ex - dx * 34, y2: ey - dy * 34, stroke: col, class: "shaft" }, g);
+            S("polygon", { points: `${ex},${ey} ${ex - dx * 44 + dy * 24},${ey - dy * 44 + dx * 24} ${ex - dx * 44 - dy * 24},${ey - dy * 44 - dx * 24}`, fill: col }, g);
+            T(dx ? (sx + ex) / 2 : sx + 34, dx ? sy - 30 : (sy + ey) / 2 + 10, name, "", g, { "text-anchor": dx ? "middle" : "start", style: `fill:${col}` });
+            pop(g, at(i, N), `${sx} ${sy}`);
+          });
+          const last = forces.length ? at(forces.length - 1, N) : 0.5;
+          const mv = DIRS[P.motion];
+          if (mv) tl.to(body, { x: mv[0] * 120, y: mv[1] * 80, duration: 1.4, ease: "power2.in" }, Math.min(P.D - 2, last + 0.8));
+          if ($(".result")) tl.fromTo($(".result"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.6)" }, Math.min(P.D - 1.5, last + 0.9));
+          notesAt(forces.length, N);
+          if ($(".caption")) tl.fromTo($(".caption"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, Math.max(1.2, Math.min(P.D - 1.4, (P.vo + P.voEnd) / 2)));
+          tl.to($(".wrap"), { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, P.D - 0.45);
+          window.__timelines["{{__id}}"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

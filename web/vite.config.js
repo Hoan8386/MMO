@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       "/api": "http://localhost:4000",
       "/storage": "http://localhost:4000",
+      "/motion-previews": "http://localhost:4000",
     },
   },
 });
