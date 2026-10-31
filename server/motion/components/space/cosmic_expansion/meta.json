@@ -1,0 +1,117 @@
+{
+  "id": "cosmic_expansion",
+  "name": "Vũ trụ giãn nở và định luật Hubble",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "cosmology",
+  "subtopic": "Cosmic Expansion · Hubble's Law · Cosmological Redshift",
+  "styles": [
+    "scientific",
+    "educational",
+    "cinematic"
+  ],
+  "dimension": "2d",
+  "palette": "cosmology",
+  "description": "Các thiên hà nằm cố định trên lưới toạ độ đồng chuyển động; hệ số tỉ lệ a(t) tăng nên mọi khoảng cách cùng tăng — không thiên hà nào là tâm. Mũi tên từ thiên hà nhà cho thấy định luật Hubble v = H·d (xa gấp đôi thì lùi nhanh gấp đôi), biểu đồ v theo d là đường thẳng, và một sóng ánh sáng đi giữa hai thiên hà bị kéo giãn cùng không gian (dịch chuyển đỏ vũ trụ 1 + z = a lúc nhận / a lúc phát).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "vũ trụ học",
+    "cosmology",
+    "thiên hà",
+    "galaxy",
+    "Big Bang"
+  ],
+  "keywords": [
+    "vũ trụ giãn nở",
+    "vũ trụ đang giãn nở",
+    "định luật Hubble",
+    "hằng số Hubble",
+    "các thiên hà lùi xa",
+    "dịch chuyển đỏ",
+    "dịch chuyển đỏ vũ trụ",
+    "không gian giãn ra",
+    "hệ số tỉ lệ",
+    "vụ nổ lớn",
+    "expanding universe",
+    "Hubble's law",
+    "redshift",
+    "scale factor",
+    "cosmic expansion"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "expansion": {
+      "type": "number",
+      "min": 1.3,
+      "max": 3,
+      "default": 2,
+      "description": "hệ số giãn nở cuối clip (khoảng cách nhân lên bao nhiêu lần)"
+    },
+    "galaxies": {
+      "type": "integer",
+      "min": 20,
+      "max": 100,
+      "default": 70,
+      "description": "mật độ thiên hà (% điểm lưới có thiên hà)"
+    },
+    "showGrid": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện lưới toạ độ giãn theo không gian"
+    },
+    "showHubble": {
+      "type": "boolean",
+      "default": true,
+      "description": "mũi tên vận tốc và biểu đồ v = H·d"
+    },
+    "showRedshift": {
+      "type": "boolean",
+      "default": true,
+      "description": "sóng ánh sáng bị kéo giãn (dịch chuyển đỏ)"
+    },
+    "seed": {
+      "type": "integer",
+      "min": 1,
+      "max": 9999,
+      "default": 4,
+      "description": "cách rải thiên hà"
+    }
+  },
+  "cues": "mốc 1: không gian bắt đầu giãn; mốc 2: mũi tên Hubble và biểu đồ; mốc 3: sóng ánh sáng bị kéo giãn",
+  "accuracy": "Giãn nở đồng nhất: vị trí = a(t) × toạ độ đồng chuyển động, nên vận tốc lùi tỉ lệ đúng với khoảng cách (v = H·d với H = ȧ/a). Bước sóng tăng theo a/a_phát. Nhịp a(t) được chọn để dễ nhìn, không theo mô hình ΛCDM; thiên hà không theo tỉ lệ.",
+  "limitations": "Định tính về nhịp giãn nở; không mô phỏng giãn nở tăng tốc hay chân trời vũ trụ.",
+  "example_usage": "{\"component\":\"cosmic_expansion\",\"props\":{\"expansion\":2.2,\"showRedshift\":true}}",
+  "combines_with": [
+    "black_hole",
+    "stellar_lifecycle",
+    "galaxy_rotation_curve"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

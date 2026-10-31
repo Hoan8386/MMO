@@ -1,0 +1,163 @@
+{
+  "id": "function_graph",
+  "name": "Đồ thị hàm số, tiếp tuyến và tích phân",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "calculus",
+  "subtopic": "Hàm số · Đạo hàm · Tiếp tuyến · Tích phân · Diện tích dưới đường cong",
+  "styles": [
+    "educational",
+    "minimalist",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "calculus",
+  "description": "Vẽ đồ thị y = f(x) từ công thức gõ vào (vd. x^2 - 2x, sin(x)/x, e^(-x^2)) trên hệ trục có vạch chia đẹp; theo lời thoại: tiếp tuyến trượt dọc đường cong kèm độ dốc f′(x), đường đạo hàm f′ nét đứt, và diện tích từ a đến b — trước bằng các hình chữ nhật Riemann mịn dần, rồi vùng chính xác với giá trị tích phân.",
+  "tags": [
+    "toán học",
+    "math",
+    "mathematics",
+    "giải tích",
+    "calculus",
+    "đồ thị",
+    "graph",
+    "hàm số",
+    "function",
+    "education"
+  ],
+  "keywords": [
+    "đồ thị hàm số",
+    "vẽ đồ thị",
+    "đạo hàm",
+    "tiếp tuyến",
+    "hệ số góc",
+    "độ dốc",
+    "tích phân",
+    "diện tích dưới đường cong",
+    "tổng Riemann",
+    "giới hạn",
+    "parabol",
+    "hàm sin",
+    "derivative",
+    "tangent line",
+    "integral",
+    "area under the curve",
+    "Riemann sum",
+    "function graph"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "formula": {
+      "type": "string",
+      "maxLength": 60,
+      "default": "x^3/6 - x",
+      "description": "công thức theo x: + - * / ^, sin cos tan exp ln sqrt abs, pi, e; nhân ngầm như 2x"
+    },
+    "xMin": {
+      "type": "number",
+      "min": -1000,
+      "max": 1000,
+      "default": -3.5,
+      "description": "x nhỏ nhất"
+    },
+    "xMax": {
+      "type": "number",
+      "min": -1000,
+      "max": 1000,
+      "default": 3.5,
+      "description": "x lớn nhất"
+    },
+    "yMin": {
+      "type": "number",
+      "min": -100000,
+      "max": 100000,
+      "description": "y nhỏ nhất (bỏ trống = tự tính)"
+    },
+    "yMax": {
+      "type": "number",
+      "min": -100000,
+      "max": 100000,
+      "description": "y lớn nhất (bỏ trống = tự tính)"
+    },
+    "curveColor": {
+      "type": "color",
+      "default": "#06B6D4",
+      "description": "màu đường cong"
+    },
+    "tangent": {
+      "type": "boolean",
+      "default": true,
+      "description": "tiếp tuyến trượt dọc đường cong với độ dốc"
+    },
+    "tangentFrom": {
+      "type": "number",
+      "min": -1000,
+      "max": 1000,
+      "default": -2.5,
+      "description": "x bắt đầu của tiếp tuyến"
+    },
+    "tangentTo": {
+      "type": "number",
+      "min": -1000,
+      "max": 1000,
+      "default": 2.5,
+      "description": "x kết thúc của tiếp tuyến"
+    },
+    "showDerivative": {
+      "type": "boolean",
+      "default": false,
+      "description": "vẽ thêm đồ thị đạo hàm f′(x)"
+    },
+    "integral": {
+      "type": "boolean",
+      "default": true,
+      "description": "tô diện tích từ a đến b (Riemann rồi chính xác)"
+    },
+    "a": {
+      "type": "number",
+      "min": -1000,
+      "max": 1000,
+      "default": 0.5,
+      "description": "cận dưới tích phân"
+    },
+    "b": {
+      "type": "number",
+      "min": -1000,
+      "max": 1000,
+      "default": 3,
+      "description": "cận trên tích phân"
+    }
+  },
+  "cues": "theo thứ tự: tiếp tuyến trượt, đường đạo hàm, diện tích tích phân (mỗi phần bật mới dùng một mốc)",
+  "accuracy": "Giá trị tính trực tiếp từ công thức: độ dốc bằng sai phân trung tâm (h = 10⁻⁴), tích phân bằng quy tắc Simpson 2000 khoảng, hình chữ nhật Riemann lấy điểm giữa. Phần đồ thị vượt khung y bị ngắt.",
+  "limitations": "Chỉ hàm một biến y = f(x); không vẽ hàm ẩn, tham số hay toạ độ cực.",
+  "example_usage": "{\"component\":\"function_graph\",\"props\":{\"formula\":\"sin(x)\",\"xMin\":0,\"xMax\":6.3,\"a\":0,\"b\":3.14}}",
+  "combines_with": [
+    "matrix_transform"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

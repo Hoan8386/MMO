@@ -1,0 +1,112 @@
+{
+  "id": "transit_method",
+  "name": "Phương pháp quá cảnh tìm ngoại hành tinh",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "exoplanets",
+  "subtopic": "Transit Method · Light Curve",
+  "styles": [
+    "scientific",
+    "infographic",
+    "educational"
+  ],
+  "dimension": "2d",
+  "palette": "exoplanets",
+  "description": "Một hành tinh đi ngang qua ngôi sao của nó; độ sáng nhận được giảm xuống và đường cong ánh sáng được vẽ trực tiếp bên dưới. Sao có hiệu ứng tối ở rìa nên đáy đường cong hơi cong; độ sâu ≈ (Rp/Rs)² được in ra. Chọn bán kính hành tinh, tham số va chạm (đi qua giữa hay sát mép) và số lần quá cảnh.",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "ngoại hành tinh",
+    "exoplanet",
+    "kính thiên văn",
+    "telescope"
+  ],
+  "keywords": [
+    "phương pháp quá cảnh",
+    "ngoại hành tinh",
+    "hành tinh ngoài hệ mặt trời",
+    "đường cong ánh sáng",
+    "độ sáng ngôi sao giảm",
+    "kính Kepler",
+    "TESS",
+    "James Webb",
+    "tìm hành tinh mới",
+    "transit method",
+    "exoplanet transit",
+    "light curve",
+    "transit depth"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 5,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "planetRadius": {
+      "type": "number",
+      "min": 0.02,
+      "max": 0.3,
+      "default": 0.12,
+      "description": "bán kính hành tinh / bán kính sao (Trái Đất–Mặt Trời 0,009; Sao Mộc–Mặt Trời 0,1)"
+    },
+    "impact": {
+      "type": "number",
+      "min": 0,
+      "max": 0.9,
+      "default": 0.2,
+      "description": "tham số va chạm: 0 đi qua tâm sao, 0,9 sát mép"
+    },
+    "transits": {
+      "type": "integer",
+      "min": 1,
+      "max": 3,
+      "default": 2,
+      "description": "số lần quá cảnh trong clip (lặp đều = có chu kỳ quỹ đạo)"
+    },
+    "starColor": {
+      "type": "color",
+      "default": "#FFD27A",
+      "description": "màu sao (vàng như Mặt Trời, đỏ cam cho sao lùn đỏ, trắng xanh cho sao nóng)"
+    },
+    "planetColor": {
+      "type": "color",
+      "default": "#22D3EE",
+      "description": "màu viền hành tinh"
+    },
+    "showFormula": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện công thức độ sâu"
+    }
+  },
+  "cues": "mốc 1: hiện công thức độ sâu; hành tinh chạy liên tục",
+  "accuracy": "Độ sáng = 1 − (diện tích hai đĩa chồng nhau × cường độ tại tâm hành tinh)/(π(1 − u/3)) với luật tối rìa tuyến tính u = 0,6 — xấp xỉ tốt khi hành tinh nhỏ so với sao. Trục độ sáng được phóng to để đáy luôn rõ; số % in trên hình là giá trị thật.",
+  "limitations": "Bỏ qua ánh sáng phản xạ của hành tinh và quá cảnh thứ cấp; quỹ đạo vẽ thẳng ngang.",
+  "example_usage": "{\"component\":\"transit_method\",\"props\":{\"planetRadius\":0.1,\"transits\":2}}",
+  "combines_with": [
+    "solar_orbit",
+    "planet_rotation"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

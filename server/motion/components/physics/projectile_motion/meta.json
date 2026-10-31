@@ -2,6 +2,14 @@
   "id": "projectile_motion",
   "name": "Chuyển động ném xiên",
   "category": "physics",
+  "domain": "physics",
+  "topic": "classical_mechanics",
+  "subtopic": "Projectile Motion · Force Vectors",
+  "styles": [
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Vật ném xiên bay theo quỹ đạo parabol tính đúng công thức (không lực cản): thước đo mét, đồng hồ thời gian, vector vận tốc (thành phần ngang không đổi, thành phần đứng giảm dần), độ cao cực đại H và tầm xa R; có thể vẽ thêm quỹ đạo của các góc khác để so sánh.",
   "tags": [
     "vật lý",

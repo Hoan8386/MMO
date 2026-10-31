@@ -1,0 +1,101 @@
+{
+  "id": "stellar_lifecycle",
+  "name": "Vòng đời một ngôi sao",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "stars_galaxies",
+  "subtopic": "Nebula · Star Birth · Stellar Evolution · Red Giant · Supernova · Neutron Star",
+  "styles": [
+    "cinematic",
+    "educational"
+  ],
+  "dimension": "2d",
+  "palette": "stars_galaxies",
+  "description": "Vòng đời ngôi sao theo khối lượng: tinh vân co lại thành tiền sao, sao đốt hydro ở dãy chính (màu theo khối lượng, thời gian sống ≈ 10 tỉ năm × M^-2,5), phình thành sao khổng lồ đỏ, rồi kết thúc bằng tinh vân hành tinh + sao lùn trắng (dưới 8 lần Mặt Trời) hoặc siêu tân tinh để lại sao neutron (8–20) hay hố đen (trên ~20). Thanh các giai đoạn sáng dần theo lời thoại.",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "ngôi sao",
+    "star",
+    "thiên văn",
+    "siêu tân tinh",
+    "supernova"
+  ],
+  "keywords": [
+    "vòng đời ngôi sao",
+    "sự ra đời của ngôi sao",
+    "tinh vân",
+    "tiền sao",
+    "dãy chính",
+    "sao khổng lồ đỏ",
+    "siêu khổng lồ đỏ",
+    "sao lùn trắng",
+    "tinh vân hành tinh",
+    "siêu tân tinh",
+    "sao neutron",
+    "sao xung",
+    "mặt trời sẽ chết",
+    "ngôi sao chết",
+    "stellar evolution",
+    "life cycle of a star",
+    "red giant",
+    "white dwarf",
+    "supernova",
+    "neutron star",
+    "pulsar"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 8,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mass": {
+      "type": "number",
+      "min": 0.3,
+      "max": 40,
+      "default": 1,
+      "description": "khối lượng sao, theo khối lượng Mặt Trời (quyết định màu, thời gian sống và kết cục)"
+    },
+    "showTimeline": {
+      "type": "boolean",
+      "default": true,
+      "description": "thanh các giai đoạn ở dưới"
+    },
+    "showLifetime": {
+      "type": "boolean",
+      "default": true,
+      "description": "in thời gian sống ở dãy chính"
+    }
+  },
+  "cues": "4 mốc: tiền sao, dãy chính, khổng lồ đỏ, kết cục (tinh vân hành tinh hoặc siêu tân tinh)",
+  "accuracy": "Ngưỡng kết cục theo khối lượng ban đầu (≈8 và ≈20 lần Mặt Trời) và thời gian sống t ≈ 10¹⁰ năm × M^-2,5 là các xấp xỉ giáo khoa; màu theo lớp phổ gần đúng. Kích thước và thời gian các giai đoạn không theo tỉ lệ.",
+  "limitations": "Không mô phỏng sao đôi, sao lùn nâu hay các nhánh tiến hoá chi tiết.",
+  "example_usage": "{\"component\":\"stellar_lifecycle\",\"props\":{\"mass\":15}}",
+  "combines_with": [
+    "black_hole",
+    "cosmic_expansion"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

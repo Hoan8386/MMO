@@ -1,0 +1,231 @@
+{
+  "domains": {
+    "astronomy": {
+      "id": "astronomy",
+      "name": "Deep Space",
+      "bg": "#050816",
+      "bg2": "#101B3D",
+      "primary": "#8B5CF6",
+      "secondary": "#22D3EE",
+      "accent": "#FBBF24",
+      "highlight": "#FB7185",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#3B82F6",
+        "#22D3EE",
+        "#8B5CF6",
+        "#FBBF24",
+        "#FB7185",
+        "#F8FAFC"
+      ]
+    },
+    "mathematics": {
+      "id": "mathematics",
+      "name": "Geometric",
+      "bg": "#111827",
+      "bg2": "#1E293B",
+      "primary": "#6366F1",
+      "secondary": "#06B6D4",
+      "accent": "#F59E0B",
+      "highlight": "#F43F5E",
+      "ink": "#F9FAFB",
+      "muted": "#9CA3AF",
+      "series": [
+        "#06B6D4",
+        "#10B981",
+        "#F59E0B",
+        "#F43F5E",
+        "#8B5CF6",
+        "#6366F1"
+      ]
+    },
+    "biology": {
+      "id": "biology",
+      "name": "Organic",
+      "bg": "#052E16",
+      "bg2": "#14532D",
+      "primary": "#10B981",
+      "secondary": "#A78BFA",
+      "accent": "#F472B6",
+      "highlight": "#FB923C",
+      "ink": "#F8FAF5",
+      "muted": "#A7C4B5",
+      "series": [
+        "#10B981",
+        "#22D3EE",
+        "#A78BFA",
+        "#F472B6",
+        "#FB923C",
+        "#6EE7B7"
+      ]
+    },
+    "physics": {
+      "id": "physics",
+      "name": "Energetic",
+      "bg": "#0B1120",
+      "bg2": "#111827",
+      "primary": "#3B82F6",
+      "secondary": "#22D3EE",
+      "accent": "#F97316",
+      "highlight": "#A855F7",
+      "ink": "#F9FAFB",
+      "muted": "#94A3B8",
+      "series": [
+        "#3B82F6",
+        "#22D3EE",
+        "#A855F7",
+        "#F97316",
+        "#EF4444",
+        "#2563EB"
+      ]
+    }
+  },
+  "topics": {
+    "cosmology": {
+      "primary": "#8B5CF6",
+      "secondary": "#22D3EE",
+      "accent": "#F8FAFC",
+      "highlight": "#FB7185"
+    },
+    "black_holes": {
+      "primary": "#FBBF24",
+      "secondary": "#FB7185",
+      "accent": "#22D3EE",
+      "highlight": "#8B5CF6",
+      "series": [
+        "#FFF7D6",
+        "#FBBF24",
+        "#FB923C",
+        "#FB7185",
+        "#8B5CF6",
+        "#22D3EE"
+      ]
+    },
+    "solar_system": {
+      "primary": "#FBBF24",
+      "secondary": "#3B82F6",
+      "accent": "#22D3EE"
+    },
+    "stars_galaxies": {
+      "primary": "#FBBF24",
+      "secondary": "#8B5CF6",
+      "accent": "#FB7185",
+      "highlight": "#22D3EE"
+    },
+    "exoplanets": {
+      "primary": "#FBBF24",
+      "secondary": "#22D3EE",
+      "accent": "#10B981",
+      "highlight": "#FB7185"
+    },
+    "dark_universe": {
+      "primary": "#8B5CF6",
+      "secondary": "#22D3EE",
+      "accent": "#F8FAFC",
+      "highlight": "#FB7185"
+    },
+    "calculus": {
+      "primary": "#06B6D4",
+      "secondary": "#F59E0B",
+      "accent": "#F43F5E",
+      "highlight": "#10B981"
+    },
+    "linear_algebra": {
+      "primary": "#10B981",
+      "secondary": "#F43F5E",
+      "accent": "#F59E0B",
+      "highlight": "#8B5CF6"
+    },
+    "probability": {
+      "primary": "#6366F1",
+      "secondary": "#F43F5E",
+      "accent": "#10B981",
+      "highlight": "#F59E0B"
+    },
+    "number_theory": {
+      "primary": "#F59E0B",
+      "secondary": "#6366F1",
+      "accent": "#10B981",
+      "highlight": "#F43F5E"
+    },
+    "genetics": {
+      "primary": "#A78BFA",
+      "secondary": "#22D3EE",
+      "accent": "#F472B6",
+      "highlight": "#FB923C",
+      "series": [
+        "#F472B6",
+        "#22D3EE",
+        "#FB923C",
+        "#6EE7B7"
+      ]
+    },
+    "cell_biology": {
+      "primary": "#10B981",
+      "secondary": "#F472B6",
+      "accent": "#A78BFA",
+      "highlight": "#FB923C"
+    },
+    "neuroscience": {
+      "primary": "#22D3EE",
+      "secondary": "#A78BFA",
+      "accent": "#F472B6",
+      "highlight": "#FBBF24"
+    },
+    "quantum": {
+      "primary": "#A855F7",
+      "secondary": "#22D3EE",
+      "accent": "#F97316",
+      "highlight": "#3B82F6"
+    },
+    "electromagnetism": {
+      "primary": "#EF4444",
+      "secondary": "#2563EB",
+      "accent": "#22D3EE",
+      "highlight": "#F97316"
+    },
+    "relativity": {
+      "primary": "#3B82F6",
+      "secondary": "#22D3EE",
+      "accent": "#F97316",
+      "highlight": "#A855F7"
+    },
+    "nuclear": {
+      "primary": "#F97316",
+      "secondary": "#3B82F6",
+      "accent": "#EF4444",
+      "highlight": "#FBBF24"
+    }
+  },
+  "light": {
+    "astronomy": {
+      "bg": "#EEF2FF",
+      "bg2": "#E0E7FF",
+      "ink": "#0F172A",
+      "muted": "#475569"
+    },
+    "mathematics": {
+      "bg": "#F9FAFB",
+      "bg2": "#EEF2F7",
+      "ink": "#111827",
+      "muted": "#4B5563",
+      "secondary": "#0891B2",
+      "accent": "#D97706"
+    },
+    "biology": {
+      "bg": "#F8FAF5",
+      "bg2": "#ECF5EA",
+      "ink": "#14532D",
+      "muted": "#4D6B57",
+      "primary": "#059669"
+    },
+    "physics": {
+      "bg": "#F9FAFB",
+      "bg2": "#EEF2F7",
+      "ink": "#111827",
+      "muted": "#4B5563",
+      "secondary": "#0891B2"
+    }
+  }
+}

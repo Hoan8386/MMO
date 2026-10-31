@@ -2,6 +2,14 @@
   "id": "planet_rotation",
   "name": "Hành tinh tự quay",
   "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Planet Rotation · Axial Tilt · Day and Night",
+  "styles": [
+    "scientific",
+    "3d"
+  ],
+  "dimension": "2.5d",
   "description": "Hành tinh tự quay quanh trục nghiêng (số liệu thật: ngày sao, độ nghiêng trục; Sao Kim và Sao Thiên Vương quay ngược), nhìn ngang với Mặt Trời bên trái: kinh tuyến chạy qua, nửa đêm cố định, một điểm đánh dấu (vd. Hà Nội) đi qua ngày và đêm, đồng hồ giờ trôi qua. Dùng cho ngày và đêm, vì sao có múi giờ, trục nghiêng.",
   "tags": [
     "vũ trụ",

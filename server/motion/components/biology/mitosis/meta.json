@@ -1,0 +1,101 @@
+{
+  "id": "mitosis",
+  "name": "Nguyên phân — một tế bào thành hai",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "cell_biology",
+  "subtopic": "Mitosis · Chromosome · Cell Division",
+  "styles": [
+    "organic",
+    "educational",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "cell_biology",
+  "description": "Nguyên phân từng kỳ theo lời thoại: kỳ trung gian (chất nhiễm sắc lỏng trong nhân), kỳ đầu (nhiễm sắc thể co xoắn thành hình X gồm hai nhiễm sắc tử chị em, màng nhân tan, trung thể đi về hai cực), kỳ giữa (NST xếp trên mặt phẳng xích đạo, thoi phân bào gắn ở tâm động), kỳ sau (nhiễm sắc tử chị em bị kéo về hai cực), kỳ cuối (hai nhân mới) và phân chia tế bào chất (màng thắt lại thành hai tế bào). NST tương đồng cùng màu hai sắc độ.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "tế bào",
+    "cell",
+    "phân bào",
+    "cell division",
+    "di truyền",
+    "genetics"
+  ],
+  "keywords": [
+    "nguyên phân",
+    "phân bào",
+    "nhiễm sắc thể",
+    "kỳ trung gian",
+    "kỳ đầu",
+    "kỳ giữa",
+    "kỳ sau",
+    "kỳ cuối",
+    "thoi phân bào",
+    "tâm động",
+    "tế bào nhân đôi",
+    "tế bào con",
+    "mitosis",
+    "cell division",
+    "chromosomes",
+    "prophase",
+    "metaphase",
+    "anaphase",
+    "telophase",
+    "cytokinesis"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 8,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "pairs": {
+      "type": "integer",
+      "min": 1,
+      "max": 4,
+      "default": 2,
+      "description": "số cặp nhiễm sắc thể tương đồng (2n = gấp đôi)"
+    },
+    "showSpindle": {
+      "type": "boolean",
+      "default": true,
+      "description": "hiện sợi thoi phân bào"
+    },
+    "showPhases": {
+      "type": "boolean",
+      "default": true,
+      "description": "thanh tên các kỳ ở dưới"
+    }
+  },
+  "cues": "5 mốc: kỳ đầu, kỳ giữa, kỳ sau, kỳ cuối, phân chia tế bào chất",
+  "accuracy": "Trình tự và sự kiện của từng kỳ theo sinh học tế bào chuẩn; mỗi tế bào con nhận đúng một nhiễm sắc tử của mọi NST. Hình dạng, kích thước và thời gian tương đối là minh hoạ.",
+  "limitations": "Không thể hiện kỳ đầu muộn/prometaphase riêng, không có giảm phân (meiosis).",
+  "example_usage": "{\"component\":\"mitosis\",\"props\":{\"pairs\":2}}",
+  "combines_with": [
+    "dna_helix",
+    "cell_membrane_transport"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

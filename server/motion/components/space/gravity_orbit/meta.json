@@ -2,6 +2,14 @@
   "id": "gravity_orbit",
   "name": "Quỹ đạo dưới lực hấp dẫn",
   "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Orbital Mechanics · Kepler's Laws",
+  "styles": [
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Một vật được phóng ngang gần một thiên thể và bay theo lực hấp dẫn Newton (tích phân số): vận tốc phóng bằng vận tốc vòng tròn cho quỹ đạo tròn, nhỏ hơn cho elip, từ √2 lần trở lên thì thoát ra. Mũi tên vận tốc và lực hấp dẫn đi theo vật; tuỳ chọn tô các hình quạt quét trong những khoảng thời gian bằng nhau (định luật 2 Kepler).",
   "tags": [
     "vũ trụ",

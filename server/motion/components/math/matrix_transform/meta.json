@@ -1,0 +1,136 @@
+{
+  "id": "matrix_transform",
+  "name": "Ma trận là phép biến đổi mặt phẳng",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "linear_algebra",
+  "subtopic": "Vector · Matrix Transformation · Determinant · Eigenvectors · Eigenvalues",
+  "styles": [
+    "educational",
+    "minimalist",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "linear_algebra",
+  "description": "Ma trận 2×2 biến đổi cả mặt phẳng: lưới, hai vector cơ sở î, ĵ và hình vuông đơn vị chuyển mượt từ ma trận đơn vị sang M. Cột của M là nơi î và ĵ đi tới; diện tích hình vuông đơn vị thành |det M| (lật mặt khi det < 0). Tuỳ chọn vector v và ảnh Mv, các vector riêng nằm trên đường thẳng không đổi và chỉ bị kéo dài λ lần.",
+  "tags": [
+    "toán học",
+    "math",
+    "mathematics",
+    "đại số tuyến tính",
+    "linear algebra",
+    "ma trận",
+    "matrix",
+    "vector",
+    "education"
+  ],
+  "keywords": [
+    "ma trận",
+    "phép biến đổi tuyến tính",
+    "vector cơ sở",
+    "định thức",
+    "vector riêng",
+    "giá trị riêng",
+    "phép quay",
+    "phép co giãn",
+    "phép trượt",
+    "đại số tuyến tính",
+    "matrix transformation",
+    "linear transformation",
+    "determinant",
+    "eigenvector",
+    "eigenvalue",
+    "basis vectors",
+    "shear",
+    "rotation matrix"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "matrix": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "min": -5,
+        "max": 5
+      },
+      "minItems": 4,
+      "maxItems": 4,
+      "default": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "description": "[a, b, c, d] của M = [[a, b], [c, d]] (vd. trượt [1,1,0,1], quay 90° [0,-1,1,0], co giãn [2,0,0,0.5])"
+    },
+    "vector": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "min": -5,
+        "max": 5
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "default": [
+        1,
+        2
+      ],
+      "description": "vector v [x, y] cho thấy Mv"
+    },
+    "showVector": {
+      "type": "boolean",
+      "default": false,
+      "description": "hiện vector v và ảnh của nó"
+    },
+    "showDeterminant": {
+      "type": "boolean",
+      "default": true,
+      "description": "tô hình vuông đơn vị và in định thức"
+    },
+    "showEigen": {
+      "type": "boolean",
+      "default": false,
+      "description": "hiện vector riêng và giá trị riêng (nếu thực)"
+    },
+    "range": {
+      "type": "integer",
+      "min": 2,
+      "max": 8,
+      "default": 4,
+      "description": "nửa bề rộng lưới hiển thị (đơn vị)"
+    }
+  },
+  "cues": "mốc theo thứ tự: vector v, bắt đầu biến đổi, định thức, vector riêng (chạy lại phép biến đổi)",
+  "accuracy": "Chính xác theo đại số: mỗi điểm p đi tới ((1−t)I + tM)p; định thức a·d − b·c; giá trị riêng là nghiệm λ² − (a+d)λ + det = 0. Cách nội suy tuyến tính từ I sang M là quy ước trình chiếu, không phải một phép biến đổi liên tục duy nhất.",
+  "limitations": "Chỉ ma trận 2×2 thực; giá trị riêng phức chỉ được báo là không có vector riêng thực.",
+  "example_usage": "{\"component\":\"matrix_transform\",\"props\":{\"matrix\":[2,1,1,2],\"showEigen\":true}}",
+  "combines_with": [
+    "function_graph"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

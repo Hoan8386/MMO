@@ -1,0 +1,147 @@
+{
+  "id": "em_field",
+  "name": "Điện trường và đường sức của các điện tích",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "electromagnetism",
+  "subtopic": "Electric Field · Field Lines · Equipotential · Coulomb's Law",
+  "styles": [
+    "scientific",
+    "futuristic",
+    "educational"
+  ],
+  "dimension": "2d",
+  "palette": "electromagnetism",
+  "description": "Điện trường của các điện tích điểm: đường sức được dò số từ điện tích dương theo E = Σ q·r̂/r² cho tới khi gặp điện tích âm hoặc ra khỏi khung, nên hình dạng và mật độ là của trường thật; mũi tên nhỏ chạy dọc đường sức theo chiều trường. Tuỳ chọn: tô mặt đẳng thế V = Σ q/r (đỏ dương, xanh âm, có vạch đồng mức), lưới vector trường, và một điện tích thử dương bị đẩy dọc đường sức. Có sẵn lưỡng cực, hai điện tích cùng dấu, một điện tích, tứ cực, hoặc tự đặt.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "điện",
+    "electricity",
+    "điện từ",
+    "electromagnetism",
+    "trường",
+    "field"
+  ],
+  "keywords": [
+    "điện trường",
+    "đường sức điện",
+    "điện tích",
+    "định luật Coulomb",
+    "lưỡng cực điện",
+    "điện thế",
+    "mặt đẳng thế",
+    "điện tích dương",
+    "điện tích âm",
+    "lực điện",
+    "electric field",
+    "field lines",
+    "electric dipole",
+    "equipotential",
+    "Coulomb's law",
+    "point charge"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "preset": {
+      "type": "string",
+      "enum": [
+        "dipole",
+        "like",
+        "single",
+        "quadrupole",
+        "custom"
+      ],
+      "default": "dipole",
+      "description": "cấu hình có sẵn; custom dùng danh sách charges"
+    },
+    "charges": {
+      "type": "array",
+      "maxItems": 6,
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "number",
+            "min": -3,
+            "max": 3,
+            "required": true,
+            "description": "điện tích (âm/dương)"
+          },
+          "x": {
+            "type": "number",
+            "min": -0.9,
+            "max": 0.9,
+            "required": true,
+            "description": "vị trí ngang −0,9…0,9"
+          },
+          "y": {
+            "type": "number",
+            "min": -0.9,
+            "max": 0.9,
+            "required": true,
+            "description": "vị trí dọc −0,9…0,9"
+          }
+        }
+      },
+      "description": "điện tích tự đặt (preset custom)"
+    },
+    "linesPerCharge": {
+      "type": "integer",
+      "min": 6,
+      "max": 28,
+      "default": 16,
+      "description": "số đường sức trên mỗi đơn vị điện tích"
+    },
+    "showPotential": {
+      "type": "boolean",
+      "default": true,
+      "description": "tô điện thế và vạch đẳng thế"
+    },
+    "showVectors": {
+      "type": "boolean",
+      "default": false,
+      "description": "lưới vector cường độ điện trường"
+    },
+    "testCharge": {
+      "type": "boolean",
+      "default": true,
+      "description": "điện tích thử chạy dọc một đường sức"
+    }
+  },
+  "cues": "mốc theo thứ tự: điện thế, lưới vector, điện tích thử (chỉ những phần được bật)",
+  "accuracy": "Đường sức là nghiệm số (Runge–Kutta bậc 2, bước 4 px) của trường Coulomb thật nên mật độ tỉ lệ với cường độ; điện thế V = Σ q/r. Mô hình 2D của các điện tích điểm trong mặt phẳng; điện tích thử đi dọc đường sức là minh hoạ (vật có quán tính không đi đúng theo đường sức).",
+  "limitations": "Không có từ trường hay điện tích chuyển động; không có vật dẫn hay bản tụ.",
+  "example_usage": "{\"component\":\"em_field\",\"props\":{\"preset\":\"like\",\"showPotential\":true}}",
+  "combines_with": [
+    "double_slit",
+    "wave_propagation"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

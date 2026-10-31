@@ -2,6 +2,14 @@
   "id": "solar_orbit",
   "name": "Hành tinh quay quanh Mặt Trời",
   "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Solar System · Orbital Motion",
+  "styles": [
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Các hành tinh chạy trên quỹ đạo elip thật (số liệu J2000, giải phương trình Kepler): chu kỳ đúng tỉ lệ với nhau nên hành tinh xa quay chậm hơn hẳn; có bộ đếm ngày, nhãn tên + chu kỳ, làm nổi một hành tinh. Khoảng cách nén theo căn bậc hai và kích thước không theo tỉ lệ (ghi chú trên hình).",
   "tags": [
     "vũ trụ",

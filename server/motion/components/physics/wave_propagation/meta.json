@@ -2,6 +2,14 @@
   "id": "wave_propagation",
   "name": "Sóng lan truyền",
   "category": "physics",
+  "domain": "physics",
+  "topic": "waves",
+  "subtopic": "Waves · Sound Waves · Interference",
+  "styles": [
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Sóng chạy y = A·sin(kx − ωt) theo đúng tần số và bước sóng nhập vào, in v = f·λ; sóng ngang hoặc sóng dọc (hạt nén – giãn), một phần tử môi trường được đánh dấu chỉ dao động tại chỗ. Có thể chồng thêm sóng thứ hai cùng chiều (giao thoa, phách) hoặc ngược chiều (sóng dừng). Sóng nhanh (âm thanh, ánh sáng) được chiếu chậm và ghi hệ số chậm.",
   "tags": [
     "vật lý",

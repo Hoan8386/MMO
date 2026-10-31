@@ -1,0 +1,97 @@
+{
+  "id": "monte_carlo_pi",
+  "name": "Ước lượng π bằng Monte Carlo",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "probability",
+  "subtopic": "Xác suất · Mô phỏng Monte Carlo · Luật số lớn",
+  "styles": [
+    "infographic",
+    "educational",
+    "minimalist"
+  ],
+  "dimension": "2d",
+  "palette": "probability",
+  "description": "Các điểm ngẫu nhiên rơi vào hình vuông có hình tròn nội tiếp; tỉ lệ điểm nằm trong tròn tiến về π/4 nên 4 × trong / tổng → π. Điểm rơi nhanh dần, bộ đếm in ước lượng hiện tại, biểu đồ bên cạnh vẽ ước lượng theo số điểm (thang log) hội tụ về đường π trong dải sai số ±2σ — minh hoạ luật số lớn.",
+  "tags": [
+    "toán học",
+    "math",
+    "mathematics",
+    "xác suất",
+    "probability",
+    "thống kê",
+    "statistics",
+    "mô phỏng",
+    "simulation",
+    "education"
+  ],
+  "keywords": [
+    "số pi",
+    "ước lượng pi",
+    "phương pháp Monte Carlo",
+    "mô phỏng ngẫu nhiên",
+    "xác suất",
+    "luật số lớn",
+    "điểm ngẫu nhiên",
+    "sai số",
+    "hội tụ",
+    "Monte Carlo simulation",
+    "estimate pi",
+    "law of large numbers",
+    "random sampling"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "points": {
+      "type": "integer",
+      "min": 100,
+      "max": 20000,
+      "default": 6000,
+      "description": "tổng số điểm ngẫu nhiên"
+    },
+    "seed": {
+      "type": "integer",
+      "min": 1,
+      "max": 99999,
+      "default": 7,
+      "description": "hạt giống ngẫu nhiên (cùng số = cùng kết quả)"
+    },
+    "showChart": {
+      "type": "boolean",
+      "default": true,
+      "description": "biểu đồ ước lượng hội tụ về π"
+    }
+  },
+  "cues": "không dùng mốc: điểm rơi liên tục, chậm rồi nhanh dần",
+  "accuracy": "Mô phỏng thật với bộ sinh số giả ngẫu nhiên có hạt giống: ước lượng in ra là 4 × số điểm trong / tổng thực tế; dải sai số ±2 × 4√(p(1−p)/n) với p = π/4.",
+  "limitations": "Số điểm tối đa 20 000 nên chỉ đạt khoảng 2 chữ số thập phân đúng — đúng bản chất hội tụ chậm của Monte Carlo.",
+  "example_usage": "{\"component\":\"monte_carlo_pi\",\"props\":{\"points\":10000}}",
+  "combines_with": [
+    "function_graph",
+    "data_chart"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

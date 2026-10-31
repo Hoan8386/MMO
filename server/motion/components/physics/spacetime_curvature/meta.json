@@ -1,0 +1,118 @@
+{
+  "id": "spacetime_curvature",
+  "name": "Không–thời gian cong và sóng hấp dẫn",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "relativity",
+  "subtopic": "Spacetime Curvature · Orbital Motion · Gravitational Lensing · Gravitational Waves",
+  "styles": [
+    "3d",
+    "futuristic",
+    "cinematic",
+    "educational"
+  ],
+  "dimension": "3d",
+  "palette": "relativity",
+  "description": "Mô hình 'tấm cao su' của thuyết tương đối rộng trên lưới 3D phối cảnh: một khối lượng xuất hiện và tấm lõm xuống (độ sâu ∝ −M/√(r² + ε²)); một vật nhỏ quay quanh trong chỗ trũng với vận tốc góc Kepler ω ∝ √(M/r³); một tia sáng đi ngang bị bẻ cong về phía khối lượng. Chế độ hệ đôi: hai khối lượng quay quanh nhau và gợn sóng xoắn lan ra trên tấm với tần số gấp đôi tần số quỹ đạo — sóng hấp dẫn.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "thuyết tương đối",
+    "relativity",
+    "hấp dẫn",
+    "gravity",
+    "vũ trụ",
+    "space",
+    "Einstein"
+  ],
+  "keywords": [
+    "không thời gian cong",
+    "độ cong không thời gian",
+    "thuyết tương đối rộng",
+    "Einstein",
+    "lực hấp dẫn là gì",
+    "tấm cao su",
+    "sóng hấp dẫn",
+    "LIGO",
+    "hai hố đen va chạm",
+    "ánh sáng bị bẻ cong",
+    "thấu kính hấp dẫn",
+    "spacetime curvature",
+    "general relativity",
+    "gravitational waves",
+    "rubber sheet",
+    "gravity well"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mass": {
+      "type": "number",
+      "min": 0.2,
+      "max": 1.6,
+      "default": 1,
+      "description": "khối lượng (độ sâu chỗ trũng)"
+    },
+    "elevation": {
+      "type": "number",
+      "min": 15,
+      "max": 60,
+      "default": 32,
+      "description": "góc nhìn camera so với mặt lưới (độ)"
+    },
+    "gridLines": {
+      "type": "integer",
+      "min": 12,
+      "max": 40,
+      "default": 26,
+      "description": "số đường lưới mỗi chiều"
+    },
+    "showOrbit": {
+      "type": "boolean",
+      "default": true,
+      "description": "vật nhỏ quay quanh trong chỗ trũng"
+    },
+    "showLight": {
+      "type": "boolean",
+      "default": true,
+      "description": "tia sáng bị bẻ cong"
+    },
+    "binary": {
+      "type": "boolean",
+      "default": false,
+      "description": "hai khối lượng quay quanh nhau phát sóng hấp dẫn"
+    }
+  },
+  "cues": "mốc theo thứ tự: khối lượng làm lõm lưới, quỹ đạo, tia sáng, sóng hấp dẫn (phần được bật)",
+  "accuracy": "Hình dạng chỗ trũng theo thế Newton làm mềm (−M/√(r²+ε²)), quỹ đạo tròn với ω ∝ √(M/r³), sóng hấp dẫn có tần số gấp đôi tần số quỹ đạo và dạng tứ cực. 'Tấm cao su' là phép ẩn dụ giáo khoa — không phải hình học không–thời gian thật (thiếu chiều thời gian, độ lệch tia sáng chỉ định tính).",
+  "limitations": "Định tính; không tính độ lệch tia sáng 4GM/(c²b) hay biên độ sóng hấp dẫn thật.",
+  "example_usage": "{\"component\":\"spacetime_curvature\",\"props\":{\"binary\":true,\"showLight\":false}}",
+  "combines_with": [
+    "black_hole",
+    "gravity_orbit"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

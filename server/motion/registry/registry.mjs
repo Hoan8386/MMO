@@ -6,12 +6,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateProps, schemaErrors } from "./schema.mjs";
+import { withCommon } from "./common.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const COMPONENTS_DIR = path.join(ROOT, "components");
 export const PREVIEWS_DIR = path.join(ROOT, "previews");
 export const STATUSES = ["dev", "tested", "ready"];
 const REQUIRED = ["id", "name", "category", "description", "tags", "duration", "inputs", "version", "renderer", "output", "status"];
+// Science library fields (optional, used for browsing and AI search): domain, topic, subtopic,
+// styles, dimension, palette, limitations, example_usage, common (shared inputs, common.mjs).
+export const DOMAINS = ["astronomy", "mathematics", "biology", "physics"];
+export const STYLES = ["cinematic", "scientific", "3d", "educational", "infographic", "minimalist", "futuristic", "organic"];
 
 let cache = null;
 
@@ -38,6 +43,13 @@ export function scan() {
       if (meta.id !== id) errs.push(`id "${meta.id}" phải trùng tên thư mục`);
       if (meta.category !== cat) errs.push(`category "${meta.category}" phải trùng thư mục ${cat}`);
       if (!STATUSES.includes(meta.status)) errs.push(`status phải là ${STATUSES.join("|")}`);
+      if (meta.domain != null && !DOMAINS.includes(meta.domain)) errs.push(`domain phải là ${DOMAINS.join("|")}`);
+      for (const st of meta.styles || []) if (!STYLES.includes(st)) errs.push(`style "${st}" không có — chọn trong ${STYLES.join(", ")}`);
+      if (meta.common) {
+        const { inputs, unknown } = withCommon(meta);
+        for (const n of unknown) errs.push(`common "${n}" không có trong registry/common.mjs`);
+        meta.inputs = inputs;
+      }
       if (!fs.existsSync(path.join(dir, "index.tsx"))) errs.push("thiếu index.tsx (component chưa có mã render)");
       errs.push(...schemaErrors(meta.inputs));
       let example = null;

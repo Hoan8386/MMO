@@ -2,6 +2,14 @@
   "id": "data_chart",
   "name": "Biểu đồ số liệu",
   "category": "science",
+  "domain": "mathematics",
+  "topic": "probability",
+  "subtopic": "Biểu đồ thống kê · Data Visualization",
+  "styles": [
+    "infographic",
+    "minimalist"
+  ],
+  "dimension": "2d",
   "description": "Biểu đồ cột hoặc đường từ số liệu thật: trục có vạch chia tròn, từng cột/điểm hiện ra đúng lúc được nhắc tới với số đếm tăng dần, làm nổi một mục, ghi đơn vị và nguồn. Dùng cho so sánh số đo, nhiệt độ theo năm, dân số, nồng độ CO₂, kết quả thí nghiệm.",
   "tags": [
     "khoa học",

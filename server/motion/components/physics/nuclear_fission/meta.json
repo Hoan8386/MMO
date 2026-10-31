@@ -1,0 +1,104 @@
+{
+  "id": "nuclear_fission",
+  "name": "Phân hạch hạt nhân và phản ứng dây chuyền",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "nuclear",
+  "subtopic": "Nuclear Fission · Chain Reaction · Radioactive Energy",
+  "styles": [
+    "scientific",
+    "cinematic",
+    "educational"
+  ],
+  "dimension": "2.5d",
+  "palette": "nuclear",
+  "description": "Phân hạch urani-235: một neutron chậm đập vào hạt nhân (cụm proton và neutron xếp khít, đổ bóng như khối cầu); hạt nhân U-236 kích thích rung, kéo dài thành hình hạt lạc rồi tách thành hai mảnh (Ba-141 và Kr-92) bay ra xa, giải phóng ba neutron và khoảng 200 MeV kèm chớp năng lượng; phương trình hiện bên dưới. Chế độ dây chuyền: mỗi neutron sinh ra lại làm phân hạch hạt nhân khác, thế hệ sau gấp ba (1 → 3 → 9…), bộ đếm cho thấy tăng theo hàm mũ.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "hạt nhân",
+    "nuclear",
+    "năng lượng",
+    "energy",
+    "nguyên tử",
+    "atom"
+  ],
+  "keywords": [
+    "phân hạch hạt nhân",
+    "phản ứng phân hạch",
+    "phản ứng dây chuyền",
+    "urani",
+    "uranium 235",
+    "neutron",
+    "nhà máy điện hạt nhân",
+    "bom nguyên tử",
+    "năng lượng hạt nhân",
+    "lò phản ứng",
+    "nuclear fission",
+    "chain reaction",
+    "uranium-235",
+    "nuclear energy",
+    "nuclear reactor"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 6,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "single",
+        "chain"
+      ],
+      "default": "single",
+      "description": "single = một phân hạch chi tiết, chain = phản ứng dây chuyền"
+    },
+    "generations": {
+      "type": "integer",
+      "min": 2,
+      "max": 4,
+      "default": 3,
+      "description": "số thế hệ trong chế độ dây chuyền (1, 3, 9, 27 hạt nhân)"
+    },
+    "showEquation": {
+      "type": "boolean",
+      "default": true,
+      "description": "viết phương trình phản ứng"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "default": true,
+      "description": "tên hạt nhân, mảnh vỡ và năng lượng"
+    }
+  },
+  "cues": "mốc 1: viết phương trình (sau khi phân hạch); neutron đập vào hạt nhân ở giây 1,6",
+  "accuracy": "Một kênh phân hạch có thật của U-235 (¹⁴¹Ba + ⁹²Kr + 3 neutron, khoảng 200 MeV); bảo toàn số khối 236 = 141 + 92 + 3. Số nucleon vẽ ra tượng trưng (48 quả cầu, không phải 235), tỉ lệ proton/neutron theo U-235; thời gian và hình dạng là minh hoạ. Chế độ dây chuyền dùng hệ số 3 cho dễ nhìn (thực tế trung bình ≈ 2,4 neutron).",
+  "limitations": "Không mô phỏng chất làm chậm neutron, khối lượng tới hạn hay xác suất bắt neutron.",
+  "example_usage": "{\"component\":\"nuclear_fission\",\"props\":{\"mode\":\"chain\",\"generations\":3}}",
+  "combines_with": [
+    "em_field",
+    "data_chart"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,109 @@
+{
+  "id": "neuron_signal",
+  "name": "Xung thần kinh truyền dọc nơ-ron",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "neuroscience",
+  "subtopic": "Neuron Anatomy · Action Potential · Saltatory Conduction · Synaptic Transmission",
+  "styles": [
+    "organic",
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
+  "palette": "neuroscience",
+  "description": "Một nơ-ron (sợi nhánh phân nhánh, thân tế bào, sợi trục, cúc tận cùng) truyền điện thế hoạt động từ trái sang phải: sợi trục có bao myelin thì xung nhảy cóc từ eo Ranvier này sang eo kế tiếp, sợi trục trần thì lan dần. Bên dưới là đồ thị điện thế màng tại một điểm: nghỉ −70 mV → +40 mV (Na⁺ vào) → −80 mV (K⁺ ra) → về nghỉ. Ở cúc tận cùng, chất dẫn truyền thần kinh được giải phóng qua khe synapse.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "thần kinh",
+    "neuroscience",
+    "não",
+    "brain",
+    "cơ thể người",
+    "human body"
+  ],
+  "keywords": [
+    "nơ-ron",
+    "tế bào thần kinh",
+    "xung thần kinh",
+    "điện thế hoạt động",
+    "điện thế nghỉ",
+    "bao myelin",
+    "eo Ranvier",
+    "dẫn truyền nhảy cóc",
+    "synapse",
+    "khe synapse",
+    "chất dẫn truyền thần kinh",
+    "sợi trục",
+    "sợi nhánh",
+    "neuron",
+    "action potential",
+    "myelin sheath",
+    "nerve impulse",
+    "synaptic transmission",
+    "neurotransmitter"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "myelinated": {
+      "type": "boolean",
+      "default": true,
+      "description": "sợi trục có bao myelin (xung nhảy cóc) hay trần (lan dần)"
+    },
+    "impulses": {
+      "type": "integer",
+      "min": 1,
+      "max": 4,
+      "default": 2,
+      "description": "số xung trong clip"
+    },
+    "showGraph": {
+      "type": "boolean",
+      "default": true,
+      "description": "đồ thị điện thế màng"
+    },
+    "showSynapse": {
+      "type": "boolean",
+      "default": true,
+      "description": "giải phóng chất dẫn truyền qua khe synapse"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích các phần của nơ-ron (theo mốc)"
+    }
+  },
+  "cues": "mỗi chú thích (sợi nhánh, thân, myelin, eo Ranvier, cúc tận cùng) hiện ở một mốc; xung chạy theo nhịp riêng",
+  "accuracy": "Hình dạng điện thế hoạt động theo các giá trị giáo khoa (−70, +40, −80 mV); dẫn truyền nhảy cóc giữa các eo Ranvier. Thời gian được kéo dài rất nhiều (một xung thật kéo dài ~1–2 ms) và kích thước không theo tỉ lệ.",
+  "limitations": "Không mô phỏng kênh ion riêng lẻ hay tổng hợp điện thế sau synapse.",
+  "example_usage": "{\"component\":\"neuron_signal\",\"props\":{\"myelinated\":true,\"impulses\":2}}",
+  "combines_with": [
+    "cell_membrane_transport"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -2,6 +2,14 @@
   "id": "cell_membrane_transport",
   "name": "Vận chuyển chất qua màng tế bào",
   "category": "biology",
+  "domain": "biology",
+  "topic": "cell_biology",
+  "subtopic": "Cell Membrane · Diffusion · Active Transport",
+  "styles": [
+    "organic",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Mô phỏng hạt (cố định theo seed) hai bên màng tế bào lipid kép: khuếch tán (phân tử nhỏ đi xuyên màng, dòng tổng xuôi gradient), khuếch tán qua kênh protein, hoặc vận chuyển chủ động (bơm protein dùng ATP đẩy chất vào trong, ngược gradient); số phân tử mỗi bên cập nhật liên tục. Có ghi chú đây là mô hình giản lược.",
   "tags": [
     "sinh học",

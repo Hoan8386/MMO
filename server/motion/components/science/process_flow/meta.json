@@ -2,6 +2,11 @@
   "id": "process_flow",
   "name": "Sơ đồ quy trình",
   "category": "science",
+  "styles": [
+    "infographic",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "2–6 bước dạng thẻ đánh số nối bằng mũi tên, mỗi bước hiện ra đúng lúc được nhắc tới, các hạt sáng chạy dọc mũi tên như dòng chảy của quy trình. Tự xếp thành hàng ngang, hai hàng zigzag (nhiều bước) hoặc cột (khung dọc). Dùng cho chuỗi nguyên nhân – kết quả, các giai đoạn, cách một hệ thống hoạt động.",
   "tags": [
     "khoa học",

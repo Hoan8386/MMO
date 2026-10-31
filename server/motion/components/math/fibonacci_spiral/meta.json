@@ -1,0 +1,94 @@
+{
+  "id": "fibonacci_spiral",
+  "name": "Dãy Fibonacci và tỉ lệ vàng",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "number_theory",
+  "subtopic": "Dãy Fibonacci · Tỷ lệ vàng · Xoắn ốc vàng",
+  "styles": [
+    "educational",
+    "infographic",
+    "minimalist"
+  ],
+  "dimension": "2d",
+  "palette": "number_theory",
+  "description": "Các hình vuông cạnh 1, 1, 2, 3, 5, 8… xếp vòng quanh nhau, mỗi cạnh mới bằng tổng hai cạnh trước; một phần tư đường tròn trong mỗi ô nối thành xoắn ốc. Bên cạnh, tỉ số hai số liên tiếp F(n+1)/F(n) tiến dần về tỉ lệ vàng φ = (1 + √5)/2 ≈ 1,618034.",
+  "tags": [
+    "toán học",
+    "math",
+    "mathematics",
+    "lý thuyết số",
+    "number theory",
+    "Fibonacci",
+    "tỉ lệ vàng",
+    "golden ratio",
+    "education"
+  ],
+  "keywords": [
+    "dãy Fibonacci",
+    "số Fibonacci",
+    "tỉ lệ vàng",
+    "tỷ lệ vàng",
+    "xoắn ốc vàng",
+    "số phi",
+    "hoa hướng dương",
+    "vỏ ốc anh vũ",
+    "tỉ lệ trong tự nhiên",
+    "Fibonacci sequence",
+    "golden ratio",
+    "golden spiral",
+    "phi"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 40
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "terms": {
+      "type": "integer",
+      "min": 5,
+      "max": 12,
+      "default": 9,
+      "description": "số hình vuông (số hạng Fibonacci)"
+    },
+    "showRatios": {
+      "type": "boolean",
+      "default": true,
+      "description": "danh sách tỉ số F(n+1)/F(n) và φ"
+    },
+    "showNumbers": {
+      "type": "boolean",
+      "default": true,
+      "description": "ghi số trong mỗi hình vuông"
+    }
+  },
+  "cues": "hình vuông và xoắn ốc chạy đều; mốc 1: hiện φ",
+  "accuracy": "Chính xác: các cạnh là số Fibonacci, mỗi cung là 1/4 đường tròn bán kính bằng cạnh ô (xoắn ốc Fibonacci, xấp xỉ xoắn ốc vàng logarit); tỉ số in ra tính trực tiếp.",
+  "limitations": "Xoắn ốc Fibonacci chỉ gần đúng xoắn ốc logarit; không khẳng định mọi cấu trúc tự nhiên tuân theo tỉ lệ vàng.",
+  "example_usage": "{\"component\":\"fibonacci_spiral\",\"props\":{\"terms\":10}}",
+  "combines_with": [
+    "function_graph"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

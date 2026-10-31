@@ -2,6 +2,14 @@
   "id": "collision_simulation",
   "name": "Va chạm hai vật",
   "category": "physics",
+  "domain": "physics",
+  "topic": "classical_mechanics",
+  "subtopic": "Momentum · Collision",
+  "styles": [
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Hai vật trượt trên một đường thẳng rồi va chạm; vận tốc sau va chạm tính đúng theo bảo toàn động lượng với hệ số phục hồi e (1 = đàn hồi, 0 = dính vào nhau). Vector vận tốc đổi ngay lúc chạm, kích thước vật theo khối lượng, bảng so sánh tổng động lượng (luôn bảo toàn) và động năng (mất một phần nếu e < 1).",
   "tags": [
     "vật lý",

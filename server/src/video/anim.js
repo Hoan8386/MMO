@@ -22,8 +22,8 @@ async function load() {
   if (lib) return lib;
   if (!fs.existsSync(path.join(ANIMLIB, "registry", "registry.mjs"))) return (lib = { missing: true });
   const url = (f) => new URL(`file:///${path.join(ANIMLIB, f).replace(/\\/g, "/")}`).href;
-  const [registry, search, schema] = await Promise.all(["registry/registry.mjs", "registry/search.mjs", "registry/schema.mjs"].map((f) => import(url(f))));
-  lib = { registry, search, schema, render: () => import(url("renderer/render.mjs")) };
+  const [registry, search, schema, tax] = await Promise.all(["registry/registry.mjs", "registry/search.mjs", "registry/schema.mjs", "registry/taxonomy.mjs"].map((f) => import(url(f))));
+  lib = { registry, search, schema, tax, render: () => import(url("renderer/render.mjs")) };
   return lib;
 }
 // Loaded once at start so the synchronous helpers below can be used by loadFrames and the validator.
@@ -49,12 +49,22 @@ export function animForTopic(topic, { status = USABLE } = {}) {
 }
 
 // What the planner sends to the AI for one video: the components of the topic's type, the ones the
-// material talks about first, at most k (metadata only, never code).
+// material talks about first, at most k (metadata only, never code). Without a topic (long videos),
+// the candidates are the components the material mentions and the others of their science domains
+// (astronomy, mathematics…), so a black-hole script gets the astronomy set, not the cell biology one;
+// a material that mentions none of them gets every component.
 export function animCatalog(material, topic, { k = 8 } = {}) {
   if (lib.missing) return { ids: [], prompt: "" };
   const text = lib.search.searchComponents(material, { k: 999, min: 0, status: USABLE }).matches;
   const relevance = Object.fromEntries(text.map((m) => [m.id, m.score]));
-  const ids = animForTopic(topic)
+  let pool = animForTopic(topic);
+  if (!topic) {
+    const hit = new Set(text.filter((m) => m.score >= 4).map((m) => m.id));
+    const domains = new Set(pool.filter(({ component: c }) => hit.has(c.id) && c.domain).map(({ component: c }) => c.domain));
+    const near = pool.filter(({ component: c }) => hit.has(c.id) || domains.has(c.domain));
+    if (near.length) pool = near;
+  }
+  const ids = pool
     .map(({ component: c, score }) => ({ id: c.id, rank: (relevance[c.id] || 0) + score }))
     .sort((a, b) => b.rank - a.rank)
     .slice(0, k)
@@ -94,6 +104,8 @@ export const validateAnimProps = (id, props) => {
   const c = getAnimation(id);
   return c ? lib.schema.validateProps(c.inputs, props) : { props: {}, errors: [`component "${id}" không có trong thư viện`] };
 };
+// Domains → topics of the science library, with their palettes and the style names (web gallery).
+export const animTaxonomy = () => (lib.missing ? { domains: [], styles: {} } : { domains: lib.tax.taxonomy(), styles: lib.tax.STYLE_LABELS });
 export const searchAnimations = (text) => (lib.missing ? [] : lib.search.searchComponents(text, { k: 12, status: ["dev", "tested", "ready"] }).matches);
 
 // Sets a component's status (the web UI's "approve" button moves tested → ready) and reloads the registry.
@@ -106,11 +118,12 @@ export function setAnimStatus(id, status) {
 
 // A trial render from the web UI: one component with the given props, in a topic's colours and a
 // format's scene canvas. Cached like video clips. Returns the clip's path under storage/.
-export function renderAnimTrial({ component, props, duration, width, height, theme, background }) {
+// safe: margins kept free (defaults to a video scene's, with the caption band at the bottom).
+export function renderAnimTrial({ component, props, duration, width, height, theme, background, safe = { top: 60, right: 90, bottom: 280, left: 90 } }) {
   return exclusive(async () => {
     const { renderJob, jobHash, prepareJob, encode, closeBrowser, ensureBuild } = await lib.render();
     await ensureBuild();
-    const job = { component, props, duration, fps: 30, width, height, theme, background, safe: { top: 60, right: 90, bottom: 280, left: 90 } };
+    const job = { component, props, duration, fps: 30, width, height, theme, background, safe };
     const key = jobHash(prepareJob(job, { lenient: true }));
     const dir = path.join(CACHE, "trials");
     const out = path.join(dir, `${key}.webm`);

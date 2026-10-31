@@ -19,8 +19,36 @@ tests/run.mjs    kiểm thử mọi component ở 16:9, 9:16, 1:1 và tạo prev
 previews/        ảnh/clip xem trước (webm không đưa vào git)
 ```
 
-Thư mục chủ đề hiện có: `science/`, `physics/`, `biology/`, `space/`. Thêm chủ đề mới chỉ cần tạo thư mục
+Thư mục chủ đề hiện có: `science/`, `physics/`, `biology/`, `space/`, `math/`. Thêm chủ đề mới chỉ cần tạo thư mục
 mới trong `components/` — không đổi kiến trúc.
+
+## Thư viện khoa học: lĩnh vực, topic, bảng màu
+
+Ngoài `category` (thư mục), mỗi component khoa học ghi **lĩnh vực** và **topic** theo bản đồ `registry/taxonomy.mjs`
+(4 lĩnh vực: `astronomy`, `mathematics`, `biology`, `physics`; mỗi lĩnh vực 7–10 topic như `black_holes`,
+`calculus`, `genetics`, `quantum`…). Topic chưa có component vẫn được liệt kê để thấy phần còn thiếu.
+
+| file | vai trò |
+|---|---|
+| `shared/palettes.json` | màu của từng lĩnh vực, tinh chỉnh theo topic, bản nền sáng — dùng chung cho component, server và trang web |
+| `shared/palettes.ts` | `look(ctx, domain, topic)`: bảng màu đang dùng (theo props `palette`/`mode`/`backdrop`), màu chữ, `alpha()`, `mix()` |
+| `shared/stage.tsx` | `stage(ctx, look)`: phông nền tuỳ chọn, nhóm camera (push_in, pull_out, drift, orbit), cỡ, tốc độ, easing; cắt theo vùng an toàn. `area(ctx, hasTitle)`: vùng vẽ dưới tiêu đề |
+| `shared/fx.tsx` | hiệu ứng dùng chung: `glow`, `starfield`, `burst` (nổ hạt), `ripple` (vòng lan / xung năng lượng), `pathAt` + `trail` (vệt sáng chạy theo đường), `typeOn` (hiện công thức), `kinetic` (chữ chuyển động), `callout` (chú thích có đường dẫn), `legend` |
+| `shared/raster.tsx` | `Raster`: điểm ảnh tính bằng hàm (giao thoa, điện thế, fractal); `Draw`: vẽ trực tiếp bằng canvas 2D (hàng nghìn hạt, đĩa bồi tụ, cộng sáng) |
+| `shared/expr.ts` | bộ đọc công thức an toàn (không eval) cho component toán: `compile("x^2 - 2x")` |
+| `registry/common.mjs` | tham số dùng chung: `palette`, `mode`, `backdrop`, `speed`, `scale`, `easing`, `camera` |
+
+Trường metadata thêm (không bắt buộc, dùng để duyệt và cho AI tìm): `domain`, `topic`, `subtopic` (cụm cách nhau bằng
+"·", cũng được dùng làm từ khoá tìm kiếm), `styles` (cinematic, scientific, 3d, educational, infographic, minimalist,
+futuristic, organic), `dimension` (2d, 2.5d, 3d), `palette`, `limitations`, `example_usage`, `common` (danh sách tham số
+dùng chung được gộp vào `inputs` — validator, prompt AI và form web đều thấy).
+
+Màu không viết cứng trong component: `palette: "auto"` dùng bảng của lĩnh vực/topic, `"theme"` dùng màu chủ đề video,
+tên lĩnh vực khác thì đổi sang bảng đó — logic animation giữ nguyên. Cùng loại đối tượng giữ cùng màu qua `series`
+(vd. A/T/G/C của DNA, các hành tinh).
+
+**Chọn cho AI:** với video dài (không có chủ đề), `animCatalog` (`server/src/video/anim.js`) chỉ gửi các component kịch
+bản nhắc tới cùng các component **cùng lĩnh vực** với chúng; kịch bản không khớp gì mới nhận tất cả.
 
 ## Lệnh
 
@@ -97,6 +125,11 @@ export default defineAnimation<Props>({
 tìm kiếm, lọc theo chủ đề và trạng thái, xem clip xem trước (rê chuột để phát), bảng tham số, trình sửa props JSON
 có kiểm tra trực tiếp, **Render thử** với màu chủ đề và khung hình bất kỳ (cache trong `storage/anim-cache/trials`),
 nút duyệt `tested → ready`, và ô "Thử với kịch bản" cho thấy AI sẽ nhận những animation nào.
+
+Tab **Animation cho video dài**: duyệt theo lĩnh vực → topic (kèm bảng màu của topic và số component, topic chưa có
+được đánh dấu), lọc theo phong cách và 2D/2.5D/3D, ô "Thử với kịch bản video dài" (đúng phép chọn của planner video
+dài), và trong bảng chi tiết: nút chỉnh nhanh bảng màu/nền/tốc độ/cỡ/easing/camera, Render thử đúng như trong video
+dài (1920×1080, nền đen, chừa chỗ tiêu đề và phụ đề), mô hình khoa học, giới hạn, ví dụ dùng.
 
 ## Tích hợp HyperFrames
 

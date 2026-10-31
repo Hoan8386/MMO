@@ -1,0 +1,125 @@
+{
+  "id": "double_slit",
+  "name": "Thí nghiệm hai khe — giao thoa sóng và hạt",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "quantum",
+  "subtopic": "Double Slit Experiment · Interference · Wave-Particle Duality",
+  "styles": [
+    "scientific",
+    "futuristic",
+    "educational"
+  ],
+  "dimension": "2d",
+  "palette": "quantum",
+  "description": "Sóng phẳng có bước sóng tuỳ chọn (màu đúng theo bước sóng) tới tấm chắn có hai khe; phía sau, hai sóng tròn chồng lên nhau và trường sóng được tính từng điểm ảnh là tổng của chúng — vân sáng/tối là giao thoa thật. Trên màn, cường độ theo công thức Fraunhofer I = cos²(πd·sinθ/λ)·sinc²(πa·sinθ/λ), có đồ thị bên cạnh. Chế độ hạt: từng lượng tử rơi xuống điểm ngẫu nhiên theo đúng phân bố đó và vân giao thoa hiện dần — lưỡng tính sóng–hạt.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "lượng tử",
+    "quantum",
+    "ánh sáng",
+    "light",
+    "sóng",
+    "wave",
+    "quang học",
+    "optics"
+  ],
+  "keywords": [
+    "thí nghiệm hai khe",
+    "khe Young",
+    "giao thoa ánh sáng",
+    "vân giao thoa",
+    "lưỡng tính sóng hạt",
+    "photon",
+    "electron",
+    "cơ học lượng tử",
+    "nhiễu xạ",
+    "bước sóng",
+    "double slit experiment",
+    "interference pattern",
+    "wave-particle duality",
+    "diffraction",
+    "Young's experiment"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "wavelength": {
+      "type": "number",
+      "min": 380,
+      "max": 750,
+      "default": 520,
+      "description": "bước sóng (nm) — quyết định màu và độ rộng vân"
+    },
+    "slitSeparation": {
+      "type": "number",
+      "min": 2,
+      "max": 12,
+      "default": 5,
+      "description": "khoảng cách hai khe, tính theo bước sóng"
+    },
+    "slitWidth": {
+      "type": "number",
+      "min": 0.5,
+      "max": 3,
+      "default": 1,
+      "description": "bề rộng mỗi khe, tính theo bước sóng"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "wave",
+        "particles",
+        "both"
+      ],
+      "default": "both",
+      "description": "wave = chỉ sóng, particles = từng hạt, both = cả hai"
+    },
+    "particles": {
+      "type": "integer",
+      "min": 50,
+      "max": 4000,
+      "default": 1500,
+      "description": "số hạt rơi lên màn (chế độ hạt)"
+    },
+    "showGraph": {
+      "type": "boolean",
+      "default": true,
+      "description": "đồ thị cường độ cạnh màn"
+    }
+  },
+  "cues": "mốc 1: các hạt bắt đầu rơi (chế độ particles/both); sóng chạy liên tục",
+  "accuracy": "Trường sóng phía sau khe là tổng hai sóng trụ cos(kr − ωt)/√r tính tại mỗi điểm; cường độ trên màn theo công thức Fraunhofer với sinθ đo từ hình học thật; hạt được lấy mẫu từ đúng phân bố cường độ (có hạt giống). Tỉ lệ bước sóng/khoảng cách được phóng to để thấy được.",
+  "limitations": "Mô hình vô hướng 2D; vùng gần khe (Fresnel) chỉ gần đúng; không mô phỏng phép đo 'khe nào' làm mất vân.",
+  "example_usage": "{\"component\":\"double_slit\",\"props\":{\"wavelength\":650,\"mode\":\"particles\"}}",
+  "combines_with": [
+    "wave_propagation",
+    "em_field"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

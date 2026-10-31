@@ -2,6 +2,14 @@
   "id": "moon_phases",
   "name": "Các pha của Mặt Trăng",
   "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Moon Phases · Eclipses",
+  "styles": [
+    "scientific",
+    "educational"
+  ],
+  "dimension": "2d",
   "description": "Hai góc nhìn cùng lúc: bên trái nhìn từ trên xuống (Mặt Trời chiếu từ trái, Mặt Trăng chạy trên quỹ đạo, nửa sáng luôn hướng về Mặt Trời), bên phải là hình Mặt Trăng nhìn từ Trái Đất đổi dần theo góc lệch; kèm tên pha, phần trăm được chiếu sáng và ngày trong tháng âm lịch.",
   "tags": [
     "vũ trụ",

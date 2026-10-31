@@ -1,0 +1,132 @@
+{
+  "id": "dna_helix",
+  "name": "Chuỗi xoắn kép DNA, nhân đôi và phiên mã",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "genetics",
+  "subtopic": "DNA Double Helix · DNA Replication · RNA Transcription",
+  "styles": [
+    "3d",
+    "scientific",
+    "organic"
+  ],
+  "dimension": "2.5d",
+  "palette": "genetics",
+  "description": "Chuỗi xoắn kép DNA dạng 2,5D xoay chậm: hai mạch khung đường–phosphate quấn quanh trục (10,5 cặp base mỗi vòng, có rãnh lớn và rãnh nhỏ), các cặp base tô màu theo loại và luôn A–T, G–C, có đổ bóng theo chiều sâu. Chế độ: chỉ xoắn kép; nhân đôi (chạc sao chép mở dần, nucleotide mới bắt cặp với từng mạch cũ — bán bảo toàn); phiên mã (bong bóng phiên mã chạy dọc, mRNA được dựng trên mạch khuôn với U thay T).",
+  "tags": [
+    "sinh học",
+    "biology",
+    "DNA",
+    "di truyền",
+    "genetics",
+    "gene",
+    "phân tử",
+    "molecule"
+  ],
+  "keywords": [
+    "DNA",
+    "ADN",
+    "chuỗi xoắn kép",
+    "cặp base",
+    "nucleotide",
+    "nhân đôi DNA",
+    "sao chép DNA",
+    "phiên mã",
+    "mRNA",
+    "RNA",
+    "gen",
+    "mã di truyền",
+    "A T G C",
+    "double helix",
+    "DNA replication",
+    "transcription",
+    "base pairs",
+    "genetic code"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "sequence": {
+      "type": "string",
+      "maxLength": 60,
+      "default": "ATGCGTACGTTAGCCATG",
+      "description": "trình tự một mạch (A, C, G, T), lặp lại cho đủ chiều dài"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "helix",
+        "replication",
+        "transcription"
+      ],
+      "default": "helix",
+      "description": "helix = xoắn kép, replication = nhân đôi, transcription = phiên mã"
+    },
+    "turns": {
+      "type": "number",
+      "min": 1.5,
+      "max": 5,
+      "default": 3,
+      "description": "số vòng xoắn hiển thị"
+    },
+    "rotationSpeed": {
+      "type": "number",
+      "min": 0,
+      "max": 3,
+      "default": 0.8,
+      "description": "tốc độ xoay quanh trục (rad/s)"
+    },
+    "baseColors": {
+      "type": "array",
+      "items": {
+        "type": "color"
+      },
+      "minItems": 4,
+      "maxItems": 4,
+      "default": [
+        "#F472B6",
+        "#22D3EE",
+        "#FB923C",
+        "#6EE7B7"
+      ],
+      "description": "màu A, T, G, C"
+    },
+    "showLegend": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú giải màu các base"
+    }
+  },
+  "cues": "mốc 1: hiện chú thích và bắt đầu nhân đôi/phiên mã",
+  "accuracy": "Đúng quy tắc bắt cặp A–T, G–C (RNA: A–U), 10,5 cặp base mỗi vòng xoắn, hai mạch lệch nhau tạo rãnh lớn/nhỏ. Hình dáng, tỉ lệ và tốc độ là minh hoạ; không vẽ mạch chậm/đoạn Okazaki hay các enzyme ngoài RNA polymerase.",
+  "limitations": "Mô hình định tính; không thể hiện chiều 5′→3′ của từng mạch.",
+  "example_usage": "{\"component\":\"dna_helix\",\"props\":{\"mode\":\"replication\",\"turns\":3}}",
+  "combines_with": [
+    "cell_membrane_transport",
+    "mitosis"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

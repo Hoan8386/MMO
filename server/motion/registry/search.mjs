@@ -27,7 +27,9 @@ const STOP = new Set(["va", "la", "cua", "cac", "nhung", "mot", "cho", "voi", "t
 function score(c, text) {
   let s = 0;
   const hits = [];
-  for (const phrase of [...(c.keywords || []), ...c.tags, c.name, c.id.replace(/_/g, " ")]) {
+  // Subtopics ("Accretion Disk · Event Horizon") count as phrases too.
+  const subs = String(c.subtopic || "").split(/[·,]/).map((x) => x.trim()).filter(Boolean);
+  for (const phrase of [...(c.keywords || []), ...c.tags, ...subs, c.name, c.id.replace(/_/g, " ")]) {
     const f = fold(phrase);
     const words = f.trim().split(" ").filter((w) => w && !STOP.has(w));
     if (!words.length) continue;
@@ -49,7 +51,7 @@ export function searchComponents(text, { k = 6, min = 4, status = ["tested", "re
     .filter((m) => m.s >= min)
     .sort((a, b) => b.s - a.s)
     .slice(0, k)
-    .map(({ c, s, hits }) => ({ id: c.id, name: c.name, category: c.category, status: c.status, score: Math.round(s * 10) / 10, hits }));
+    .map(({ c, s, hits }) => ({ id: c.id, name: c.name, category: c.category, domain: c.domain || null, topic: c.topic || null, status: c.status, score: Math.round(s * 10) / 10, hits }));
   return { matches, missing: matches.length === 0 };
 }
 
@@ -59,7 +61,7 @@ export function describeForPrompt(ids) {
   return ids
     .map((id) => all.get(id))
     .filter(Boolean)
-    .map((c) => `- ${c.id} (${c.name}; ${c.duration.min}-${c.duration.max}s): ${c.description} Props: ${describeInputs(c.inputs)}.${c.cues ? ` Cues: ${c.cues}` : ""}${c.accuracy ? ` Model: ${c.accuracy}` : ""}`)
+    .map((c) => `- ${c.id} (${c.name}; ${c.domain ? `${c.domain}/${c.topic}; ` : ""}${c.duration.min}-${c.duration.max}s${c.styles ? `; style ${c.styles.join(", ")}` : ""}): ${c.description} Props: ${describeInputs(c.inputs)}.${c.cues ? ` Cues: ${c.cues}` : ""}${c.accuracy ? ` Model: ${c.accuracy}` : ""}${c.limitations ? ` Limits: ${c.limitations}` : ""}`)
     .join("\n");
 }
 

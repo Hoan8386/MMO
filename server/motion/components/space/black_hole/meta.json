@@ -1,0 +1,139 @@
+{
+  "id": "black_hole",
+  "name": "Hố đen và đĩa bồi tụ",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "black_holes",
+  "subtopic": "Accretion Disk · Event Horizon · Gravitational Lensing",
+  "styles": [
+    "cinematic",
+    "3d",
+    "scientific"
+  ],
+  "dimension": "2.5d",
+  "palette": "black_holes",
+  "description": "Hố đen Schwarzschild nhìn nghiêng theo góc tuỳ chọn: đĩa khí quay (vận tốc góc ∝ r^-1,5, càng vào trong càng nóng và trắng, phía đang lao về phía người xem sáng hơn do hiệu ứng Doppler), nửa xa của đĩa bị bẻ cong vắt qua đỉnh bóng tối do thấu kính hấp dẫn, vòng photon sáng quanh bóng tối, nền sao bị lệch theo phương trình thấu kính điểm. Tuỳ chọn tia vật chất hai cực, vật rơi vào bị kéo dài và đỏ dần, chú thích các bán kính.",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "hố đen",
+    "black hole",
+    "thiên văn",
+    "thuyết tương đối",
+    "relativity"
+  ],
+  "keywords": [
+    "hố đen",
+    "lỗ đen",
+    "chân trời sự kiện",
+    "đĩa bồi tụ",
+    "thấu kính hấp dẫn",
+    "vòng photon",
+    "bóng tối của hố đen",
+    "tia vật chất",
+    "hố đen siêu khối lượng",
+    "sự kéo dài như sợi mì",
+    "spaghettification",
+    "event horizon",
+    "accretion disk",
+    "gravitational lensing",
+    "photon ring",
+    "relativistic jets",
+    "Sagittarius A*",
+    "M87"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 60
+  },
+  "common": [
+    "palette",
+    "backdrop",
+    "mode",
+    "speed",
+    "scale",
+    "easing",
+    "camera"
+  ],
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên (để trống nếu video đã có)"
+    },
+    "diskSize": {
+      "type": "number",
+      "min": 6,
+      "max": 20,
+      "default": 12,
+      "description": "bán kính ngoài của đĩa bồi tụ, theo bán kính Schwarzschild rs"
+    },
+    "tilt": {
+      "type": "number",
+      "min": 3,
+      "max": 85,
+      "default": 12,
+      "description": "góc nhìn so với mặt đĩa, độ (nhỏ = gần như nhìn ngang)"
+    },
+    "spin": {
+      "type": "number",
+      "min": 0.2,
+      "max": 4,
+      "default": 1,
+      "description": "tốc độ quay của đĩa"
+    },
+    "brightness": {
+      "type": "number",
+      "min": 0.3,
+      "max": 2,
+      "default": 1,
+      "description": "độ sáng của đĩa"
+    },
+    "particles": {
+      "type": "integer",
+      "min": 200,
+      "max": 2500,
+      "default": 1400,
+      "description": "mật độ hạt khí trong đĩa"
+    },
+    "jets": {
+      "type": "boolean",
+      "default": false,
+      "description": "hiện tia vật chất tương đối tính dọc trục quay"
+    },
+    "infall": {
+      "type": "boolean",
+      "default": false,
+      "description": "một vật rơi xoắn vào, bị kéo dài và đỏ dần"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích chân trời, vòng photon, đĩa (theo mốc lời thoại)"
+    },
+    "lensing": {
+      "type": "boolean",
+      "default": true,
+      "description": "nền sao bị thấu kính hấp dẫn bẻ lệch"
+    }
+  },
+  "cues": "mỗi chú thích (chân trời, vòng photon, đĩa, tia) hiện ở một mốc; vật rơi bắt đầu ở mốc cuối",
+  "accuracy": "Tỉ lệ bán kính theo nghiệm Schwarzschild (bóng tối ≈ 2,6 rs, mặt cầu photon 1,5 rs, quỹ đạo bền trong cùng 3 rs); quay Kepler ω ∝ r^-1,5; nhiệt độ đĩa mỏng T ∝ r^-3/4 đổi thành màu; độ sáng Doppler ∝ D³. Ảnh thấu kính của nửa xa đĩa là phép xấp xỉ hình học (không dò tia), nền sao dùng phương trình thấu kính điểm θ = (β + √(β² + 4θE²))/2. Màu sắc mang tính minh hoạ, tốc độ quay được nén.",
+  "limitations": "Không mô phỏng hố đen quay (Kerr) hay hình dạng chính xác của ảnh thấu kính; dùng cho minh hoạ định tính cấu trúc.",
+  "example_usage": "{\"component\":\"black_hole\",\"props\":{\"tilt\":10,\"jets\":true,\"camera\":\"push_in\"}}",
+  "combines_with": [
+    "spacetime_curvature",
+    "stellar_lifecycle",
+    "gravity_orbit"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}
