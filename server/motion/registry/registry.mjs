@@ -59,6 +59,18 @@ export function scan() {
         example = JSON.parse(fs.readFileSync(exFile, "utf8"));
         errs.push(...validateProps(meta.inputs, example.props).errors.map((e) => `example: ${e}`));
       }
+      // Variants: named configurations (a planet, a mode, a sub-structure) the gallery previews one by
+      // one and the AI picks from. Each must validate like the example.
+      const variants = Array.isArray(meta.variants) ? meta.variants : [];
+      const seen = new Set();
+      for (const v of variants) {
+        if (!v.id || !v.name || typeof v.props !== "object") errs.push(`variant cần id, name, props`);
+        else if (seen.has(v.id)) errs.push(`variant "${v.id}" trùng`);
+        else {
+          seen.add(v.id);
+          errs.push(...validateProps(meta.inputs, v.props).errors.map((e) => `variant ${v.id}: ${e}`));
+        }
+      }
       if (components.has(id)) errs.push(`trùng id với ${components.get(id).category}/${id}`);
       if (errs.length) {
         problems.push(...errs.map((e) => `${cat}/${id}: ${e}`));
@@ -67,6 +79,11 @@ export function scan() {
       const preview = ["webm", "png"].map((x) => `${id}.${x}`).filter((f) => fs.existsSync(path.join(PREVIEWS_DIR, f)));
       components.set(id, {
         ...meta,
+        variants: variants.map((v) => {
+          const f = `${id}--${v.id}`;
+          const pv = ["webm", "png"].filter((x) => fs.existsSync(path.join(PREVIEWS_DIR, `${f}.${x}`))).map((x) => `previews/${f}.${x}`);
+          return { ...v, preview: pv.length ? pv : null };
+        }),
         example,
         preview: preview.length ? preview.map((f) => `previews/${f}`) : null,
         docs: fs.existsSync(path.join(dir, "README.md")) ? `components/${cat}/${id}/README.md` : null,

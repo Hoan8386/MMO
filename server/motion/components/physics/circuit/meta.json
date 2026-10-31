@@ -1,0 +1,189 @@
+{
+  "id": "circuit",
+  "name": "Mạch điện: nối tiếp, song song, định luật Ohm, nạp tụ RC",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "electromagnetism",
+  "subtopic": "Electric Circuit · Battery · Resistor · Bulb · Switch · Capacitor · Ammeter · Voltmeter · Ohm's Law · RC Charging · Electric Current",
+  "styles": [
+    "educational",
+    "scientific",
+    "infographic"
+  ],
+  "dimension": "2d",
+  "palette": "electromagnetism",
+  "description": "Mạch điện một chiều vẽ theo ký hiệu sơ đồ với số liệu trực tiếp. series/parallel: pin và các bóng đèn; dòng điện tính theo định luật Ohm và Kirchhoff, mỗi bóng sáng theo công suất I²R (song song sáng hơn nối tiếp), electron chạy trong dây ngược chiều dòng điện quy ước với tốc độ tỉ lệ cường độ. ohm: hiệu điện thế của nguồn tăng từng nấc, ampe kế và vôn kế đo I và U, các điểm nằm trên đường I = U/R. rc: đóng khoá K, tụ điện nạp theo U_C = E(1 − e^(−t/RC)), điện tích dồn lên hai bản, dòng điện giảm dần, đồ thị đánh dấu hằng số thời gian τ (63 %).",
+  "tags": [
+    "vật lý",
+    "physics",
+    "điện học",
+    "electricity",
+    "mạch điện",
+    "circuit"
+  ],
+  "keywords": [
+    "mạch điện",
+    "electric circuit",
+    "mạch nối tiếp",
+    "series circuit",
+    "mạch song song",
+    "parallel circuit",
+    "định luật ohm",
+    "ohm's law",
+    "điện trở",
+    "resistor",
+    "resistance",
+    "bóng đèn",
+    "light bulb",
+    "pin",
+    "battery",
+    "nguồn điện",
+    "khoá k",
+    "công tắc",
+    "switch",
+    "dòng điện",
+    "electric current",
+    "hiệu điện thế",
+    "voltage",
+    "ampe kế",
+    "ammeter",
+    "vôn kế",
+    "voltmeter",
+    "công suất điện",
+    "electric power",
+    "tụ điện",
+    "capacitor",
+    "nạp tụ",
+    "rc circuit",
+    "hằng số thời gian",
+    "time constant",
+    "electron chuyển động",
+    "định luật kirchhoff"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "series",
+        "parallel",
+        "ohm",
+        "rc"
+      ],
+      "default": "series",
+      "description": "loại mạch"
+    },
+    "voltage": {
+      "type": "number",
+      "min": 1.5,
+      "max": 24,
+      "default": 12,
+      "description": "suất điện động của nguồn, V"
+    },
+    "resistances": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "default": [
+        10,
+        20
+      ],
+      "items": {
+        "type": "number",
+        "min": 1,
+        "max": 1000
+      },
+      "description": "điện trở các bóng/điện trở, Ω (ohm/rc dùng giá trị đầu)"
+    },
+    "capacitance": {
+      "type": "number",
+      "min": 10,
+      "max": 2000,
+      "default": 200,
+      "description": "rc: điện dung, mF"
+    },
+    "electrons": {
+      "type": "boolean",
+      "default": true,
+      "description": "electron chạy trong dây"
+    },
+    "conventional": {
+      "type": "boolean",
+      "default": true,
+      "description": "mũi tên chiều dòng điện quy ước (+ → −)"
+    },
+    "values": {
+      "type": "boolean",
+      "default": true,
+      "description": "số đo U, I, P cạnh linh kiện"
+    }
+  },
+  "variants": [
+    {
+      "id": "series",
+      "name": "Mạch nối tiếp hai bóng đèn",
+      "props": {
+        "mode": "series"
+      }
+    },
+    {
+      "id": "parallel",
+      "name": "Mạch song song ba bóng đèn",
+      "props": {
+        "mode": "parallel",
+        "resistances": [
+          10,
+          20,
+          40
+        ]
+      }
+    },
+    {
+      "id": "ohm",
+      "name": "Định luật Ohm với ampe kế, vôn kế",
+      "props": {
+        "mode": "ohm",
+        "resistances": [
+          8
+        ]
+      }
+    },
+    {
+      "id": "rc",
+      "name": "Nạp tụ điện qua điện trở (RC)",
+      "props": {
+        "mode": "rc",
+        "resistances": [
+          20
+        ],
+        "capacitance": 100
+      }
+    }
+  ],
+  "cues": "đóng mạch ở mốc đầu; số đo rồi đồ thị ở các mốc sau",
+  "accuracy": "Dòng điện theo định luật Ohm và quy tắc nối tiếp/song song; công suất I²R quyết định độ sáng; nạp tụ theo nghiệm chính xác U_C = E(1 − e^(−t/RC)), I = (E/R)e^(−t/RC); electron chạy ngược chiều dòng điện quy ước với tốc độ tỉ lệ I (tốc độ thật chỉ cỡ mm/s — hình được phóng đại).",
+  "limitations": "Nguồn lý tưởng (không có điện trở trong), dây không điện trở, bóng đèn có điện trở cố định; thời gian nạp tụ được co giãn theo tốc độ phát nhưng nhãn τ ghi giá trị thật.",
+  "example_usage": "{\"component\":\"circuit\",\"props\":{\"mode\":\"parallel\",\"resistances\":[10,20,40]}}",
+  "combines_with": [
+    "em_field",
+    "magnetism"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,208 @@
+{
+  "id": "nebula",
+  "name": "Tinh vân: phát xạ, phản xạ, tối, hành tinh, tàn dư siêu tân tinh, cột hình thành sao",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "stars_galaxies",
+  "subtopic": "Emission Nebula · Reflection Nebula · Dark Nebula · Planetary Nebula · Supernova Remnant · Star Formation · Interstellar Dust",
+  "styles": [
+    "cinematic",
+    "scientific",
+    "organic"
+  ],
+  "dimension": "2.5d",
+  "palette": "stars_galaxies",
+  "description": "Tinh vân nhiều lớp khí và sao: phát xạ (hydro ion hoá đỏ Hα, oxy ion hoá xanh lục lam gần các sao nóng, dải bụi tối), phản xạ (bụi xanh lam được sao sáng chiếu), tinh vân tối (đám bụi lạnh che khuất nền sao dày), tinh vân hành tinh (lớp vỏ khí quanh sao lùn trắng — dạng vòng hoặc hai cực, nở dần), tàn dư siêu tân tinh (sợi khí sóng xung kích, ánh sáng synchrotron bên trong, sao xung nhấp nháy ở tâm) và cột hình thành sao (cột bụi tối có viền sáng do sao trẻ phía trên chiếu). Có thị sai giữa các lớp sao và khí, sao sáng có tia nhiễu xạ, bảng màu tự nhiên hoặc \"Hubble\" (SHO).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "tinh vân",
+    "nebula",
+    "hình thành sao",
+    "star formation"
+  ],
+  "keywords": [
+    "tinh vân",
+    "nebula",
+    "tinh vân phát xạ",
+    "emission nebula",
+    "tinh vân orion",
+    "orion nebula",
+    "tinh vân phản xạ",
+    "reflection nebula",
+    "pleiades",
+    "tua rua",
+    "tinh vân tối",
+    "dark nebula",
+    "đầu ngựa",
+    "horsehead",
+    "tinh vân hành tinh",
+    "planetary nebula",
+    "tinh vân mắt mèo",
+    "ring nebula",
+    "tàn dư siêu tân tinh",
+    "supernova remnant",
+    "tinh vân con cua",
+    "crab nebula",
+    "cột tạo hóa",
+    "pillars of creation",
+    "vườn ươm sao",
+    "stellar nursery",
+    "bụi liên sao",
+    "interstellar dust",
+    "khí liên sao",
+    "đám mây phân tử",
+    "molecular cloud"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "emission",
+        "reflection",
+        "dark",
+        "planetary",
+        "supernova_remnant",
+        "pillars"
+      ],
+      "default": "emission",
+      "description": "loại tinh vân"
+    },
+    "colors": {
+      "type": "string",
+      "enum": [
+        "natural",
+        "hubble"
+      ],
+      "default": "natural",
+      "description": "natural = màu phát xạ tự nhiên; hubble = bảng SHO của ảnh Hubble"
+    },
+    "shape": {
+      "type": "string",
+      "enum": [
+        "ring",
+        "bipolar"
+      ],
+      "default": "ring",
+      "description": "hình tinh vân hành tinh"
+    },
+    "density": {
+      "type": "number",
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1,
+      "description": "độ dày của khí"
+    },
+    "starCount": {
+      "type": "integer",
+      "min": 50,
+      "max": 600,
+      "default": 260,
+      "description": "mật độ sao"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "emission",
+      "name": "Tinh vân phát xạ",
+      "props": {
+        "kind": "emission"
+      }
+    },
+    {
+      "id": "hubble",
+      "name": "Tinh vân phát xạ — bảng màu Hubble",
+      "props": {
+        "kind": "emission",
+        "colors": "hubble",
+        "labels": false
+      }
+    },
+    {
+      "id": "pillars",
+      "name": "Cột hình thành sao",
+      "props": {
+        "kind": "pillars"
+      },
+      "keywords": [
+        "cột tạo hóa",
+        "pillars of creation"
+      ]
+    },
+    {
+      "id": "reflection",
+      "name": "Tinh vân phản xạ",
+      "props": {
+        "kind": "reflection"
+      }
+    },
+    {
+      "id": "dark",
+      "name": "Tinh vân tối",
+      "props": {
+        "kind": "dark"
+      }
+    },
+    {
+      "id": "planetary_ring",
+      "name": "Tinh vân hành tinh dạng vòng",
+      "props": {
+        "kind": "planetary"
+      }
+    },
+    {
+      "id": "planetary_bipolar",
+      "name": "Tinh vân hành tinh hai cực",
+      "props": {
+        "kind": "planetary",
+        "shape": "bipolar",
+        "labels": false
+      }
+    },
+    {
+      "id": "supernova_remnant",
+      "name": "Tàn dư siêu tân tinh và sao xung",
+      "props": {
+        "kind": "supernova_remnant"
+      },
+      "keywords": [
+        "tinh vân con cua",
+        "crab nebula"
+      ]
+    }
+  ],
+  "cues": "mỗi chú thích hiện ở một mốc",
+  "accuracy": "Màu theo vạch phát xạ thật (Hα 656 nm đỏ, [OIII] 501 nm xanh lục lam, [SII] đỏ cam; bảng Hubble ánh xạ S-H-O sang R-G-B); oxy ion hoá tập trung gần sao nóng; tinh vân phản xạ xanh do tán xạ ưu tiên ánh sáng xanh.",
+  "limitations": "Hình dạng khí là nhiễu fractal minh hoạ (không phải ảnh thật của một tinh vân cụ thể); tốc độ nở của vỏ khí được tăng rất nhiều; thị sai là hiệu ứng điện ảnh.",
+  "example_usage": "{\"component\":\"nebula\",\"props\":{\"kind\":\"pillars\",\"camera\":\"push_in\"}}",
+  "combines_with": [
+    "galaxy",
+    "stellar_lifecycle",
+    "sun_activity"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

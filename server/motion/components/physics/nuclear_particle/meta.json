@@ -1,0 +1,179 @@
+{
+  "id": "nuclear_particle",
+  "name": "Phóng xạ, nhiệt hạch và máy gia tốc hạt",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "nuclear",
+  "subtopic": "Radioactive Decay · Half-life · Alpha Decay · Beta Decay · Gamma Emission · Nuclear Fusion · Binding Energy · Particle Collision · Particle Detector · Accelerator Ring",
+  "styles": [
+    "scientific",
+    "educational",
+    "futuristic"
+  ],
+  "dimension": "2d",
+  "palette": "nuclear",
+  "description": "Vật lý hạt nhân và hạt. decay: lưới hạt nhân không bền, mỗi hạt phân rã ở một thời điểm ngẫu nhiên rút theo luật hàm mũ (theo seed) — đường số hạt còn lại bám theo N₀·2^(−t/T½) chỉ một cách trung bình, có dao động thật, đánh dấu 1, 2, 3 chu kỳ bán rã. alpha/beta/gamma: một hạt nhân phát hạt α (2p + 2n), electron β⁻ (neutron biến thành proton, kèm phản neutrino) hoặc photon γ, viết phương trình phản ứng. fusion: deuteri và triti vượt lực đẩy, hợp thành heli-4 và neutron nhanh, năng lượng E = Δm·c² tính từ khối lượng thật (17,6 MeV). collider: hai chùm hạt chạy ngược chiều trong vòng gia tốc, va chạm tại máy dò, các hạt sinh ra bay theo vết cong trong từ trường (hạt mang điện cong, hạt trung hoà thẳng; cong nhiều = động lượng nhỏ).",
+  "tags": [
+    "vật lý",
+    "physics",
+    "hạt nhân",
+    "nuclear",
+    "phóng xạ",
+    "radioactivity",
+    "vật lý hạt",
+    "particle physics"
+  ],
+  "keywords": [
+    "phóng xạ",
+    "radioactive decay",
+    "chu kỳ bán rã",
+    "half-life",
+    "bán rã",
+    "phân rã alpha",
+    "alpha decay",
+    "phân rã beta",
+    "beta decay",
+    "tia gamma",
+    "gamma ray",
+    "định tuổi carbon",
+    "carbon dating",
+    "carbon 14",
+    "uranium",
+    "neutrino",
+    "phản ứng nhiệt hạch",
+    "nuclear fusion",
+    "tổng hợp hạt nhân",
+    "deuterium tritium",
+    "e = mc2",
+    "độ hụt khối",
+    "mass defect",
+    "năng lượng liên kết",
+    "binding energy",
+    "iter",
+    "tokamak",
+    "máy gia tốc hạt",
+    "particle accelerator",
+    "lhc",
+    "large hadron collider",
+    "va chạm hạt",
+    "particle collision",
+    "máy dò hạt",
+    "particle detector",
+    "cern",
+    "higgs"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "decay",
+        "alpha",
+        "beta",
+        "gamma",
+        "fusion",
+        "collider"
+      ],
+      "default": "decay",
+      "description": "cảnh"
+    },
+    "halfLife": {
+      "type": "number",
+      "min": 0.5,
+      "max": 3,
+      "default": 1,
+      "description": "decay: chu kỳ bán rã, theo 1/5 thời lượng clip (1 = có 5 chu kỳ bán rã trong clip, 2 = có 2,5)"
+    },
+    "nuclei": {
+      "type": "integer",
+      "min": 16,
+      "max": 400,
+      "default": 144,
+      "description": "decay: số hạt nhân"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích và phương trình"
+    }
+  },
+  "variants": [
+    {
+      "id": "decay",
+      "name": "Phân rã phóng xạ và chu kỳ bán rã",
+      "props": {
+        "mode": "decay"
+      }
+    },
+    {
+      "id": "alpha",
+      "name": "Phân rã alpha",
+      "props": {
+        "mode": "alpha"
+      }
+    },
+    {
+      "id": "beta",
+      "name": "Phân rã beta",
+      "props": {
+        "mode": "beta"
+      }
+    },
+    {
+      "id": "gamma",
+      "name": "Phát xạ gamma",
+      "props": {
+        "mode": "gamma"
+      }
+    },
+    {
+      "id": "fusion",
+      "name": "Nhiệt hạch deuteri–triti",
+      "props": {
+        "mode": "fusion"
+      },
+      "keywords": [
+        "nhiệt hạch",
+        "fusion"
+      ]
+    },
+    {
+      "id": "collider",
+      "name": "Va chạm trong máy gia tốc",
+      "props": {
+        "mode": "collider"
+      },
+      "keywords": [
+        "lhc",
+        "máy gia tốc"
+      ]
+    }
+  ],
+  "cues": "phân rã/va chạm/hợp hạch xảy ra ở mốc đầu; các chú thích ở các mốc sau",
+  "accuracy": "Thời điểm phân rã rút từ phân bố mũ t = −T½·log₂U (thống kê thật, có nhiễu); khối lượng nguyên tử ²H 2,014102 u, ³H 3,016049 u, ⁴He 4,002603 u, n 1,008665 u → Δm·931,494 MeV = 17,6 MeV, chia 3,5/14,1 MeV theo bảo toàn động lượng; bán kính cong vết hạt ∝ động lượng ngang.",
+  "limitations": "Hạt nhân vẽ như cụm nucleon (không đúng tỉ lệ, không có cấu trúc lớp); các vết va chạm là sự kiện minh hoạ (không mô phỏng vật lý hạt); chu kỳ bán rã được nén vào clip.",
+  "example_usage": "{\"component\":\"nuclear_particle\",\"props\":{\"mode\":\"fusion\"}}",
+  "combines_with": [
+    "nuclear_fission",
+    "atom_orbital",
+    "sun_activity"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

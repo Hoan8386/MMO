@@ -1,0 +1,205 @@
+{
+  "id": "cell",
+  "name": "Tế bào động vật và thực vật với các bào quan",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "cell_biology",
+  "subtopic": "Cell · Cell Membrane · Cell Wall · Cytoplasm · Nucleus · Nucleolus · Mitochondrion · Ribosome · Endoplasmic Reticulum · Golgi Apparatus · Lysosome · Vacuole · Chloroplast · Cytoskeleton · Vesicle",
+  "styles": [
+    "organic",
+    "educational",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "cell_biology",
+  "description": "Tế bào nhân thực vẽ từng bào quan: màng sinh chất (lớp kép), nhân với màng nhân có lỗ, hạch nhân và chất nhiễm sắc; ty thể có mào gấp nếp; lưới nội chất hạt gắn ribosome và lưới nội chất trơn; bộ máy Golgi; lysosome; ribosome tự do; trung thể; bộ khung tế bào. Tế bào thực vật thêm thành cellulose, không bào trung tâm lớn và lục lạp có các chồng thylakoid (grana), tế bào chất chuyển động vòng mang lục lạp đi. Túi tiết nảy từ lưới nội chất, qua Golgi rồi hoà vào màng (xuất bào). Nhãn hiện lần lượt; tuỳ chọn phóng to camera vào một bào quan ở cuối clip. Có thể chọn chỉ hiện một số bào quan.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "tế bào",
+    "cell",
+    "bào quan",
+    "organelle"
+  ],
+  "keywords": [
+    "tế bào động vật",
+    "animal cell",
+    "tế bào thực vật",
+    "plant cell",
+    "cấu trúc tế bào",
+    "cell structure",
+    "bào quan",
+    "organelles",
+    "màng tế bào",
+    "cell membrane",
+    "thành tế bào",
+    "cell wall",
+    "tế bào chất",
+    "cytoplasm",
+    "nhân tế bào",
+    "nucleus",
+    "hạch nhân",
+    "nucleolus",
+    "ty thể",
+    "mitochondria",
+    "nhà máy năng lượng",
+    "ribosome",
+    "lưới nội chất",
+    "endoplasmic reticulum",
+    "bộ máy golgi",
+    "golgi apparatus",
+    "lysosome",
+    "không bào",
+    "vacuole",
+    "lục lạp",
+    "chloroplast",
+    "bộ khung tế bào",
+    "cytoskeleton",
+    "trung thể",
+    "centrosome",
+    "xuất bào",
+    "exocytosis",
+    "túi tiết",
+    "vesicle"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "animal",
+        "plant"
+      ],
+      "default": "animal",
+      "description": "tế bào động vật hay thực vật"
+    },
+    "organelles": {
+      "type": "array",
+      "maxItems": 12,
+      "default": [],
+      "items": {
+        "type": "string",
+        "enum": [
+          "nucleus",
+          "mitochondrion",
+          "rough_er",
+          "smooth_er",
+          "golgi",
+          "lysosome",
+          "ribosome",
+          "centrosome",
+          "cytoskeleton",
+          "vacuole",
+          "chloroplast",
+          "cell_wall"
+        ]
+      },
+      "description": "bào quan hiện (trống = tất cả phù hợp với loại tế bào)"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "nhãn từng bào quan (lần lượt theo mốc)"
+    },
+    "transport": {
+      "type": "boolean",
+      "default": true,
+      "description": "túi tiết chạy ER → Golgi → màng"
+    },
+    "focus": {
+      "type": "string",
+      "enum": [
+        "none",
+        "nucleus",
+        "mitochondrion",
+        "chloroplast",
+        "golgi",
+        "er"
+      ],
+      "default": "none",
+      "description": "phóng to vào một bào quan ở cuối clip"
+    }
+  },
+  "variants": [
+    {
+      "id": "animal",
+      "name": "Tế bào động vật",
+      "props": {
+        "type": "animal"
+      }
+    },
+    {
+      "id": "plant",
+      "name": "Tế bào thực vật",
+      "props": {
+        "type": "plant"
+      }
+    },
+    {
+      "id": "simple",
+      "name": "Tế bào đơn giản: nhân, ty thể, màng",
+      "props": {
+        "type": "animal",
+        "organelles": [
+          "nucleus",
+          "mitochondrion",
+          "ribosome"
+        ]
+      }
+    },
+    {
+      "id": "focus_mito",
+      "name": "Phóng to ty thể",
+      "props": {
+        "type": "animal",
+        "labels": false,
+        "focus": "mitochondrion"
+      },
+      "keywords": [
+        "ty thể",
+        "mitochondria"
+      ]
+    },
+    {
+      "id": "focus_chloroplast",
+      "name": "Phóng to lục lạp",
+      "props": {
+        "type": "plant",
+        "labels": false,
+        "focus": "chloroplast"
+      },
+      "keywords": [
+        "lục lạp",
+        "chloroplast"
+      ]
+    }
+  ],
+  "cues": "mỗi nhãn bào quan một mốc; phóng to (focus) ở mốc cuối",
+  "accuracy": "Bào quan đặt đúng quan hệ (lưới nội chất hạt nối với màng nhân, Golgi giữa ER và màng, lục lạp sát màng do chuyển động tế bào chất); cấu trúc trong (mào ty thể, grana lục lạp, lỗ màng nhân, ribosome trên ER hạt) vẽ dạng sơ đồ.",
+  "limitations": "Hình sơ đồ 2D, kích thước tương đối giữa bào quan không đúng tỉ lệ (ty thể, ribosome được phóng to); số lượng bào quan ít hơn thật rất nhiều.",
+  "example_usage": "{\"component\":\"cell\",\"props\":{\"type\":\"plant\",\"focus\":\"chloroplast\"}}",
+  "combines_with": [
+    "mitosis",
+    "dna_helix",
+    "cell_membrane_transport",
+    "photosynthesis"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

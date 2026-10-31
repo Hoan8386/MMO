@@ -4,80 +4,80 @@
       "id": "astronomy",
       "name": "Deep Space",
       "bg": "#050816",
-      "bg2": "#101B3D",
-      "primary": "#8B5CF6",
-      "secondary": "#22D3EE",
-      "accent": "#FBBF24",
-      "highlight": "#FB7185",
+      "bg2": "#151B3D",
+      "primary": "#B24BF3",
+      "secondary": "#00D9FF",
+      "accent": "#FFB703",
+      "highlight": "#FF4D4D",
       "ink": "#F8FAFC",
       "muted": "#94A3B8",
       "series": [
-        "#3B82F6",
-        "#22D3EE",
-        "#8B5CF6",
-        "#FBBF24",
-        "#FB7185",
-        "#F8FAFC"
+        "#00D9FF",
+        "#B24BF3",
+        "#FFB703",
+        "#FF7849",
+        "#00F5A0",
+        "#E0AAFF"
       ]
     },
     "mathematics": {
       "id": "mathematics",
-      "name": "Geometric",
-      "bg": "#111827",
-      "bg2": "#1E293B",
-      "primary": "#6366F1",
-      "secondary": "#06B6D4",
-      "accent": "#F59E0B",
-      "highlight": "#F43F5E",
-      "ink": "#F9FAFB",
+      "name": "Mathematics Dark",
+      "bg": "#0B1020",
+      "bg2": "#182238",
+      "primary": "#4CC9F0",
+      "secondary": "#FF7B00",
+      "accent": "#FF4D9D",
+      "highlight": "#FFBE0B",
+      "ink": "#F8FAFC",
       "muted": "#9CA3AF",
       "series": [
-        "#06B6D4",
-        "#10B981",
-        "#F59E0B",
-        "#F43F5E",
-        "#8B5CF6",
-        "#6366F1"
+        "#4CC9F0",
+        "#FF7B00",
+        "#06D6A0",
+        "#FF4D9D",
+        "#C77DFF",
+        "#FFBE0B"
       ]
     },
     "biology": {
       "id": "biology",
-      "name": "Organic",
-      "bg": "#052E16",
-      "bg2": "#14532D",
-      "primary": "#10B981",
-      "secondary": "#A78BFA",
-      "accent": "#F472B6",
-      "highlight": "#FB923C",
-      "ink": "#F8FAF5",
-      "muted": "#A7C4B5",
+      "name": "Microscopy Dark",
+      "bg": "#071B20",
+      "bg2": "#102D36",
+      "primary": "#21E6A1",
+      "secondary": "#00CFFF",
+      "accent": "#FF6B81",
+      "highlight": "#FFD166",
+      "ink": "#F5FBF8",
+      "muted": "#9FC2BC",
       "series": [
-        "#10B981",
-        "#22D3EE",
-        "#A78BFA",
-        "#F472B6",
-        "#FB923C",
-        "#6EE7B7"
+        "#21E6A1",
+        "#00CFFF",
+        "#9B5DE5",
+        "#FF6B81",
+        "#FFD166",
+        "#7CFF6B"
       ]
     },
     "physics": {
       "id": "physics",
-      "name": "Energetic",
-      "bg": "#0B1120",
-      "bg2": "#111827",
-      "primary": "#3B82F6",
-      "secondary": "#22D3EE",
-      "accent": "#F97316",
-      "highlight": "#A855F7",
-      "ink": "#F9FAFB",
+      "name": "Physics Dark",
+      "bg": "#080B16",
+      "bg2": "#151A2E",
+      "primary": "#168BFF",
+      "secondary": "#C084FC",
+      "accent": "#FFB000",
+      "highlight": "#FF3CAC",
+      "ink": "#F8FAFC",
       "muted": "#94A3B8",
       "series": [
-        "#3B82F6",
-        "#22D3EE",
-        "#A855F7",
-        "#F97316",
-        "#EF4444",
-        "#2563EB"
+        "#55C7FF",
+        "#00D68F",
+        "#FFB000",
+        "#FF3CAC",
+        "#C084FC",
+        "#FF6B35"
       ]
     }
   },
@@ -226,6 +226,568 @@
       "ink": "#111827",
       "muted": "#4B5563",
       "secondary": "#0891B2"
+    }
+  },
+  "themes": {
+    "deep_space": {
+      "id": "deep_space",
+      "name": "Deep Space",
+      "domain": "astronomy",
+      "bg": "#050816",
+      "bg2": "#151B3D",
+      "primary": "#5CE1E6",
+      "secondary": "#B24BF3",
+      "accent": "#FFD166",
+      "highlight": "#FF7849",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#A6F6FF",
+        "#5CE1E6",
+        "#E0AAFF",
+        "#FFD166",
+        "#FF7849",
+        "#80FFDB"
+      ]
+    },
+    "nebula_purple": {
+      "id": "nebula_purple",
+      "name": "Nebula Purple",
+      "domain": "astronomy",
+      "bg": "#0B1026",
+      "bg2": "#2A0F4A",
+      "primary": "#B24BF3",
+      "secondary": "#E0AAFF",
+      "accent": "#00D9FF",
+      "highlight": "#FFB703",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#7928CA",
+        "#B24BF3",
+        "#E0AAFF",
+        "#00D9FF",
+        "#FFB703",
+        "#FF4D4D"
+      ]
+    },
+    "cosmic_cyan": {
+      "id": "cosmic_cyan",
+      "name": "Cosmic Cyan",
+      "domain": "astronomy",
+      "bg": "#050816",
+      "bg2": "#0B2A44",
+      "primary": "#00D9FF",
+      "secondary": "#5CE1E6",
+      "accent": "#FFB703",
+      "highlight": "#B24BF3",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#00D9FF",
+        "#5CE1E6",
+        "#A6F6FF",
+        "#FFB703",
+        "#B24BF3",
+        "#00F5A0"
+      ]
+    },
+    "stellar_gold": {
+      "id": "stellar_gold",
+      "name": "Stellar Gold",
+      "domain": "astronomy",
+      "bg": "#0B1026",
+      "bg2": "#2B1E0A",
+      "primary": "#FFB703",
+      "secondary": "#FFD166",
+      "accent": "#00D9FF",
+      "highlight": "#FF4D4D",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#FFB703",
+        "#FFD166",
+        "#FFF0A6",
+        "#FF7849",
+        "#00D9FF",
+        "#B24BF3"
+      ]
+    },
+    "planetary_red": {
+      "id": "planetary_red",
+      "name": "Planetary Red",
+      "domain": "astronomy",
+      "bg": "#0B1026",
+      "bg2": "#2E0F14",
+      "primary": "#FF4D4D",
+      "secondary": "#FF7849",
+      "accent": "#FFD166",
+      "highlight": "#00D9FF",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#FF4D4D",
+        "#FF7849",
+        "#FFB199",
+        "#FFD166",
+        "#00D9FF",
+        "#B24BF3"
+      ]
+    },
+    "aurora_green": {
+      "id": "aurora_green",
+      "name": "Aurora Green",
+      "domain": "astronomy",
+      "bg": "#050816",
+      "bg2": "#08281F",
+      "primary": "#00F5A0",
+      "secondary": "#80FFDB",
+      "accent": "#B24BF3",
+      "highlight": "#FFD166",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#00F5A0",
+        "#80FFDB",
+        "#C7FFE8",
+        "#00D9FF",
+        "#B24BF3",
+        "#FFD166"
+      ]
+    },
+    "electric_blue": {
+      "id": "electric_blue",
+      "name": "Electric Blue",
+      "domain": "physics",
+      "bg": "#080B16",
+      "bg2": "#0C1E3A",
+      "primary": "#168BFF",
+      "secondary": "#55C7FF",
+      "accent": "#FFB000",
+      "highlight": "#FF3CAC",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#168BFF",
+        "#55C7FF",
+        "#00D68F",
+        "#FFB000",
+        "#FF3CAC",
+        "#C084FC"
+      ]
+    },
+    "plasma_purple": {
+      "id": "plasma_purple",
+      "name": "Plasma Purple",
+      "domain": "physics",
+      "bg": "#080B16",
+      "bg2": "#1E1236",
+      "primary": "#8B5CF6",
+      "secondary": "#C084FC",
+      "accent": "#55C7FF",
+      "highlight": "#FF6B35",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#8B5CF6",
+        "#C084FC",
+        "#55C7FF",
+        "#FF77E8",
+        "#FFB000",
+        "#00D68F"
+      ]
+    },
+    "energy_orange": {
+      "id": "energy_orange",
+      "name": "Energy Orange",
+      "domain": "physics",
+      "bg": "#0E0A10",
+      "bg2": "#2A160C",
+      "primary": "#FF6B35",
+      "secondary": "#FFB000",
+      "accent": "#55C7FF",
+      "highlight": "#FF3CAC",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#FF6B35",
+        "#FFB000",
+        "#FFD166",
+        "#55C7FF",
+        "#FF3CAC",
+        "#00D68F"
+      ]
+    },
+    "quantum_magenta": {
+      "id": "quantum_magenta",
+      "name": "Quantum Magenta",
+      "domain": "physics",
+      "bg": "#0B0816",
+      "bg2": "#2A0F2E",
+      "primary": "#FF3CAC",
+      "secondary": "#FF77E8",
+      "accent": "#55C7FF",
+      "highlight": "#FFB000",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#FF3CAC",
+        "#FF77E8",
+        "#C084FC",
+        "#55C7FF",
+        "#FFB000",
+        "#00D68F"
+      ]
+    },
+    "field_green": {
+      "id": "field_green",
+      "name": "Field Green",
+      "domain": "physics",
+      "bg": "#060E10",
+      "bg2": "#0C2420",
+      "primary": "#00D68F",
+      "secondary": "#8BFFCB",
+      "accent": "#168BFF",
+      "highlight": "#FFB000",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#00D68F",
+        "#8BFFCB",
+        "#55C7FF",
+        "#168BFF",
+        "#FFB000",
+        "#FF3CAC"
+      ]
+    },
+    "physics_dark": {
+      "id": "physics_dark",
+      "name": "Physics Dark",
+      "domain": "physics",
+      "bg": "#080B16",
+      "bg2": "#151A2E",
+      "primary": "#55C7FF",
+      "secondary": "#C084FC",
+      "accent": "#FFB000",
+      "highlight": "#FF3CAC",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#55C7FF",
+        "#00D68F",
+        "#FFB000",
+        "#FF3CAC",
+        "#C084FC",
+        "#FF6B35"
+      ]
+    },
+    "cell_green": {
+      "id": "cell_green",
+      "name": "Cell Green",
+      "domain": "biology",
+      "bg": "#071B20",
+      "bg2": "#0E3326",
+      "primary": "#21E6A1",
+      "secondary": "#7CFF6B",
+      "accent": "#FF6B81",
+      "highlight": "#FFD166",
+      "ink": "#F8FAFC",
+      "muted": "#9FC2BC",
+      "series": [
+        "#21E6A1",
+        "#7CFF6B",
+        "#00CFFF",
+        "#FF6B81",
+        "#FFD166",
+        "#9B5DE5"
+      ]
+    },
+    "dna_cyan": {
+      "id": "dna_cyan",
+      "name": "DNA Cyan",
+      "domain": "biology",
+      "bg": "#071B20",
+      "bg2": "#0A2E3D",
+      "primary": "#00CFFF",
+      "secondary": "#75F0FF",
+      "accent": "#FF6B81",
+      "highlight": "#FFD166",
+      "ink": "#F8FAFC",
+      "muted": "#9FC2BC",
+      "series": [
+        "#00CFFF",
+        "#75F0FF",
+        "#FF6B81",
+        "#FFD166",
+        "#21E6A1",
+        "#9B5DE5"
+      ]
+    },
+    "protein_violet": {
+      "id": "protein_violet",
+      "name": "Protein Violet",
+      "domain": "biology",
+      "bg": "#0E0B1F",
+      "bg2": "#1F1638",
+      "primary": "#9B5DE5",
+      "secondary": "#D0A2FF",
+      "accent": "#21E6A1",
+      "highlight": "#FFD166",
+      "ink": "#F8FAFC",
+      "muted": "#B6A9CF",
+      "series": [
+        "#9B5DE5",
+        "#D0A2FF",
+        "#00CFFF",
+        "#21E6A1",
+        "#FFD166",
+        "#FF6B81"
+      ]
+    },
+    "organic_coral": {
+      "id": "organic_coral",
+      "name": "Organic Coral",
+      "domain": "biology",
+      "bg": "#1A0B12",
+      "bg2": "#33121F",
+      "primary": "#FF6B81",
+      "secondary": "#FF9FAD",
+      "accent": "#21E6A1",
+      "highlight": "#FFD166",
+      "ink": "#F8FAFC",
+      "muted": "#CFA9B2",
+      "series": [
+        "#FF6B81",
+        "#FF9FAD",
+        "#FFD166",
+        "#21E6A1",
+        "#00CFFF",
+        "#9B5DE5"
+      ]
+    },
+    "molecular_gold": {
+      "id": "molecular_gold",
+      "name": "Molecular Gold",
+      "domain": "biology",
+      "bg": "#0F0D07",
+      "bg2": "#2A230C",
+      "primary": "#FFD166",
+      "secondary": "#FFF0A6",
+      "accent": "#00CFFF",
+      "highlight": "#FF6B81",
+      "ink": "#F8FAFC",
+      "muted": "#C9BF9A",
+      "series": [
+        "#FFD166",
+        "#FFF0A6",
+        "#00CFFF",
+        "#21E6A1",
+        "#FF6B81",
+        "#9B5DE5"
+      ]
+    },
+    "microscopy_dark": {
+      "id": "microscopy_dark",
+      "name": "Microscopy Dark",
+      "domain": "biology",
+      "bg": "#071B20",
+      "bg2": "#102D36",
+      "primary": "#21E6A1",
+      "secondary": "#00CFFF",
+      "accent": "#FF6B81",
+      "highlight": "#FFD166",
+      "ink": "#F8FAFC",
+      "muted": "#9FC2BC",
+      "series": [
+        "#21E6A1",
+        "#00CFFF",
+        "#9B5DE5",
+        "#FF6B81",
+        "#FFD166",
+        "#7CFF6B"
+      ]
+    },
+    "geometry_blue": {
+      "id": "geometry_blue",
+      "name": "Geometry Blue",
+      "domain": "mathematics",
+      "bg": "#0B1020",
+      "bg2": "#13204A",
+      "primary": "#4361EE",
+      "secondary": "#4CC9F0",
+      "accent": "#FFBE0B",
+      "highlight": "#FF4D9D",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#4361EE",
+        "#4CC9F0",
+        "#06D6A0",
+        "#FFBE0B",
+        "#FF4D9D",
+        "#C77DFF"
+      ]
+    },
+    "function_orange": {
+      "id": "function_orange",
+      "name": "Function Orange",
+      "domain": "mathematics",
+      "bg": "#0B1020",
+      "bg2": "#2A1A0C",
+      "primary": "#FF7B00",
+      "secondary": "#FFBE0B",
+      "accent": "#4CC9F0",
+      "highlight": "#FF4D9D",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#FF7B00",
+        "#FFBE0B",
+        "#4CC9F0",
+        "#06D6A0",
+        "#FF4D9D",
+        "#C77DFF"
+      ]
+    },
+    "equation_violet": {
+      "id": "equation_violet",
+      "name": "Equation Violet",
+      "domain": "mathematics",
+      "bg": "#0B1020",
+      "bg2": "#1E1440",
+      "primary": "#8338EC",
+      "secondary": "#C77DFF",
+      "accent": "#FFBE0B",
+      "highlight": "#4CC9F0",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#8338EC",
+        "#C77DFF",
+        "#4CC9F0",
+        "#FFBE0B",
+        "#FF4D9D",
+        "#06D6A0"
+      ]
+    },
+    "coordinate_green": {
+      "id": "coordinate_green",
+      "name": "Coordinate Green",
+      "domain": "mathematics",
+      "bg": "#0B1020",
+      "bg2": "#0C2A26",
+      "primary": "#06D6A0",
+      "secondary": "#8BFFCB",
+      "accent": "#FF7B00",
+      "highlight": "#FF4D9D",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#06D6A0",
+        "#8BFFCB",
+        "#4CC9F0",
+        "#FF7B00",
+        "#FF4D9D",
+        "#FFBE0B"
+      ]
+    },
+    "highlight_pink": {
+      "id": "highlight_pink",
+      "name": "Highlight Pink",
+      "domain": "mathematics",
+      "bg": "#0B1020",
+      "bg2": "#2C1030",
+      "primary": "#FF4D9D",
+      "secondary": "#FF99C8",
+      "accent": "#4CC9F0",
+      "highlight": "#FFBE0B",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#FF4D9D",
+        "#FF99C8",
+        "#4CC9F0",
+        "#FFBE0B",
+        "#06D6A0",
+        "#C77DFF"
+      ]
+    },
+    "mathematics_dark": {
+      "id": "mathematics_dark",
+      "name": "Mathematics Dark",
+      "domain": "mathematics",
+      "bg": "#0B1020",
+      "bg2": "#182238",
+      "primary": "#4CC9F0",
+      "secondary": "#FF7B00",
+      "accent": "#FF4D9D",
+      "highlight": "#FFBE0B",
+      "ink": "#F8FAFC",
+      "muted": "#94A3B8",
+      "series": [
+        "#4CC9F0",
+        "#FF7B00",
+        "#06D6A0",
+        "#FF4D9D",
+        "#C77DFF",
+        "#FFBE0B"
+      ]
+    }
+  },
+  "visuals": {
+    "standard": {
+      "name": "Chuẩn",
+      "glow": 1,
+      "line": 1,
+      "fill": 1
+    },
+    "cinematic": {
+      "name": "Điện ảnh",
+      "glow": 1.25,
+      "line": 1,
+      "fill": 1,
+      "vignette": true
+    },
+    "neon": {
+      "name": "Neon",
+      "glow": 1.7,
+      "line": 0.85,
+      "fill": 0.7
+    },
+    "holographic": {
+      "name": "Holographic",
+      "glow": 1.3,
+      "line": 0.9,
+      "fill": 0.55,
+      "scanlines": true
+    },
+    "realistic": {
+      "name": "Thực tế",
+      "glow": 0.55,
+      "line": 1,
+      "fill": 1
+    },
+    "clean": {
+      "name": "Phẳng, sạch",
+      "glow": 0,
+      "line": 1.1,
+      "fill": 1
+    },
+    "blackboard": {
+      "name": "Bảng đen",
+      "glow": 0,
+      "line": 1.25,
+      "fill": 0.6,
+      "bg": "#1F2B26",
+      "bg2": "#2A3A33",
+      "ink": "#F2F0E6",
+      "muted": "#B9C2B5"
+    },
+    "infographic": {
+      "name": "Infographic",
+      "glow": 0.4,
+      "line": 1.15,
+      "fill": 1
     }
   }
 }

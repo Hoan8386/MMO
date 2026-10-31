@@ -105,7 +105,7 @@ export const validateAnimProps = (id, props) => {
   return c ? lib.schema.validateProps(c.inputs, props) : { props: {}, errors: [`component "${id}" không có trong thư viện`] };
 };
 // Domains → topics of the science library, with their palettes and the style names (web gallery).
-export const animTaxonomy = () => (lib.missing ? { domains: [], styles: {} } : { domains: lib.tax.taxonomy(), styles: lib.tax.STYLE_LABELS });
+export const animTaxonomy = () => (lib.missing ? { domains: [], styles: {} } : { domains: lib.tax.taxonomy(), styles: lib.tax.STYLE_LABELS, visuals: lib.tax.VISUALS });
 export const searchAnimations = (text) => (lib.missing ? [] : lib.search.searchComponents(text, { k: 12, status: ["dev", "tested", "ready"] }).matches);
 
 // Sets a component's status (the web UI's "approve" button moves tested → ready) and reloads the registry.

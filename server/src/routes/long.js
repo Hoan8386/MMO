@@ -80,6 +80,7 @@ const update = (slug, change) => {
 // showing a task that will never finish.
 (async () => {
   for (const d of await fs.readdir(LONG_DIR).catch(() => [])) {
+    if (d.startsWith(".")) continue;
     const s = await readState(d);
     if (!s || !["planning", "rendering"].includes(s.status)) continue;
     const msg = "Server đã khởi động lại khi đang xử lý nên tác vụ bị huỷ — bấm lại để chạy tiếp (giọng đọc và animation đã xong được dùng lại)";
@@ -200,6 +201,7 @@ router.get("/", async (_req, res) => {
   await fs.mkdir(LONG_DIR, { recursive: true });
   const out = [];
   for (const d of await fs.readdir(LONG_DIR)) {
+    if (d.startsWith(".")) continue;
     const s = await readState(d);
     if (s) out.push({ slug: s.slug, title: s.title, status: running.has(s.slug) ? "busy" : s.status, scenes: s.plan?.scenes.length || 0, minutes: s.minutes, updated: s.updated, video: s.video });
   }
@@ -223,11 +225,30 @@ router.get("/:slug", async (req, res) => {
   res.json(withPreviews(s));
 });
 
+// Deleting on Windows: another process (Defender, the search indexer, an Explorer or editor window, a
+// reader of state.json) can hold a handle for a moment and make rmdir fail with EBUSY/EPERM. The folder
+// is first renamed into a hidden trash folder (so the video leaves the list at once), then removed with
+// retries; whatever is still locked stays in the trash and is swept on the next delete.
+const TRASH = path.join(LONG_DIR, ".trash");
+const sweepTrash = async () => {
+  for (const d of await fs.readdir(TRASH).catch(() => [])) await fs.rm(path.join(TRASH, d), { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }).catch(() => {});
+};
 router.delete("/:slug", async (req, res) => {
-  if (running.has(req.params.slug)) return res.status(409).json({ error: "Video đang được xử lý" });
-  await stopStudio(`long:${slugify(req.params.slug)}`, dirOf(req.params.slug)).catch(() => {});
-  await fs.rm(dirOf(req.params.slug), { recursive: true, force: true });
+  const slug = slugify(req.params.slug);
+  if (running.has(slug)) return res.status(409).json({ error: "Video đang được xử lý" });
+  await stopStudio(`long:${slug}`, dirOf(slug)).catch(() => {});
+  await fs.mkdir(TRASH, { recursive: true });
+  const target = path.join(TRASH, `${slug}-${Date.now()}`);
+  let moved = false;
+  for (let i = 0; i < 10 && !moved; i++) {
+    moved = await fs.rename(dirOf(slug), target).then(
+      () => true,
+      (e) => (e.code === "ENOENT" ? true : new Promise((r) => setTimeout(() => r(false), 200))),
+    );
+  }
+  if (!moved) return res.status(423).json({ error: "Thư mục video đang bị chương trình khác mở (Explorer, VS Code…) — đóng lại rồi xoá lần nữa" });
   res.status(204).end();
+  sweepTrash();
 });
 
 // The render seen from inside: HyperFrames' segments (finished, being captured with an estimate of

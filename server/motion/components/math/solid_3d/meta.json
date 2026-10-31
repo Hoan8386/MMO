@@ -1,0 +1,207 @@
+{
+  "id": "solid_3d",
+  "name": "Hình học không gian: khối 3D xoay, mặt cắt, khai triển, công thức",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "geometry",
+  "subtopic": "Cube · Prism · Sphere · Cylinder · Cone · Pyramid · Torus · Polyhedron · Cross Section 3D · Rotation 3D · Perspective Projection · Volume",
+  "styles": [
+    "3d",
+    "educational",
+    "minimalist",
+    "scientific"
+  ],
+  "dimension": "3d",
+  "palette": "geometry",
+  "description": "Khối hình học 3D quay trước camera phối cảnh: lập phương, hộp chữ nhật, cầu, trụ, nón, chóp tứ giác, lăng trụ tam giác, xuyến, khối 20 mặt đều, khối 12 mặt đều — mặt được chiếu sáng (đổ bóng Lambert), vẽ theo thứ tự xa–gần, cạnh khuất nét đứt. Tuỳ chọn mặt phẳng cắt trượt qua khối (thiết diện tô màu riêng, tính từ giao của mặt phẳng với các cạnh), khai triển hình lập phương thành lưới phẳng, và công thức thể tích / diện tích kèm tên khối.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "hình học",
+    "geometry",
+    "hình học không gian",
+    "3d"
+  ],
+  "keywords": [
+    "hình học không gian",
+    "solid geometry",
+    "khối 3d",
+    "hình lập phương",
+    "cube",
+    "hình hộp chữ nhật",
+    "rectangular box",
+    "hình cầu",
+    "sphere",
+    "hình trụ",
+    "cylinder",
+    "hình nón",
+    "cone",
+    "hình chóp",
+    "pyramid",
+    "hình lăng trụ",
+    "prism",
+    "hình xuyến",
+    "torus",
+    "khối đa diện đều",
+    "platonic solid",
+    "khối 20 mặt",
+    "icosahedron",
+    "khối 12 mặt",
+    "dodecahedron",
+    "thể tích",
+    "volume",
+    "diện tích xung quanh",
+    "surface area",
+    "thiết diện",
+    "mặt cắt",
+    "cross section",
+    "hình khai triển",
+    "net of a cube",
+    "cạnh khuất",
+    "phối cảnh"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 4,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "shape": {
+      "type": "string",
+      "enum": [
+        "cube",
+        "box",
+        "sphere",
+        "cylinder",
+        "cone",
+        "pyramid",
+        "prism",
+        "torus",
+        "icosahedron",
+        "dodecahedron"
+      ],
+      "default": "cube",
+      "description": "khối"
+    },
+    "wireframe": {
+      "type": "boolean",
+      "default": false,
+      "description": "chỉ vẽ khung"
+    },
+    "hiddenEdges": {
+      "type": "boolean",
+      "default": true,
+      "description": "cạnh khuất nét đứt (khối đa diện)"
+    },
+    "section": {
+      "type": "boolean",
+      "default": false,
+      "description": "mặt phẳng cắt ngang trượt qua khối"
+    },
+    "unfold": {
+      "type": "boolean",
+      "default": false,
+      "description": "cube: khai triển thành lưới phẳng"
+    },
+    "formula": {
+      "type": "boolean",
+      "default": true,
+      "description": "tên khối và công thức"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "(dự phòng)"
+    }
+  },
+  "variants": [
+    {
+      "id": "cube",
+      "name": "Hình lập phương, cạnh khuất",
+      "props": {
+        "shape": "cube"
+      }
+    },
+    {
+      "id": "cube_net",
+      "name": "Khai triển hình lập phương",
+      "props": {
+        "shape": "cube",
+        "unfold": true
+      }
+    },
+    {
+      "id": "cone_section",
+      "name": "Hình nón và thiết diện",
+      "props": {
+        "shape": "cone",
+        "section": true
+      }
+    },
+    {
+      "id": "cylinder",
+      "name": "Hình trụ",
+      "props": {
+        "shape": "cylinder"
+      }
+    },
+    {
+      "id": "sphere",
+      "name": "Hình cầu",
+      "props": {
+        "shape": "sphere"
+      }
+    },
+    {
+      "id": "pyramid",
+      "name": "Hình chóp tứ giác đều",
+      "props": {
+        "shape": "pyramid"
+      }
+    },
+    {
+      "id": "torus",
+      "name": "Hình xuyến",
+      "props": {
+        "shape": "torus"
+      }
+    },
+    {
+      "id": "icosahedron",
+      "name": "Khối 20 mặt đều",
+      "props": {
+        "shape": "icosahedron"
+      }
+    },
+    {
+      "id": "dodecahedron",
+      "name": "Khối 12 mặt đều",
+      "props": {
+        "shape": "dodecahedron",
+        "wireframe": false
+      }
+    }
+  ],
+  "cues": "công thức, mặt cắt, khai triển — mỗi bước một mốc",
+  "accuracy": "Lưới đỉnh/mặt chính xác (khối 12 mặt dựng làm đối ngẫu của khối 20 mặt); phép chiếu phối cảnh; thiết diện tính bằng giao của mặt phẳng với các cạnh của lưới; công thức thể tích và diện tích chuẩn.",
+  "limitations": "Mặt cong xấp xỉ bằng đa giác (36 × 14); thứ tự vẽ theo tâm mặt (painter) có thể sai cục bộ ở hình xuyến; thiết diện của mặt cong là đa giác xấp xỉ.",
+  "example_usage": "{\"component\":\"solid_3d\",\"props\":{\"shape\":\"cone\",\"section\":true}}",
+  "combines_with": [
+    "geometry_proof",
+    "function_graph"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

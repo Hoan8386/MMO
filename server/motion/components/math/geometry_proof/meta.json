@@ -1,0 +1,194 @@
+{
+  "id": "geometry_proof",
+  "name": "Hình học phẳng: Pythagoras, dựng hình, góc nội tiếp, đường thẳng Euler, phép biến hình",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "geometry",
+  "subtopic": "Pythagorean Theorem · Geometric Construction · Perpendicular Bisector · Angle Bisector · Inscribed Angle · Triangle Centers · Euler Line · Geometric Transformation",
+  "styles": [
+    "educational",
+    "minimalist",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "geometry",
+  "description": "Hình học phẳng đo trực tiếp. pythagoras: hình vuông trên ba cạnh tam giác vuông, rồi chứng minh bằng sắp xếp lại — bốn tam giác giống nhau trong hình vuông cạnh a + b để lại lỗ c², xếp lại để lại a² + b². construction: dựng hình bằng thước và compa vẽ từng nét (đường trung trực, tam giác đều, phân giác), có hình compa đang quay. inscribed_angle: điểm P chạy trên đường tròn, góc nội tiếp luôn bằng nửa góc ở tâm chắn cùng cung (số đo trực tiếp). centers: tam giác có đỉnh trôi chậm — trung tuyến/trọng tâm G, trung trực/tâm ngoại tiếp O với đường tròn ngoại tiếp, đường cao/trực tâm H — và đường thẳng Euler qua O, G, H. transform: tịnh tiến, quay, đối xứng trục, vị tự một hình trên lưới toạ độ, có bóng hình gốc.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "hình học",
+    "geometry",
+    "chứng minh",
+    "proof"
+  ],
+  "keywords": [
+    "định lý pythagoras",
+    "định lý pitago",
+    "pythagorean theorem",
+    "tam giác vuông",
+    "right triangle",
+    "cạnh huyền",
+    "hypotenuse",
+    "chứng minh pythagoras",
+    "dựng hình",
+    "geometric construction",
+    "thước và compa",
+    "compass and straightedge",
+    "đường trung trực",
+    "perpendicular bisector",
+    "tia phân giác",
+    "angle bisector",
+    "tam giác đều",
+    "góc nội tiếp",
+    "inscribed angle",
+    "góc ở tâm",
+    "central angle",
+    "đường tròn",
+    "circle",
+    "trọng tâm",
+    "centroid",
+    "trực tâm",
+    "orthocenter",
+    "tâm đường tròn ngoại tiếp",
+    "circumcenter",
+    "đường thẳng euler",
+    "euler line",
+    "phép biến hình",
+    "geometric transformation",
+    "tịnh tiến",
+    "translation",
+    "phép quay",
+    "rotation",
+    "đối xứng trục",
+    "reflection",
+    "vị tự",
+    "dilation"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "pythagoras",
+        "construction",
+        "inscribed_angle",
+        "centers",
+        "transform"
+      ],
+      "default": "pythagoras",
+      "description": "cảnh"
+    },
+    "a": {
+      "type": "number",
+      "min": 1,
+      "max": 6,
+      "default": 3,
+      "description": "pythagoras: cạnh góc vuông a"
+    },
+    "b": {
+      "type": "number",
+      "min": 1,
+      "max": 6,
+      "default": 4,
+      "description": "pythagoras: cạnh góc vuông b"
+    },
+    "construction": {
+      "type": "string",
+      "enum": [
+        "perpendicular_bisector",
+        "equilateral",
+        "angle_bisector"
+      ],
+      "default": "perpendicular_bisector",
+      "description": "construction: dựng gì"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích và kết luận"
+    }
+  },
+  "variants": [
+    {
+      "id": "pythagoras",
+      "name": "Chứng minh định lý Pythagoras",
+      "props": {
+        "mode": "pythagoras"
+      },
+      "duration": 12
+    },
+    {
+      "id": "bisector",
+      "name": "Dựng đường trung trực",
+      "props": {
+        "mode": "construction"
+      }
+    },
+    {
+      "id": "equilateral",
+      "name": "Dựng tam giác đều",
+      "props": {
+        "mode": "construction",
+        "construction": "equilateral"
+      }
+    },
+    {
+      "id": "angle_bisector",
+      "name": "Dựng tia phân giác",
+      "props": {
+        "mode": "construction",
+        "construction": "angle_bisector"
+      }
+    },
+    {
+      "id": "inscribed",
+      "name": "Góc nội tiếp bằng nửa góc ở tâm",
+      "props": {
+        "mode": "inscribed_angle"
+      }
+    },
+    {
+      "id": "euler",
+      "name": "Các điểm đặc biệt và đường thẳng Euler",
+      "props": {
+        "mode": "centers"
+      },
+      "duration": 12
+    },
+    {
+      "id": "transform",
+      "name": "Các phép biến hình",
+      "props": {
+        "mode": "transform"
+      },
+      "duration": 12
+    }
+  ],
+  "cues": "mỗi bước dựng / mỗi điểm đặc biệt / mỗi chú thích ở một mốc",
+  "accuracy": "Hình vẽ và số đo tính chính xác: tâm ngoại tiếp từ công thức toạ độ, trực tâm H = A + B + C − 2O (nên O, G, H thẳng hàng tỉ lệ 1:2), góc đo từ toạ độ; các bước dựng hình đúng thứ tự cổ điển; phép chứng minh sắp xếp lại đúng diện tích.",
+  "limitations": "Hình compa là biểu tượng; các tam giác minh hoạ có kích thước được chọn để vừa khung.",
+  "example_usage": "{\"component\":\"geometry_proof\",\"props\":{\"mode\":\"pythagoras\",\"a\":3,\"b\":4}}",
+  "combines_with": [
+    "solid_3d",
+    "function_graph",
+    "complex_plane"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,193 @@
+{
+  "id": "magnetism",
+  "name": "Từ trường: nam châm, dòng điện, ống dây, lực Lorentz, cảm ứng điện từ",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "electromagnetism",
+  "subtopic": "Bar Magnet · Magnetic Field Lines · Compass Needle · Current-Carrying Wire · Solenoid · Lorentz Force · Charged Particle Trajectory · Electromagnetic Induction · Lenz's Law",
+  "styles": [
+    "scientific",
+    "educational",
+    "futuristic"
+  ],
+  "dimension": "2d",
+  "palette": "electromagnetism",
+  "description": "Từ trường tính từ nguồn của nó. bar_magnet: hai cực từ — đường sức dò số đi từ N sang S (bên trong nam châm từ S về N), kim la bàn quay về hướng trường tại chỗ, tuỳ chọn mạt sắt; wire: dòng điện thẳng hướng ra khỏi màn hình, đường sức tròn đồng tâm thưa dần theo 1/r, quy tắc nắm tay phải; solenoid: cộng từ trường của các vòng dây — bên trong thẳng và đều, bên ngoài giống nam châm thẳng; lorentz: hạt mang điện trong từ trường đều chuyển động tròn r = mv/(qB), lực qv×B luôn hướng vào tâm (đổi dấu điện tích thì quay ngược); induction: nam châm đẩy vào rút ra khỏi cuộn dây — từ thông Φ(t), suất điện động −dΦ/dt trên điện kế và đồ thị, dòng cảm ứng chống lại sự biến thiên (định luật Lenz). Mũi tên chạy dọc đường sức cho thấy chiều.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "điện từ học",
+    "electromagnetism",
+    "từ trường",
+    "magnetic field",
+    "nam châm",
+    "magnet"
+  ],
+  "keywords": [
+    "nam châm",
+    "magnet",
+    "nam châm thẳng",
+    "bar magnet",
+    "đường sức từ",
+    "magnetic field lines",
+    "cực bắc cực nam",
+    "la bàn",
+    "compass",
+    "mạt sắt",
+    "iron filings",
+    "dòng điện sinh ra từ trường",
+    "dây dẫn thẳng",
+    "current carrying wire",
+    "quy tắc nắm tay phải",
+    "right hand rule",
+    "ống dây",
+    "solenoid",
+    "nam châm điện",
+    "electromagnet",
+    "lực lorentz",
+    "lorentz force",
+    "hạt mang điện trong từ trường",
+    "charged particle in magnetic field",
+    "chuyển động tròn",
+    "cảm ứng điện từ",
+    "electromagnetic induction",
+    "định luật faraday",
+    "faraday's law",
+    "định luật lenz",
+    "lenz's law",
+    "từ thông",
+    "magnetic flux",
+    "suất điện động cảm ứng",
+    "máy phát điện"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "bar_magnet",
+        "wire",
+        "solenoid",
+        "lorentz",
+        "induction"
+      ],
+      "default": "bar_magnet",
+      "description": "cảnh"
+    },
+    "lines": {
+      "type": "integer",
+      "min": 6,
+      "max": 30,
+      "default": 18,
+      "description": "số đường sức"
+    },
+    "compasses": {
+      "type": "boolean",
+      "default": true,
+      "description": "kim la bàn"
+    },
+    "filings": {
+      "type": "boolean",
+      "default": false,
+      "description": "mạt sắt"
+    },
+    "flow": {
+      "type": "boolean",
+      "default": true,
+      "description": "mũi tên chạy dọc đường sức"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    },
+    "charge": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "negative"
+      ],
+      "default": "positive",
+      "description": "lorentz: dấu điện tích"
+    }
+  },
+  "variants": [
+    {
+      "id": "bar_magnet",
+      "name": "Đường sức nam châm thẳng và la bàn",
+      "props": {
+        "mode": "bar_magnet"
+      }
+    },
+    {
+      "id": "filings",
+      "name": "Mạt sắt quanh nam châm",
+      "props": {
+        "mode": "bar_magnet",
+        "filings": true,
+        "compasses": false,
+        "lines": 12
+      }
+    },
+    {
+      "id": "wire",
+      "name": "Từ trường của dòng điện thẳng",
+      "props": {
+        "mode": "wire"
+      }
+    },
+    {
+      "id": "solenoid",
+      "name": "Từ trường ống dây",
+      "props": {
+        "mode": "solenoid",
+        "lines": 10
+      }
+    },
+    {
+      "id": "lorentz",
+      "name": "Lực Lorentz: hạt mang điện chuyển động tròn",
+      "props": {
+        "mode": "lorentz"
+      }
+    },
+    {
+      "id": "induction",
+      "name": "Cảm ứng điện từ và định luật Lenz",
+      "props": {
+        "mode": "induction"
+      },
+      "keywords": [
+        "cảm ứng điện từ",
+        "faraday",
+        "lenz"
+      ]
+    }
+  ],
+  "cues": "vẽ đường sức, rồi mạt sắt/la bàn, rồi chú thích — mỗi bước một mốc",
+  "accuracy": "Đường sức dò số (RK2) từ trường tổng của các cực từ (1/r²) hoặc dòng điện thẳng (1/r); ống dây là tổng các dây trong mặt cắt; quỹ đạo Lorentz tròn với lực hướng tâm; từ thông của lưỡng cực qua vòng đồng trục Φ ∝ R²/(R² + d²)^{3/2}, suất điện động là đạo hàm số của Φ.",
+  "limitations": "Hình 2D (lát cắt qua trục); nam châm mô hình bằng hai cực điểm; mật độ đường sức chỉ gần đúng độ lớn từ trường; độ lớn trên đồ thị là tương đối (không đơn vị).",
+  "example_usage": "{\"component\":\"magnetism\",\"props\":{\"mode\":\"solenoid\"}}",
+  "combines_with": [
+    "em_field",
+    "circuit"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,201 @@
+{
+  "id": "atom_orbital",
+  "name": "Nguyên tử hydro: orbital, đám mây electron, mức năng lượng và quang phổ",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "quantum",
+  "subtopic": "Atomic Orbital · Electron Cloud · Energy Level · Photon Emission · Photon Absorption · Spectral Lines · Quantum Numbers",
+  "styles": [
+    "scientific",
+    "3d",
+    "futuristic",
+    "educational"
+  ],
+  "dimension": "3d",
+  "palette": "quantum",
+  "description": "Nguyên tử hydro từ nghiệm chính xác của nó. cloud: orbital dưới dạng đám mây electron — hàng nghìn điểm rút ngẫu nhiên theo |ψ|² = |R_nl(r)·Y_lm|², tô màu theo dấu của ψ (pha), xoay 3D có phối cảnh, lần lượt chuyển qua các orbital (1s, 2s, 2p, 3s, 3p, 3d…) kèm số lượng tử, năng lượng và số mặt nút. slice: |ψ|² trên mặt phẳng qua hạt nhân, thấy rõ nút cầu và nút góc. levels: các mức năng lượng E_n = −13,6 eV/n², electron nhảy xuống phát photon hoặc hấp thụ photon nhảy lên, bước sóng đúng theo công thức Rydberg 1/λ = R(1/n₁² − 1/n₂²), các vạch Balmer sáng lên trên dải quang phổ.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "lượng tử",
+    "quantum",
+    "nguyên tử",
+    "atom",
+    "electron"
+  ],
+  "keywords": [
+    "orbital",
+    "obitan",
+    "atomic orbital",
+    "đám mây electron",
+    "electron cloud",
+    "nguyên tử hydro",
+    "hydrogen atom",
+    "số lượng tử",
+    "quantum numbers",
+    "orbital s",
+    "orbital p",
+    "orbital d",
+    "mặt nút",
+    "nodes",
+    "mức năng lượng",
+    "energy levels",
+    "electron nhảy mức",
+    "quantum jump",
+    "phát xạ photon",
+    "photon emission",
+    "hấp thụ photon",
+    "photon absorption",
+    "quang phổ vạch",
+    "line spectrum",
+    "dãy balmer",
+    "balmer series",
+    "dãy lyman",
+    "công thức rydberg",
+    "mô hình bohr"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "cloud",
+        "slice",
+        "levels"
+      ],
+      "default": "cloud",
+      "description": "cảnh"
+    },
+    "orbitals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "default": [
+        "1s",
+        "2p_z",
+        "3d_z2"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "1s",
+          "2s",
+          "2p_z",
+          "2p_x",
+          "3s",
+          "3p_z",
+          "3d_z2",
+          "3d_xz",
+          "3d_x2y2"
+        ]
+      },
+      "description": "các orbital lần lượt hiện (cloud/slice)"
+    },
+    "points": {
+      "type": "integer",
+      "min": 1500,
+      "max": 12000,
+      "default": 7000,
+      "description": "số điểm của đám mây"
+    },
+    "transitions": {
+      "type": "array",
+      "maxItems": 5,
+      "default": [
+        "3-2",
+        "4-2",
+        "5-2",
+        "2-1"
+      ],
+      "items": {
+        "type": "string",
+        "maxLength": 3
+      },
+      "description": "levels: các bước nhảy \"a-b\" (a > b phát xạ, a < b hấp thụ), n ≤ 6"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "cloud",
+      "name": "Đám mây electron 1s, 2p, 3d",
+      "props": {
+        "mode": "cloud"
+      }
+    },
+    {
+      "id": "d_orbitals",
+      "name": "Các orbital d",
+      "props": {
+        "mode": "cloud",
+        "orbitals": [
+          "3d_z2",
+          "3d_xz",
+          "3d_x2y2"
+        ]
+      }
+    },
+    {
+      "id": "slice",
+      "name": "Lát cắt mật độ: 2s, 3s, 3p",
+      "props": {
+        "mode": "slice",
+        "orbitals": [
+          "2s",
+          "3s",
+          "3p_z"
+        ]
+      }
+    },
+    {
+      "id": "emission",
+      "name": "Electron nhảy mức, phát quang phổ Balmer",
+      "props": {
+        "mode": "levels"
+      }
+    },
+    {
+      "id": "absorption",
+      "name": "Hấp thụ photon, electron nhảy lên",
+      "props": {
+        "mode": "levels",
+        "transitions": [
+          "2-3",
+          "2-4",
+          "1-2"
+        ]
+      }
+    }
+  ],
+  "cues": "cloud/slice: chú thích theo mốc, các orbital chia đều thời gian clip; levels: mỗi bước nhảy ở một mốc",
+  "accuracy": "Hàm sóng hydro chính xác (R_nl với a₀ = 1, phần góc dạng orbital thực); đám mây lấy mẫu loại bỏ từ |ψ|² 3D; năng lượng −13,6 eV/n²; bước sóng theo hằng số Rydberg 1,0974·10⁷ m⁻¹ (656, 486, 434 nm; Lyman 122 nm là tử ngoại).",
+  "limitations": "Bỏ qua spin, cấu trúc tinh tế và hiệu chỉnh khối lượng rút gọn; đám mây là hình ảnh xác suất (electron không có quỹ đạo); mỗi orbital có cỡ hiển thị chuẩn hoá (n lớn thật ra rộng hơn nhiều).",
+  "example_usage": "{\"component\":\"atom_orbital\",\"props\":{\"mode\":\"levels\"}}",
+  "combines_with": [
+    "quantum_wave",
+    "double_slit",
+    "nuclear_fission"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

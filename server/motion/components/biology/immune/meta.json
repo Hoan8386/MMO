@@ -1,0 +1,147 @@
+{
+  "id": "immune",
+  "name": "Máu và miễn dịch: tế bào máu, đông máu, kháng thể, thực bào",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "human_biology",
+  "subtopic": "Red Blood Cell · White Blood Cell · Platelet · Blood Vessel · Blood Flow · Blood Clotting · Antibody Binding · Immune Response · Phagocytosis · Macrophage",
+  "styles": [
+    "organic",
+    "educational",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "human_biology",
+  "description": "Máu và miễn dịch. blood: mạch máu với dòng chảy tầng (vận tốc ∝ 1 − (r/R)², nhanh nhất ở giữa) chở hồng cầu (đĩa lõm hai mặt, lật khi trôi), bạch cầu và tiểu cầu, kèm mũi tên profile vận tốc. clotting: thành mạch bị rách; tiểu cầu bám vào vết thương và dính vào nhau, sợi fibrin đan thành lưới, hồng cầu bị giữ lại, dòng chảy chậm lại. antibody: kháng thể hình chữ Y gắn vào kháng nguyên trên virus (mỗi nhánh một kháng nguyên), bắc cầu giữa các virus thành cụm (ngưng kết). phagocytosis: đại thực bào vươn chân giả bao lấy vi khuẩn, nuốt vào túi thực bào, lysosome hoà vào và tiêu huỷ vi khuẩn.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "cơ thể người",
+    "human body",
+    "máu",
+    "blood",
+    "miễn dịch",
+    "immune system"
+  ],
+  "keywords": [
+    "máu",
+    "blood",
+    "hồng cầu",
+    "red blood cell",
+    "bạch cầu",
+    "white blood cell",
+    "tiểu cầu",
+    "platelet",
+    "huyết tương",
+    "plasma",
+    "mạch máu",
+    "blood vessel",
+    "mao mạch",
+    "capillary",
+    "đông máu",
+    "blood clotting",
+    "cục máu đông",
+    "fibrin",
+    "vết thương",
+    "hệ miễn dịch",
+    "immune system",
+    "kháng thể",
+    "antibody",
+    "kháng nguyên",
+    "antigen",
+    "ngưng kết",
+    "agglutination",
+    "vắc xin",
+    "vaccine",
+    "thực bào",
+    "phagocytosis",
+    "đại thực bào",
+    "macrophage",
+    "chân giả",
+    "pseudopod",
+    "lysosome"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "blood",
+        "clotting",
+        "antibody",
+        "phagocytosis"
+      ],
+      "default": "blood",
+      "description": "cảnh"
+    },
+    "cells": {
+      "type": "integer",
+      "min": 20,
+      "max": 160,
+      "default": 80,
+      "description": "blood/clotting: số tế bào máu"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích các bước"
+    }
+  },
+  "variants": [
+    {
+      "id": "blood",
+      "name": "Tế bào máu trong mạch",
+      "props": {
+        "mode": "blood"
+      }
+    },
+    {
+      "id": "clotting",
+      "name": "Quá trình đông máu",
+      "props": {
+        "mode": "clotting"
+      }
+    },
+    {
+      "id": "antibody",
+      "name": "Kháng thể bắt giữ virus",
+      "props": {
+        "mode": "antibody"
+      }
+    },
+    {
+      "id": "phagocytosis",
+      "name": "Đại thực bào nuốt vi khuẩn",
+      "props": {
+        "mode": "phagocytosis"
+      }
+    }
+  ],
+  "cues": "các bước (tổn thương, bám, gắn kết, nuốt, tiêu huỷ) và chú thích theo mốc",
+  "accuracy": "Profile dòng chảy Poiseuille (parabol); tỉ lệ tế bào máu gần đúng (hồng cầu chiếm đa số); trình tự đông máu (tiểu cầu → fibrin), kháng thể có hai vị trí gắn, các bước thực bào theo giáo trình.",
+  "limitations": "Hình minh hoạ 2D; số lượng tế bào ít và tốc độ được chỉnh để quan sát; tỉ lệ kích thước tiểu cầu/hồng cầu/bạch cầu gần đúng; không vẽ các yếu tố đông máu phân tử.",
+  "example_usage": "{\"component\":\"immune\",\"props\":{\"mode\":\"antibody\"}}",
+  "combines_with": [
+    "virus",
+    "bacterium",
+    "heart"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

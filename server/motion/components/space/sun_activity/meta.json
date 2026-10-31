@@ -1,0 +1,206 @@
+{
+  "id": "sun_activity",
+  "name": "Mặt Trời: bề mặt, hoạt động và cấu trúc",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "stars_galaxies",
+  "subtopic": "Photosphere · Granulation · Sunspot · Prominence · Corona · Solar Flare · Coronal Mass Ejection · Solar Wind · Solar Core",
+  "styles": [
+    "cinematic",
+    "3d",
+    "scientific",
+    "educational"
+  ],
+  "dimension": "3d",
+  "palette": "stars_galaxies",
+  "description": "Mặt Trời tự phát sáng: bề mặt có các hạt sáng đối lưu (granulation) với rãnh tối, vết đen (lõi tối và vùng nửa tối có sợi xuyên tâm) trong hai vành đai hoạt động, rìa tối và đỏ hơn (limb darkening), quay vi sai (xích đạo nhanh hơn cực); xung quanh là vành nhật hoa với các tia streamer dài hơn ở xích đạo, tai lửa là các vòng plasma theo đường sức từ có plasma chảy xuống hai chân. Theo chế độ: bùng nổ (loé sáng đột ngột, hạt văng, dãy vòng sau bùng nổ), CME (cấu trúc ba phần: mặt trước sáng, hốc tối, lõi sáng — nở rộng và bay ra), gió Mặt Trời trên xoắn Parker (dòng nhanh xanh, chậm vàng), hoặc mặt cắt bên trong (lõi tổng hợp hạt nhân, vùng bức xạ với đường đi ngẫu nhiên của một photon, vùng đối lưu với các ô cuộn).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "mặt trời",
+    "sun",
+    "ngôi sao",
+    "star"
+  ],
+  "keywords": [
+    "mặt trời",
+    "the sun",
+    "vết đen mặt trời",
+    "sunspot",
+    "tai lửa",
+    "prominence",
+    "vành nhật hoa",
+    "corona",
+    "nhật hoa",
+    "bùng nổ mặt trời",
+    "solar flare",
+    "phun trào khối vành nhật hoa",
+    "coronal mass ejection",
+    "cme",
+    "bão mặt trời",
+    "solar storm",
+    "gió mặt trời",
+    "solar wind",
+    "hạt sáng",
+    "granulation",
+    "quang cầu",
+    "photosphere",
+    "lõi mặt trời",
+    "solar core",
+    "vùng bức xạ",
+    "radiative zone",
+    "vùng đối lưu",
+    "convective zone",
+    "phản ứng tổng hợp hạt nhân",
+    "nuclear fusion in the sun",
+    "chu kỳ mặt trời"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "active",
+        "quiet",
+        "flare",
+        "cme",
+        "wind",
+        "structure"
+      ],
+      "default": "active",
+      "description": "active = vết đen và tai lửa; quiet = Mặt Trời yên tĩnh; flare = bùng nổ; cme = phun trào khối vành nhật hoa; wind = gió Mặt Trời; structure = mặt cắt các lớp bên trong"
+    },
+    "spots": {
+      "type": "integer",
+      "min": 0,
+      "max": 12,
+      "default": 6,
+      "description": "số vết đen"
+    },
+    "prominences": {
+      "type": "boolean",
+      "default": true,
+      "description": "tai lửa ở rìa"
+    },
+    "corona": {
+      "type": "boolean",
+      "default": true,
+      "description": "các tia vành nhật hoa"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích các hiện tượng (theo mốc lời thoại)"
+    },
+    "facts": {
+      "type": "boolean",
+      "default": false,
+      "description": "bảng số liệu Mặt Trời"
+    },
+    "stars": {
+      "type": "boolean",
+      "default": false,
+      "description": "nền sao"
+    }
+  },
+  "variants": [
+    {
+      "id": "active",
+      "name": "Mặt Trời hoạt động: vết đen, tai lửa",
+      "props": {
+        "mode": "active"
+      },
+      "keywords": [
+        "vết đen",
+        "tai lửa"
+      ]
+    },
+    {
+      "id": "quiet",
+      "name": "Mặt Trời yên tĩnh, hạt sáng",
+      "props": {
+        "mode": "quiet",
+        "labels": false,
+        "facts": true
+      },
+      "keywords": [
+        "bề mặt mặt trời",
+        "granulation"
+      ]
+    },
+    {
+      "id": "flare",
+      "name": "Bùng nổ Mặt Trời",
+      "props": {
+        "mode": "flare"
+      },
+      "keywords": [
+        "bùng nổ",
+        "solar flare"
+      ]
+    },
+    {
+      "id": "cme",
+      "name": "Phun trào khối vành nhật hoa (CME)",
+      "props": {
+        "mode": "cme"
+      },
+      "keywords": [
+        "cme",
+        "bão mặt trời"
+      ]
+    },
+    {
+      "id": "wind",
+      "name": "Gió Mặt Trời",
+      "props": {
+        "mode": "wind"
+      },
+      "keywords": [
+        "gió mặt trời",
+        "solar wind"
+      ]
+    },
+    {
+      "id": "structure",
+      "name": "Cấu trúc bên trong Mặt Trời",
+      "props": {
+        "mode": "structure"
+      },
+      "keywords": [
+        "lõi mặt trời",
+        "cấu tạo mặt trời",
+        "vùng bức xạ",
+        "vùng đối lưu"
+      ]
+    }
+  ],
+  "cues": "flare/cme bắt đầu ở mốc đầu; sau đó từng chú thích (hoặc: mở mặt cắt, rồi lõi, vùng bức xạ, vùng đối lưu); bảng số liệu ở mốc cuối",
+  "accuracy": "Quay vi sai theo định luật 14,71 − 2,39 sin²φ − 1,78 sin⁴φ độ/ngày (nén thời gian); vết đen chỉ ở vĩ độ ±8–30°; độ sâu các lớp bên trong theo mô hình chuẩn (lõi 0,25 R, vùng bức xạ tới 0,7 R); cấu trúc ba phần của CME và xoắn Parker là hình học định tính.",
+  "limitations": "Hạt sáng là texture tĩnh quay theo bề mặt (không tiến hoá như thật trong vài phút); kích thước hạt sáng, độ cao tai lửa và tốc độ phóng đại để dễ thấy; màu sắc mang tính minh hoạ (ánh sáng thật gần như trắng).",
+  "example_usage": "{\"component\":\"sun_activity\",\"props\":{\"mode\":\"cme\",\"backdrop\":\"full\"}}",
+  "combines_with": [
+    "planet",
+    "stellar_lifecycle",
+    "nuclear_fission"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

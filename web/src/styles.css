@@ -516,3 +516,10 @@ textarea.code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12
 }
 .common-controls { width: 100%; box-sizing: border-box; }
 .frame-detail-info pre.code { white-space: pre-wrap; word-break: break-all; }
+.theme-strip { display: flex; gap: 8px; flex-wrap: wrap; margin: -4px 0 12px; }
+.theme-chip { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 10px; font-size: 12px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.theme-chip i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.theme-chip b { margin-left: 4px; font-weight: 700; }
+.theme-chip code { opacity: 0.6; font-size: 11px; color: #cbd5e1; }
+.variant-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 10px; }
+.variant-chips .chip { font-size: 12px; }

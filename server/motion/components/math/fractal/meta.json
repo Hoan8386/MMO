@@ -1,0 +1,161 @@
+{
+  "id": "fractal",
+  "name": "Fractal: tập Mandelbrot, tập Julia, Sierpinski, bông tuyết Koch, cây fractal",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "fractals",
+  "subtopic": "Mandelbrot Set · Mandelbrot Zoom · Julia Set · Sierpinski Triangle · Chaos Game · Koch Snowflake · Fractal Tree · Recursive Geometry",
+  "styles": [
+    "cinematic",
+    "futuristic",
+    "educational",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "fractals",
+  "description": "Fractal. mandelbrot: tập các c sao cho zₙ₊₁ = zₙ² + c không chạy ra vô cùng, tính lại mỗi khung hình với tô màu mượt (số bước thoát liên tục) trong khi camera phóng to theo hàm mũ vào một điểm (thung lũng cá ngựa, voi, xoắn ốc) — số vòng lặp tăng theo độ phóng. julia: tập Julia của một c chạy vòng tròn nên hình biến đổi liên tục. sierpinski: tam giác Sierpinski dựng từng bậc (số tam giác, diện tích còn lại) và trò chơi hỗn loạn lấp đầy nó. koch: bông tuyết Koch lặp từng bậc — chu vi nhân 4/3 mỗi bước (tới vô hạn), diện tích hội tụ về 8/5 tam giác ban đầu. tree: cây phân nhánh đệ quy mọc dần, mỗi nhánh tách đôi với góc đung đưa.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "fractal",
+    "hỗn loạn",
+    "chaos",
+    "đệ quy",
+    "recursion"
+  ],
+  "keywords": [
+    "fractal",
+    "phân hình",
+    "tập mandelbrot",
+    "mandelbrot set",
+    "phóng to mandelbrot",
+    "mandelbrot zoom",
+    "tập julia",
+    "julia set",
+    "số phức lặp",
+    "tam giác sierpinski",
+    "sierpinski triangle",
+    "trò chơi hỗn loạn",
+    "chaos game",
+    "bông tuyết koch",
+    "koch snowflake",
+    "chu vi vô hạn",
+    "cây fractal",
+    "fractal tree",
+    "đệ quy",
+    "recursion",
+    "tự đồng dạng",
+    "self-similarity",
+    "hình học fractal",
+    "số chiều fractal"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "mandelbrot",
+        "julia",
+        "sierpinski",
+        "koch",
+        "tree"
+      ],
+      "default": "mandelbrot",
+      "description": "loại fractal"
+    },
+    "target": {
+      "type": "string",
+      "enum": [
+        "seahorse",
+        "elephant",
+        "spiral"
+      ],
+      "default": "seahorse",
+      "description": "mandelbrot: điểm phóng tới"
+    },
+    "zoom": {
+      "type": "number",
+      "min": 2,
+      "max": 5000,
+      "default": 800,
+      "description": "mandelbrot: độ phóng cuối clip"
+    },
+    "depth": {
+      "type": "integer",
+      "min": 2,
+      "max": 9,
+      "default": 6,
+      "description": "sierpinski/koch/tree: số bậc lặp"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "công thức và chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "mandelbrot",
+      "name": "Phóng to tập Mandelbrot",
+      "props": {
+        "kind": "mandelbrot"
+      }
+    },
+    {
+      "id": "julia",
+      "name": "Tập Julia biến hình",
+      "props": {
+        "kind": "julia"
+      }
+    },
+    {
+      "id": "sierpinski",
+      "name": "Tam giác Sierpinski",
+      "props": {
+        "kind": "sierpinski"
+      }
+    },
+    {
+      "id": "koch",
+      "name": "Bông tuyết Koch",
+      "props": {
+        "kind": "koch",
+        "depth": 5
+      }
+    },
+    {
+      "id": "tree",
+      "name": "Cây fractal",
+      "props": {
+        "kind": "tree",
+        "depth": 9
+      }
+    }
+  ],
+  "cues": "công thức / chú thích theo mốc; các bậc lặp chia đều thời gian",
+  "accuracy": "Mandelbrot/Julia tính đúng thuật toán thời gian thoát (bán kính thoát 16, màu mượt ν = n + 1 − log₂ log|z|), số vòng lặp tăng theo log độ phóng; Sierpinski và Koch dựng đệ quy chính xác; số liệu chu vi, số cạnh, diện tích theo công thức.",
+  "limitations": "Độ phân giải tính toán thấp hơn khung hình (được làm mượt khi phóng to) để render nhanh; độ phóng giới hạn bởi độ chính xác số thực 64-bit; bảng màu lấy theo theme.",
+  "example_usage": "{\"component\":\"fractal\",\"props\":{\"kind\":\"mandelbrot\",\"zoom\":2000}}",
+  "combines_with": [
+    "fibonacci_spiral",
+    "chaos"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

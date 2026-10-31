@@ -1,0 +1,144 @@
+{
+  "id": "vector_ops",
+  "name": "Vector: phép cộng, tích vô hướng, tích có hướng, trường vector",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "linear_algebra",
+  "subtopic": "Vector · Vector Addition · Dot Product · Vector Projection · Cross Product · Vector Field",
+  "styles": [
+    "educational",
+    "minimalist",
+    "scientific",
+    "3d"
+  ],
+  "dimension": "2.5d",
+  "palette": "linear_algebra",
+  "description": "Vector trên lưới toạ độ. addition: a + b theo quy tắc nối đuôi rồi hình bình hành, kèm toạ độ. dot: b quay quanh a; hình chiếu của b lên a và a·b = |a||b|cos θ cập nhật trực tiếp (bằng 0 khi vuông góc, âm khi góc tù). cross: trong 3D, a × b vuông góc với cả hai và có độ dài bằng diện tích hình bình hành, đổi chiều khi b quét qua a. field: trường vector (xoáy, nguồn, yên ngựa) vẽ bằng mũi tên với các hạt trôi theo trường.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "vector",
+    "đại số tuyến tính",
+    "linear algebra"
+  ],
+  "keywords": [
+    "vector",
+    "véc tơ",
+    "cộng vector",
+    "vector addition",
+    "quy tắc hình bình hành",
+    "parallelogram rule",
+    "quy tắc ba điểm",
+    "tích vô hướng",
+    "dot product",
+    "hình chiếu",
+    "projection",
+    "góc giữa hai vector",
+    "vuông góc",
+    "tích có hướng",
+    "cross product",
+    "quy tắc bàn tay phải",
+    "right hand rule",
+    "diện tích hình bình hành",
+    "trường vector",
+    "vector field",
+    "đường dòng",
+    "divergence",
+    "curl",
+    "xoáy"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "addition",
+        "dot",
+        "cross",
+        "field"
+      ],
+      "default": "addition",
+      "description": "cảnh"
+    },
+    "field": {
+      "type": "string",
+      "enum": [
+        "vortex",
+        "source",
+        "saddle"
+      ],
+      "default": "vortex",
+      "description": "field: loại trường"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "công thức và chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "addition",
+      "name": "Cộng hai vector",
+      "props": {
+        "mode": "addition"
+      }
+    },
+    {
+      "id": "dot",
+      "name": "Tích vô hướng và hình chiếu",
+      "props": {
+        "mode": "dot"
+      }
+    },
+    {
+      "id": "cross",
+      "name": "Tích có hướng 3D",
+      "props": {
+        "mode": "cross"
+      }
+    },
+    {
+      "id": "vortex",
+      "name": "Trường vector xoáy",
+      "props": {
+        "mode": "field",
+        "field": "vortex"
+      }
+    },
+    {
+      "id": "source",
+      "name": "Trường vector nguồn",
+      "props": {
+        "mode": "field",
+        "field": "source"
+      }
+    }
+  ],
+  "cues": "addition: b trượt tới đầu a ở mốc 1, hình bình hành ở mốc 2; công thức theo mốc",
+  "accuracy": "Toạ độ và phép tính chính xác (tổng, tích vô hướng, hình chiếu, tích có hướng); hạt trong trường vector được tích phân theo hướng trường.",
+  "limitations": "Trường vector hiển thị hướng chuẩn hoá (độ dài mũi tên chỉ gợi ý độ lớn); phối cảnh 3D đơn giản.",
+  "example_usage": "{\"component\":\"vector_ops\",\"props\":{\"mode\":\"dot\"}}",
+  "combines_with": [
+    "matrix_transform",
+    "magnetism"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

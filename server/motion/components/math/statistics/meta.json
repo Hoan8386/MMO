@@ -1,0 +1,176 @@
+{
+  "id": "statistics",
+  "name": "Xác suất – thống kê: bảng Galton, phân phối chuẩn, hồi quy, luật số lớn, định lý Bayes",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "probability",
+  "subtopic": "Binomial Distribution · Normal Distribution · Central Limit Theorem · Histogram · Regression Line · Correlation · Law of Large Numbers · Bayes Theorem · Galton Board",
+  "styles": [
+    "educational",
+    "infographic",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "probability",
+  "description": "Xác suất và thống kê với dữ liệu sinh theo seed. galton: bi rơi qua bảng Galton, mỗi chốt nảy trái/phải xác suất ½, các ngăn đầy dần thành phân phối nhị thức và tiệm cận đường cong chuẩn (định lý giới hạn trung tâm). normal: phân phối chuẩn với quy tắc 68–95–99,7 tô lần lượt từng khoảng σ. regression: các điểm hiện dần quanh một xu hướng, đường bình phương tối thiểu xoay từ đường trung bình về độ dốc khớp nhất, phần dư hiện ra, kèm phương trình và hệ số tương quan r. lln: tỉ lệ mặt ngửa khi tung đồng xu hội tụ về ½ (luật số lớn). bayes: lưới 1 000 người — tỉ lệ mắc bệnh, dương tính thật và giả — và P(bệnh | dương tính) theo định lý Bayes.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "xác suất",
+    "probability",
+    "thống kê",
+    "statistics",
+    "dữ liệu",
+    "data"
+  ],
+  "keywords": [
+    "xác suất",
+    "probability",
+    "thống kê",
+    "statistics",
+    "bảng galton",
+    "galton board",
+    "phân phối nhị thức",
+    "binomial distribution",
+    "phân phối chuẩn",
+    "normal distribution",
+    "đường cong hình chuông",
+    "bell curve",
+    "độ lệch chuẩn",
+    "standard deviation",
+    "quy tắc 68 95 99.7",
+    "định lý giới hạn trung tâm",
+    "central limit theorem",
+    "hồi quy tuyến tính",
+    "linear regression",
+    "bình phương tối thiểu",
+    "least squares",
+    "hệ số tương quan",
+    "correlation",
+    "biểu đồ phân tán",
+    "scatter plot",
+    "luật số lớn",
+    "law of large numbers",
+    "tung đồng xu",
+    "coin flip",
+    "định lý bayes",
+    "bayes theorem",
+    "xác suất có điều kiện",
+    "conditional probability",
+    "dương tính giả",
+    "false positive"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "galton",
+        "normal",
+        "regression",
+        "lln",
+        "bayes"
+      ],
+      "default": "galton",
+      "description": "cảnh"
+    },
+    "count": {
+      "type": "integer",
+      "min": 20,
+      "max": 600,
+      "default": 300,
+      "description": "galton: số bi; regression: số điểm (≤ 60); lln: số lần tung ×4"
+    },
+    "prevalence": {
+      "type": "number",
+      "min": 0.001,
+      "max": 0.5,
+      "default": 0.01,
+      "description": "bayes: tỉ lệ mắc bệnh"
+    },
+    "sensitivity": {
+      "type": "number",
+      "min": 0.5,
+      "max": 1,
+      "default": 0.99,
+      "description": "bayes: độ nhạy (người bệnh có kết quả dương)"
+    },
+    "falsePositive": {
+      "type": "number",
+      "min": 0,
+      "max": 0.3,
+      "default": 0.05,
+      "description": "bayes: tỉ lệ dương tính giả"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "galton",
+      "name": "Bảng Galton và phân phối chuẩn",
+      "props": {
+        "mode": "galton"
+      }
+    },
+    {
+      "id": "normal",
+      "name": "Quy tắc 68–95–99,7",
+      "props": {
+        "mode": "normal"
+      }
+    },
+    {
+      "id": "regression",
+      "name": "Hồi quy tuyến tính",
+      "props": {
+        "mode": "regression",
+        "count": 40
+      }
+    },
+    {
+      "id": "lln",
+      "name": "Luật số lớn: tung đồng xu",
+      "props": {
+        "mode": "lln",
+        "count": 250
+      }
+    },
+    {
+      "id": "bayes",
+      "name": "Định lý Bayes: xét nghiệm y tế",
+      "props": {
+        "mode": "bayes"
+      }
+    }
+  ],
+  "cues": "các bước / khoảng σ / chú thích theo mốc",
+  "accuracy": "Mô phỏng ngẫu nhiên có seed (bảng Galton 12 hàng, tung đồng xu), mật độ chuẩn chính xác, hồi quy bình phương tối thiểu và r tính từ dữ liệu hiển thị, xác suất hậu nghiệm theo Bayes với số người làm tròn.",
+  "limitations": "Dữ liệu là minh hoạ sinh ngẫu nhiên, không phải số liệu thật; bảng Galton bỏ qua va chạm giữa các bi.",
+  "example_usage": "{\"component\":\"statistics\",\"props\":{\"mode\":\"bayes\",\"prevalence\":0.01}}",
+  "combines_with": [
+    "monte_carlo_pi",
+    "data_chart"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

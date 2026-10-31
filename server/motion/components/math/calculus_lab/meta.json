@@ -1,0 +1,171 @@
+{
+  "id": "calculus_lab",
+  "name": "Giải tích: chuỗi Taylor, trường hướng, giới hạn, thể tích khối tròn xoay",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "calculus",
+  "subtopic": "Taylor Approximation · Differential Equation · Slope Field · Limit Visualization · Volume of Revolution · Disc Method",
+  "styles": [
+    "educational",
+    "scientific",
+    "minimalist"
+  ],
+  "dimension": "2d",
+  "palette": "calculus",
+  "description": "Giải tích. taylor: hàm số và các đa thức Taylor quanh 0 thêm từng số hạng — đa thức bám sát hàm trên khoảng ngày càng rộng (sin x, eˣ, ln(1 + x) — chuỗi này chỉ hội tụ khi |x| < 1), công thức đa thức cập nhật. slope_field: trường hướng của phương trình vi phân dy/dx = f(x, y) (logistic, phân rã, x − y) với các đường nghiệm giải bằng RK4 từ nhiều điểm đầu. limit: sin x / x khi x → 0 — hai điểm trượt về lỗ hổng tại 0 trong khi bảng giá trị tiến về 1. revolution: thể tích khối tròn xoay bằng phương pháp đĩa — y = √x quay quanh Ox, tổng các đĩa πf(x)²Δx tăng dần số đĩa và so sánh với tích phân chính xác 8π.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "giải tích",
+    "calculus"
+  ],
+  "keywords": [
+    "chuỗi taylor",
+    "taylor series",
+    "khai triển taylor",
+    "đa thức taylor",
+    "maclaurin",
+    "xấp xỉ hàm số",
+    "approximation",
+    "phương trình vi phân",
+    "differential equation",
+    "trường hướng",
+    "slope field",
+    "direction field",
+    "tăng trưởng logistic",
+    "logistic growth",
+    "phân rã mũ",
+    "giới hạn",
+    "limit",
+    "sin x trên x",
+    "giới hạn đặc biệt",
+    "thể tích khối tròn xoay",
+    "volume of revolution",
+    "phương pháp đĩa",
+    "disc method",
+    "tích phân",
+    "integral"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "taylor",
+        "slope_field",
+        "limit",
+        "revolution"
+      ],
+      "default": "taylor",
+      "description": "cảnh"
+    },
+    "fn": {
+      "type": "string",
+      "enum": [
+        "sin",
+        "exp",
+        "ln1p"
+      ],
+      "default": "sin",
+      "description": "taylor: hàm số"
+    },
+    "ode": {
+      "type": "string",
+      "enum": [
+        "logistic",
+        "decay",
+        "xy"
+      ],
+      "default": "logistic",
+      "description": "slope_field: phương trình"
+    },
+    "terms": {
+      "type": "integer",
+      "min": 1,
+      "max": 12,
+      "default": 7,
+      "description": "taylor: số số hạng khác 0 tối đa"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "taylor_sin",
+      "name": "Chuỗi Taylor của sin x",
+      "props": {
+        "mode": "taylor",
+        "fn": "sin"
+      }
+    },
+    {
+      "id": "taylor_exp",
+      "name": "Chuỗi Taylor của eˣ",
+      "props": {
+        "mode": "taylor",
+        "fn": "exp",
+        "terms": 6
+      }
+    },
+    {
+      "id": "taylor_ln",
+      "name": "ln(1 + x): bán kính hội tụ",
+      "props": {
+        "mode": "taylor",
+        "fn": "ln1p",
+        "terms": 9
+      }
+    },
+    {
+      "id": "logistic",
+      "name": "Trường hướng: tăng trưởng logistic",
+      "props": {
+        "mode": "slope_field",
+        "ode": "logistic"
+      }
+    },
+    {
+      "id": "limit",
+      "name": "Giới hạn sin x / x",
+      "props": {
+        "mode": "limit"
+      }
+    },
+    {
+      "id": "revolution",
+      "name": "Thể tích khối tròn xoay (phương pháp đĩa)",
+      "props": {
+        "mode": "revolution"
+      }
+    }
+  ],
+  "cues": "chú thích theo mốc; số hạng / đường nghiệm / số đĩa tăng dần trong clip",
+  "accuracy": "Hệ số Taylor chính xác; nghiệm phương trình vi phân bằng RK4 (400 bước); giá trị sin x / x tính trực tiếp; tổng đĩa theo quy tắc trung điểm so với tích phân giải tích 8π.",
+  "limitations": "Hình đĩa vẽ dạng hình chữ nhật có viền elip (gợi 3D); công thức đa thức dài được cắt bớt khi quá dài.",
+  "example_usage": "{\"component\":\"calculus_lab\",\"props\":{\"mode\":\"taylor\",\"fn\":\"exp\"}}",
+  "combines_with": [
+    "function_graph",
+    "fourier_series"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

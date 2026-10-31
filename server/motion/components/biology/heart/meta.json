@@ -1,0 +1,146 @@
+{
+  "id": "heart",
+  "name": "Tim và hệ tuần hoàn: chu kỳ tim, van tim, điện tâm đồ",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "human_biology",
+  "subtopic": "Heart · Heart Chamber · Heart Valve · Heartbeat · Cardiac Cycle · ECG · Blood Flow · Circulation · Pulmonary Circulation · Systemic Circulation",
+  "styles": [
+    "educational",
+    "scientific",
+    "organic"
+  ],
+  "dimension": "2d",
+  "palette": "human_biology",
+  "description": "Tim và tuần hoàn. heart: mặt cắt tim bốn ngăn; chu kỳ tim theo nhịp đặt sẵn — tâm nhĩ co, tâm thất co, tâm trương — thành tim co bóp, van nhĩ–thất và van động mạch mở đóng đúng thời điểm, máu (xanh bên phải, đỏ bên trái) chảy qua theo pha, dòng chữ mô tả pha hiện tại, điện tâm đồ (sóng P, phức bộ QRS, sóng T) vẽ đồng bộ. circulation: tuần hoàn kép — vòng phổi (tim → phổi → tim, máu chuyển đỏ) và vòng cơ thể (tim → cơ quan → tim, máu chuyển xanh) với dòng tế bào máu chạy vòng.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "cơ thể người",
+    "human body",
+    "tim",
+    "heart",
+    "tuần hoàn",
+    "circulation"
+  ],
+  "keywords": [
+    "tim",
+    "trái tim",
+    "heart",
+    "cấu tạo tim",
+    "tâm nhĩ",
+    "atrium",
+    "tâm thất",
+    "ventricle",
+    "van tim",
+    "heart valve",
+    "van hai lá",
+    "van ba lá",
+    "van động mạch chủ",
+    "chu kỳ tim",
+    "cardiac cycle",
+    "nhịp tim",
+    "heartbeat",
+    "tâm thu",
+    "systole",
+    "tâm trương",
+    "diastole",
+    "điện tâm đồ",
+    "ecg",
+    "ekg",
+    "sóng qrs",
+    "tuần hoàn máu",
+    "blood circulation",
+    "vòng tuần hoàn lớn",
+    "vòng tuần hoàn nhỏ",
+    "tuần hoàn phổi",
+    "pulmonary circulation",
+    "động mạch",
+    "artery",
+    "tĩnh mạch",
+    "vein",
+    "động mạch chủ",
+    "aorta"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "heart",
+        "circulation"
+      ],
+      "default": "heart",
+      "description": "cảnh"
+    },
+    "bpm": {
+      "type": "integer",
+      "min": 40,
+      "max": 180,
+      "default": 72,
+      "description": "nhịp tim (chiếu chậm 2 lần)"
+    },
+    "ecg": {
+      "type": "boolean",
+      "default": true,
+      "description": "heart: điện tâm đồ"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "nhãn các ngăn / cơ quan"
+    }
+  },
+  "variants": [
+    {
+      "id": "heart",
+      "name": "Chu kỳ tim và điện tâm đồ",
+      "props": {
+        "mode": "heart"
+      }
+    },
+    {
+      "id": "fast",
+      "name": "Tim đập nhanh (vận động)",
+      "props": {
+        "mode": "heart",
+        "bpm": 140,
+        "labels": false
+      }
+    },
+    {
+      "id": "circulation",
+      "name": "Hai vòng tuần hoàn",
+      "props": {
+        "mode": "circulation"
+      }
+    }
+  ],
+  "cues": "nhãn các ngăn / cơ quan theo mốc; điện tâm đồ hiện từ đầu",
+  "accuracy": "Thứ tự pha của chu kỳ tim và thời điểm đóng mở van theo sinh lý chuẩn; ECG tổng hợp từ các sóng P, QRS, T đúng thứ tự và tỉ lệ thời gian; máu nghèo O₂ ở tim phải, giàu O₂ ở tim trái.",
+  "limitations": "Hình mặt cắt sơ đồ (không phải giải phẫu chính xác), chiếu chậm 2 lần; ECG là dạng sóng tổng hợp minh hoạ, không phải bản ghi thật.",
+  "example_usage": "{\"component\":\"heart\",\"props\":{\"mode\":\"heart\",\"bpm\":72}}",
+  "combines_with": [
+    "immune",
+    "neuron_signal",
+    "cell"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

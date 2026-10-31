@@ -1,0 +1,145 @@
+{
+  "id": "complex_plane",
+  "name": "Đường tròn lượng giác và số phức: sin/cos, công thức Euler, phép nhân, căn của đơn vị",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "algebra",
+  "subtopic": "Unit Circle · Trigonometric Function · Complex Number · Complex Plane · Euler's Formula · Roots of Unity · Identity Visualization",
+  "styles": [
+    "educational",
+    "minimalist",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "algebra",
+  "description": "Lượng giác và số phức. unit_circle: một điểm chạy trên đường tròn đơn vị, hình chiếu là cos θ và sin θ, trải ra bên phải thành hai sóng (cung góc tính bằng radian), số đo trực tiếp. euler: e^{iθ} là tổng chuỗi 1 + iθ + (iθ)²/2! + … — mỗi số hạng quay thêm 90° và nhỏ dần, tổng riêng xoắn về đúng điểm trên đường tròn; với θ = π dừng ở −1 (e^{iπ} + 1 = 0). multiply: z·w quay z một góc arg w và co giãn theo |w| (góc cộng, độ dài nhân). roots: n căn bậc n của 1 là các đỉnh đa giác đều trên đường tròn đơn vị.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "lượng giác",
+    "trigonometry",
+    "số phức",
+    "complex numbers"
+  ],
+  "keywords": [
+    "đường tròn lượng giác",
+    "đường tròn đơn vị",
+    "unit circle",
+    "sin",
+    "cos",
+    "sine",
+    "cosine",
+    "radian",
+    "hàm lượng giác",
+    "trigonometric functions",
+    "sóng sin",
+    "số phức",
+    "complex number",
+    "mặt phẳng phức",
+    "complex plane",
+    "phần thực",
+    "phần ảo",
+    "môđun",
+    "acgumen",
+    "công thức euler",
+    "euler's formula",
+    "đồng nhất thức euler",
+    "e mũ i pi",
+    "euler identity",
+    "chuỗi taylor của e",
+    "nhân số phức",
+    "complex multiplication",
+    "căn bậc n của đơn vị",
+    "roots of unity",
+    "đa giác đều"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "unit_circle",
+        "euler",
+        "multiply",
+        "roots"
+      ],
+      "default": "unit_circle",
+      "description": "cảnh"
+    },
+    "theta": {
+      "type": "number",
+      "min": 0.3,
+      "max": 6.28,
+      "default": 3.14159,
+      "description": "euler: góc θ (π = 3,14159)"
+    },
+    "n": {
+      "type": "integer",
+      "min": 3,
+      "max": 12,
+      "default": 6,
+      "description": "roots: bậc n"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "công thức và kết luận"
+    }
+  },
+  "variants": [
+    {
+      "id": "unit_circle",
+      "name": "Đường tròn lượng giác sinh ra sin và cos",
+      "props": {
+        "mode": "unit_circle"
+      }
+    },
+    {
+      "id": "euler",
+      "name": "Công thức Euler e^{iπ} + 1 = 0",
+      "props": {
+        "mode": "euler"
+      }
+    },
+    {
+      "id": "multiply",
+      "name": "Nhân số phức: quay và co giãn",
+      "props": {
+        "mode": "multiply"
+      }
+    },
+    {
+      "id": "roots",
+      "name": "Căn bậc 6 của đơn vị",
+      "props": {
+        "mode": "roots"
+      }
+    }
+  ],
+  "cues": "công thức hiện ở các mốc; multiply: phép nhân bắt đầu ở mốc 1",
+  "accuracy": "Toán học chính xác: hình chiếu cos/sin, 16 số hạng đầu của chuỗi e^{iθ} (sai số < 10⁻⁶ với θ = π), phép nhân theo dạng lượng giác, nghiệm e^{2πik/n}.",
+  "limitations": "Không có — các hình là minh hoạ chính xác của công thức (giới hạn ở góc và bậc trong miền tham số).",
+  "example_usage": "{\"component\":\"complex_plane\",\"props\":{\"mode\":\"euler\"}}",
+  "combines_with": [
+    "function_graph",
+    "fourier_series"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

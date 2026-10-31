@@ -1,0 +1,148 @@
+{
+  "id": "virus",
+  "name": "Virus: vỏ capsid, virus có vỏ bọc, thể thực khuẩn, chu trình nhân lên",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "microbiology",
+  "subtopic": "Virus · Viral Capsid · Viral Envelope · Spike Protein · Bacteriophage · Viral Replication",
+  "styles": [
+    "3d",
+    "scientific",
+    "educational",
+    "organic"
+  ],
+  "dimension": "3d",
+  "palette": "microbiology",
+  "description": "Virus. capsid: vỏ capsid hình 20 mặt (icosahedron) xoay 3D, các đơn vị protein (capsomere) trên mỗi mặt, vật chất di truyền cuộn bên trong nhìn xuyên qua. enveloped: hạt virus kiểu corona — vỏ ngoài lipid, protein gai phân bố đều trên mặt cầu (xoắn vàng), vẽ đúng thứ tự trước sau khi xoay, protein màng. phage: thể thực khuẩn đáp xuống vi khuẩn bằng các sợi đuôi, bao đuôi co lại và bơm ADN vào. cycle: chu trình nhân lên trên tế bào chủ — bám thụ thể, xâm nhập (nhập bào), cởi vỏ, nhân bản ARN và tổng hợp protein, lắp ráp, giải phóng bằng nảy chồi; danh sách bước sáng lần lượt.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "vi sinh vật",
+    "microbiology",
+    "virus",
+    "bệnh truyền nhiễm"
+  ],
+  "keywords": [
+    "virus",
+    "vi rút",
+    "cấu tạo virus",
+    "virus structure",
+    "vỏ capsid",
+    "capsid",
+    "capsomere",
+    "virus có vỏ bọc",
+    "enveloped virus",
+    "protein gai",
+    "spike protein",
+    "coronavirus",
+    "sars-cov-2",
+    "covid",
+    "cúm",
+    "influenza",
+    "thể thực khuẩn",
+    "bacteriophage",
+    "phage",
+    "virus kí sinh vi khuẩn",
+    "chu trình nhân lên của virus",
+    "viral replication",
+    "nhân lên",
+    "xâm nhập tế bào",
+    "thụ thể",
+    "receptor",
+    "nảy chồi",
+    "budding",
+    "chu trình tan",
+    "lytic cycle"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "capsid",
+        "enveloped",
+        "phage",
+        "cycle"
+      ],
+      "default": "enveloped",
+      "description": "cảnh"
+    },
+    "spikes": {
+      "type": "integer",
+      "min": 20,
+      "max": 120,
+      "default": 60,
+      "description": "enveloped: số protein gai"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "enveloped",
+      "name": "Virus có vỏ bọc và protein gai (corona)",
+      "props": {
+        "kind": "enveloped"
+      },
+      "keywords": [
+        "corona",
+        "covid"
+      ]
+    },
+    {
+      "id": "capsid",
+      "name": "Vỏ capsid hình 20 mặt",
+      "props": {
+        "kind": "capsid"
+      }
+    },
+    {
+      "id": "phage",
+      "name": "Thể thực khuẩn bơm ADN vào vi khuẩn",
+      "props": {
+        "kind": "phage"
+      },
+      "keywords": [
+        "bacteriophage"
+      ]
+    },
+    {
+      "id": "cycle",
+      "name": "Chu trình nhân lên của virus",
+      "props": {
+        "kind": "cycle"
+      },
+      "duration": 14
+    }
+  ],
+  "cues": "phage: đáp, co đuôi, bơm ADN ở các mốc 0–2; cycle: 6 bước ở 6 mốc; chú thích theo mốc",
+  "accuracy": "Hình học icosahedron chính xác (12 đỉnh, 20 mặt, 3 đơn vị mỗi mặt kiểu T = 1); gai phân bố đều bằng xoắn ốc Fibonacci trên cầu; cấu tạo thể thực khuẩn T4 (đầu, cổ, bao đuôi co, tấm gốc, sợi đuôi) và chu trình nhân lên của virus có vỏ bọc theo giáo trình.",
+  "limitations": "Hình minh hoạ, không đúng tỉ lệ (virus nhỏ hơn tế bào hàng trăm lần); số gai và capsomere đơn giản hoá; chu trình là sơ đồ chung, chi tiết khác nhau tuỳ loại virus.",
+  "example_usage": "{\"component\":\"virus\",\"props\":{\"kind\":\"cycle\"}}",
+  "combines_with": [
+    "cell",
+    "immune",
+    "bacterium"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "scale_comparison",
+  "name": "So sánh kích thước các hành tinh đúng tỉ lệ",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Space Scale Comparison · Planet Size · Dwarf Planets · Moons",
+  "styles": ["educational", "3d", "cinematic"],
+  "dimension": "3d",
+  "palette": "solar_system",
+  "description": "Các hành tinh (hoặc vệ tinh, hành tinh lùn) xếp hàng theo đúng tỉ lệ bán kính thật, mỗi cái là một quả cầu tự quay với bề mặt của component planet; tuỳ chọn rìa Mặt Trời phía sau ở cùng tỉ lệ để thấy Mặt Trời lớn thế nào. Camera lia dọc hàng; tên và đường kính dưới mỗi thiên thể.",
+  "tags": ["vũ trụ", "space", "astronomy", "hành tinh", "planet", "kích thước", "scale"],
+  "keywords": [
+    "so sánh kích thước hành tinh", "planet size comparison", "kích thước thật", "to scale", "tỉ lệ hệ mặt trời", "sao mộc lớn cỡ nào", "trái đất nhỏ bé",
+    "mặt trời lớn cỡ nào", "hành tinh lùn", "dwarf planets", "vệ tinh lớn nhất", "largest moons", "ganymede", "đường kính"
+  ],
+  "duration": { "default": 12, "min": 5, "max": 40 },
+  "common": "all",
+  "inputs": {
+    "title": { "type": "string", "maxLength": 48, "default": "", "description": "tiêu đề góc trên" },
+    "set": { "type": "string", "enum": ["planets", "rocky", "moons", "dwarfs"], "default": "planets", "description": "nhóm thiên thể" },
+    "sun": { "type": "boolean", "default": true, "description": "rìa Mặt Trời ở cùng tỉ lệ" },
+    "labels": { "type": "boolean", "default": true, "description": "tên và đường kính" }
+  },
+  "variants": [
+    { "id": "planets", "name": "Tám hành tinh và Mặt Trời", "props": { "set": "planets" } },
+    { "id": "rocky", "name": "Các hành tinh đá và Mặt Trăng", "props": { "set": "rocky", "sun": false } },
+    { "id": "moons", "name": "Các vệ tinh lớn nhất", "props": { "set": "moons", "sun": false } },
+    { "id": "dwarfs", "name": "Trái Đất, Mặt Trăng, Pluto, Charon", "props": { "set": "dwarfs", "sun": false } }
+  ],
+  "cues": "camera lia dọc hàng suốt clip",
+  "accuracy": "Bán kính trung bình theo NASA, cùng một tỉ lệ px/km cho mọi thiên thể (kể cả rìa Mặt Trời 696 000 km).",
+  "limitations": "Khoảng cách giữa các thiên thể không theo tỉ lệ; thiên thể rất nhỏ được vẽ tối thiểu 2 px; bề mặt là texture thủ tục.",
+  "example_usage": "{\"component\":\"scale_comparison\",\"props\":{\"set\":\"planets\"}}",
+  "combines_with": ["planet", "solar_orbit"],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": ["png-sequence", "webm-alpha"],
+  "status": "dev"
+}

@@ -12,6 +12,8 @@ export interface RasterProps extends NodeProps {
   res?: number;
   paint: Paint;
   smoothing?: boolean;
+  // Paint once and reuse (static pictures: planetary rings, a fixed field map).
+  once?: boolean;
 }
 
 export class Raster extends Node {
@@ -21,6 +23,8 @@ export class Raster extends Node {
   private readonly rows: number;
   private readonly paint: Paint;
   private readonly smoothing: boolean;
+  private readonly once: boolean;
+  private painted = false;
   private canvas: HTMLCanvasElement | null = null;
 
   public constructor(props: RasterProps) {
@@ -31,6 +35,7 @@ export class Raster extends Node {
     this.rows = Math.max(2, Math.round((this.cols * props.h) / props.w));
     this.paint = props.paint;
     this.smoothing = props.smoothing ?? true;
+    this.once = props.once ?? false;
   }
 
   protected override draw(context: CanvasRenderingContext2D) {
@@ -39,10 +44,13 @@ export class Raster extends Node {
       this.canvas.width = this.cols;
       this.canvas.height = this.rows;
     }
-    const g = this.canvas.getContext("2d")!;
-    const img = g.createImageData(this.cols, this.rows);
-    this.paint(img.data, this.cols, this.rows);
-    g.putImageData(img, 0, 0);
+    if (!this.once || !this.painted) {
+      const g = this.canvas.getContext("2d")!;
+      const img = g.createImageData(this.cols, this.rows);
+      this.paint(img.data, this.cols, this.rows);
+      g.putImageData(img, 0, 0);
+      this.painted = true;
+    }
     context.save();
     context.imageSmoothingEnabled = this.smoothing;
     context.imageSmoothingQuality = "high";

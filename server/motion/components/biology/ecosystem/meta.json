@@ -1,0 +1,134 @@
+{
+  "id": "ecosystem",
+  "name": "Hệ sinh thái: thú săn – con mồi, tháp năng lượng, lưới thức ăn",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "ecology",
+  "subtopic": "Ecosystem · Predator-Prey · Lotka-Volterra · Population Dynamics · Food Chain · Food Web · Energy Pyramid · Ecosystem Energy Flow",
+  "styles": [
+    "educational",
+    "infographic",
+    "scientific",
+    "organic"
+  ],
+  "dimension": "2d",
+  "palette": "ecology",
+  "description": "Sinh thái học. predator_prey: phương trình Lotka–Volterra dx/dt = αx − βxy, dy/dt = δxy − γy giải bằng RK4 — thỏ và cáo là các biểu tượng trên đồng cỏ với số lượng theo nghiệm, hai đường quần thể dao động lệch pha (thú săn trễ sau con mồi), quỹ đạo khép kín trên mặt phẳng pha. pyramid: tháp năng lượng từ sinh vật sản xuất tới thú săn đầu bảng, chỉ ~10 % năng lượng truyền lên mỗi bậc, phần còn lại mất dưới dạng nhiệt. food_web: lưới thức ăn — các loài hiện dần và mũi tên dòng năng lượng nối từ thức ăn tới kẻ ăn, có xung năng lượng chạy dọc mũi tên.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "sinh thái",
+    "ecology",
+    "hệ sinh thái",
+    "ecosystem"
+  ],
+  "keywords": [
+    "hệ sinh thái",
+    "ecosystem",
+    "quan hệ vật ăn thịt con mồi",
+    "predator prey",
+    "lotka volterra",
+    "biến động quần thể",
+    "population dynamics",
+    "quần thể",
+    "population",
+    "chuỗi thức ăn",
+    "food chain",
+    "lưới thức ăn",
+    "food web",
+    "tháp năng lượng",
+    "energy pyramid",
+    "tháp sinh thái",
+    "quy tắc 10%",
+    "10 percent rule",
+    "sinh vật sản xuất",
+    "producer",
+    "sinh vật tiêu thụ",
+    "consumer",
+    "bậc dinh dưỡng",
+    "trophic level",
+    "dòng năng lượng",
+    "energy flow"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "predator_prey",
+        "pyramid",
+        "food_web"
+      ],
+      "default": "predator_prey",
+      "description": "cảnh"
+    },
+    "prey0": {
+      "type": "number",
+      "min": 10,
+      "max": 100,
+      "default": 40,
+      "description": "predator_prey: số con mồi ban đầu"
+    },
+    "predators0": {
+      "type": "number",
+      "min": 2,
+      "max": 40,
+      "default": 9,
+      "description": "predator_prey: số thú săn ban đầu"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích (predator_prey); tháp và lưới luôn hiện dần"
+    }
+  },
+  "variants": [
+    {
+      "id": "predator_prey",
+      "name": "Quan hệ thú săn – con mồi (Lotka–Volterra)",
+      "props": {
+        "mode": "predator_prey"
+      }
+    },
+    {
+      "id": "pyramid",
+      "name": "Tháp năng lượng (quy tắc 10 %)",
+      "props": {
+        "mode": "pyramid"
+      }
+    },
+    {
+      "id": "food_web",
+      "name": "Lưới thức ăn",
+      "props": {
+        "mode": "food_web"
+      }
+    }
+  ],
+  "cues": "mỗi bậc tháp / mỗi loài trong lưới / mỗi chú thích ở một mốc",
+  "accuracy": "Lotka–Volterra cổ điển (α = 1,1; β = 0,04; δ = 0,01; γ = 0,4) tích phân RK4, quỹ đạo pha khép kín; hiệu suất sinh thái ~10 % mỗi bậc (10 000 → 1 000 → 100 → 10 kcal); quan hệ ăn trong lưới là ví dụ điển hình.",
+  "limitations": "Mô hình Lotka–Volterra không có sức chứa môi trường hay yếu tố ngẫu nhiên; biểu tượng loài đơn giản, số lượng hiển thị là tỉ lệ của nghiệm; con số năng lượng là minh hoạ.",
+  "example_usage": "{\"component\":\"ecosystem\",\"props\":{\"mode\":\"predator_prey\"}}",
+  "combines_with": [
+    "natural_selection",
+    "photosynthesis"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

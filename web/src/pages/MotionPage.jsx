@@ -328,7 +328,17 @@ function MotionDetail({ item: c, topics, initialTopic, onClose, onChanged, long 
       setError(e.message);
     }
   }
-  const webm = c.preview?.find((p) => p.endsWith(".webm"));
+  // Variants: ready-made configurations, each with its own tested preview.
+  const [variant, setVariant] = useState("");
+  const V = (c.variants || []).find((v) => v.id === variant);
+  const pickVariant = (v) => {
+    setVariant(v ? v.id : "");
+    setTrial(null);
+    setJson(JSON.stringify(v ? v.props : c.example?.props || {}, null, 2));
+    setDuration(v?.duration || c.example?.duration || c.duration.default);
+  };
+  const vWebm = V?.preview?.find((p) => p.endsWith(".webm"));
+  const webm = vWebm ? `/motion-${vWebm}` : c.preview?.find((p) => p.endsWith(".webm"));
   const tall = trial && trial.height > trial.width;
 
   return (
@@ -340,7 +350,19 @@ function MotionDetail({ item: c, topics, initialTopic, onClose, onChanged, long 
             <div className={`motion-player ${tall ? "tall" : ""}`}>
               {trial ? <video key={trial.url} src={trial.url} controls autoPlay loop muted playsInline /> : webm ? <video src={webm} controls autoPlay loop muted playsInline /> : <div className="thumb-fallback">Chưa có bản xem trước</div>}
             </div>
-            <p className="muted small">{trial ? `Bản render thử · ${trial.width}×${trial.height}` : "Bản xem trước từ cấu hình mẫu (kiểm thử)."}</p>
+            <p className="muted small">{trial ? `Bản render thử · ${trial.width}×${trial.height}` : V ? `Biến thể "${V.name}" (đã kiểm thử).` : "Bản xem trước từ cấu hình mẫu (kiểm thử)."}</p>
+            {(c.variants || []).length > 0 && (
+              <div className="variant-chips">
+                <span className="muted small">Biến thể ({c.variants.length}):</span>
+                <button className={`chip ${!variant ? "active" : ""}`} onClick={() => pickVariant(null)}>Mẫu</button>
+                {c.variants.map((v) => (
+                  <button key={v.id} className={`chip ${variant === v.id ? "active" : ""}`} onClick={() => pickVariant(v)} title={JSON.stringify(v.props)}>
+                    {v.name}
+                    {!v.preview && " ·"}
+                  </button>
+                ))}
+              </div>
+            )}
 
             <CommonControls inputs={c.inputs} json={json} setJson={setJson} />
             <h3 className="detail-h3">Tham số (JSON)</h3>
@@ -518,6 +540,19 @@ function LongLibrary({ items, onOpen }) {
               {(pal.series || []).map((c, i) => <i key={i} className="small" title={c} style={{ background: c }} />)}
             </span>
           </div>
+          {(D.themes || []).length > 0 && (
+            <div className="theme-strip" title="Theme có tên của lĩnh vực — đặt props.palette = id">
+              {D.themes.map((t) => (
+                <span key={t.id} className="theme-chip" style={{ background: `linear-gradient(135deg, ${t.bg}, ${t.bg2})` }}>
+                  <i style={{ background: t.primary }} />
+                  <i style={{ background: t.secondary }} />
+                  <i style={{ background: t.accent }} />
+                  <b style={{ color: t.ink }}>{t.name}</b>
+                  <code>{t.id}</code>
+                </span>
+              ))}
+            </div>
+          )}
           <div className="lib-toolbar">
             <select className="lib-select" value={style} onChange={(e) => setStyle(e.target.value)}>
               <option value="">Mọi phong cách</option>
@@ -585,7 +620,7 @@ function LongMatchBox({ items, onOpen }) {
 }
 
 // Shared knobs of the science components (registry/common.mjs) as controls that edit the props JSON.
-const COMMON_LABEL = { palette: "Bảng màu", mode: "Nền", backdrop: "Phông nền", speed: "Tốc độ", scale: "Cỡ", easing: "Chuyển bước", camera: "Camera" };
+const COMMON_LABEL = { palette: "Bảng màu / theme", visual: "Phong cách", mode: "Nền", backdrop: "Phông nền", quality: "Chất lượng", speed: "Tốc độ", scale: "Cỡ", easing: "Chuyển bước", camera: "Camera", seed: "Seed" };
 function CommonControls({ inputs, json, setJson }) {
   const keys = Object.keys(COMMON_LABEL).filter((k) => inputs[k]);
   if (!keys.length) return null;
@@ -609,7 +644,7 @@ function CommonControls({ inputs, json, setJson }) {
               </select>
             ) : (
               <span className="range">
-                <input type="range" min={spec.min} max={spec.max} step={0.05} value={v} onChange={(e) => set(k, Number(e.target.value))} />
+                <input type="range" min={spec.min} max={spec.type === "integer" ? Math.min(spec.max, 200) : spec.max} step={spec.type === "integer" ? 1 : 0.05} value={v} onChange={(e) => set(k, Number(e.target.value))} />
                 <b>{Number(v).toFixed(2)}</b>
               </span>
             )}

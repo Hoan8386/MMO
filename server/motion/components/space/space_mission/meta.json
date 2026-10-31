@@ -1,0 +1,172 @@
+{
+  "id": "space_mission",
+  "name": "Sứ mệnh không gian: phóng, quỹ đạo, hạ cánh",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "space_exploration",
+  "subtopic": "Rocket Launch · Stage Separation · Orbital Insertion · Hohmann Transfer · Satellite Orbit · Gravity Assist · Mars Landing · Sky Crane",
+  "styles": [
+    "cinematic",
+    "scientific",
+    "educational",
+    "infographic"
+  ],
+  "dimension": "2.5d",
+  "palette": "space_exploration",
+  "description": "Các cảnh bay vũ trụ. launch: tên lửa hai tầng rời bệ phóng (lửa động cơ có kim cương sóng xung kích, khói cuộn quanh bệ, quay dần theo lực hấp dẫn, tách tầng 1 rơi lại, bỏ chóp bảo vệ), bầu trời tối dần theo độ cao, bảng đo xa (thời gian T+, độ cao, vận tốc, gia tốc g) tính từ phương trình tên lửa với số liệu kiểu Falcon 9; hohmann: chuyển từ quỹ đạo thấp LEO lên địa tĩnh GEO bằng hai lần đốt, Δv và thời gian bay tính từ phương trình vis-viva, vệ tinh chạy trên elip theo định luật Kepler; satellites: ISS, quỹ đạo cực, GPS, địa tĩnh chạy với tốc độ góc theo định luật 3 Kepler; gravity_assist: tàu thăm dò lượn qua hành tinh đang chuyển động, sơ đồ vector cho thấy vì sao tàu nhanh lên; landing: chuỗi vào khí quyển – hạ cánh Sao Hỏa (tấm chắn nhiệt nóng rực, dù siêu thanh, thả tấm chắn, động cơ hãm và cần cẩu bay hạ xe tự hành).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "tên lửa",
+    "rocket",
+    "khám phá không gian",
+    "space exploration",
+    "vệ tinh",
+    "satellite"
+  ],
+  "keywords": [
+    "phóng tên lửa",
+    "rocket launch",
+    "tách tầng",
+    "stage separation",
+    "lực đẩy",
+    "thrust",
+    "phương trình tên lửa",
+    "rocket equation",
+    "quỹ đạo",
+    "orbit",
+    "đưa vào quỹ đạo",
+    "orbital insertion",
+    "chuyển quỹ đạo hohmann",
+    "hohmann transfer",
+    "quỹ đạo địa tĩnh",
+    "geostationary",
+    "quỹ đạo thấp",
+    "low earth orbit",
+    "vệ tinh nhân tạo",
+    "trạm vũ trụ quốc tế",
+    "iss",
+    "gps",
+    "quỹ đạo cực",
+    "polar orbit",
+    "hỗ trợ trọng lực",
+    "gravity assist",
+    "súng cao su hấp dẫn",
+    "slingshot",
+    "voyager",
+    "hạ cánh sao hỏa",
+    "mars landing",
+    "7 phút kinh hoàng",
+    "seven minutes of terror",
+    "cần cẩu bay",
+    "sky crane",
+    "perseverance",
+    "curiosity",
+    "xe tự hành",
+    "rover",
+    "tấm chắn nhiệt",
+    "heat shield",
+    "dù hãm",
+    "parachute"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mission": {
+      "type": "string",
+      "enum": [
+        "launch",
+        "hohmann",
+        "gravity_assist",
+        "satellites",
+        "landing"
+      ],
+      "default": "launch",
+      "description": "cảnh"
+    },
+    "timeScale": {
+      "type": "number",
+      "min": 5,
+      "max": 40,
+      "default": 20,
+      "description": "launch: số giây sứ mệnh mỗi giây video; satellites: tốc độ thời gian"
+    },
+    "telemetry": {
+      "type": "boolean",
+      "default": true,
+      "description": "bảng đo xa (launch, landing)"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích các giai đoạn"
+    }
+  },
+  "variants": [
+    {
+      "id": "launch",
+      "name": "Phóng tên lửa và tách tầng",
+      "props": {
+        "mission": "launch"
+      },
+      "duration": 14
+    },
+    {
+      "id": "hohmann",
+      "name": "Chuyển quỹ đạo Hohmann LEO → GEO",
+      "props": {
+        "mission": "hohmann",
+        "backdrop": "full"
+      }
+    },
+    {
+      "id": "satellites",
+      "name": "Các loại quỹ đạo vệ tinh",
+      "props": {
+        "mission": "satellites"
+      }
+    },
+    {
+      "id": "gravity_assist",
+      "name": "Hỗ trợ trọng lực (súng cao su hấp dẫn)",
+      "props": {
+        "mission": "gravity_assist"
+      }
+    },
+    {
+      "id": "landing",
+      "name": "Hạ cánh trên Sao Hỏa (EDL)",
+      "props": {
+        "mission": "landing"
+      },
+      "duration": 14
+    }
+  ],
+  "cues": "hohmann: lần đốt 1 ở mốc 0, lần đốt 2 ở mốc 2, các dòng số liệu theo mốc; satellites/gravity_assist: chú thích theo mốc; launch/landing: chú thích theo đúng thời điểm của sứ mệnh",
+  "accuracy": "launch: tích phân số chuyển động với lực đẩy, khối lượng giảm dần và thời gian đốt kiểu Falcon 9 (tầng 1: 7,6 MN, 162 s; tầng 2: 0,98 MN), trọng lực giảm theo độ cao, bỏ qua lực cản; hohmann: Δv và thời gian chuyển tiếp từ vis-viva với μ = 398 600 km³/s²; satellites: chu kỳ theo định luật 3 Kepler; gravity_assist: góc lệch δ = 2·arcsin(1/e) của quỹ đạo hyperbol.",
+  "limitations": "Hình tên lửa, tàu và xe tự hành là hình minh hoạ đơn giản; khoảng cách quỹ đạo nén theo căn bậc hai; quỹ đạo hiển thị nghiêng giả 3D; chuỗi hạ cánh và số liệu từng giai đoạn là giá trị tiêu biểu của các sứ mệnh Mars 2020, không mô phỏng khí động học.",
+  "example_usage": "{\"component\":\"space_mission\",\"props\":{\"mission\":\"hohmann\",\"backdrop\":\"full\"}}",
+  "combines_with": [
+    "planet",
+    "solar_orbit",
+    "gravity_orbit"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

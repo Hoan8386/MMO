@@ -1,0 +1,145 @@
+{
+  "id": "chaos",
+  "name": "Hỗn loạn: hấp dẫn lạ Lorenz, automat tế bào, trò chơi cuộc sống",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "fractals",
+  "subtopic": "Chaos Attractor · Lorenz Attractor · Strange Attractor · Butterfly Effect · Cellular Automaton · Rule 30 · Game of Life",
+  "styles": [
+    "futuristic",
+    "cinematic",
+    "scientific"
+  ],
+  "dimension": "3d",
+  "palette": "fractals",
+  "description": "Hỗn loạn và mẫu hình tự phát. lorenz: hệ Lorenz (σ = 10, ρ = 28, β = 8/3) giải bằng RK4 — hấp dẫn lạ hình cánh bướm vẽ dần trong 3D khi camera xoay quanh; tuỳ chọn quỹ đạo thứ hai bắt đầu lệch 0,00001, tách xa hoàn toàn (khoảng cách hiển thị trực tiếp). automaton: automat tế bào một chiều (luật 30, 90 hoặc 110) mọc từng hàng từ một ô, kèm bảng 8 trường hợp của luật. life: trò chơi cuộc sống của Conway từ một hỗn hợp ngẫu nhiên có seed cộng vài tàu lượn — sinh, chết và các mẫu di chuyển, ô mới sinh được tô nổi.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "hỗn loạn",
+    "chaos",
+    "hệ động lực",
+    "dynamical systems"
+  ],
+  "keywords": [
+    "lý thuyết hỗn loạn",
+    "chaos theory",
+    "hấp dẫn lạ",
+    "strange attractor",
+    "hệ lorenz",
+    "lorenz attractor",
+    "hiệu ứng cánh bướm",
+    "butterfly effect",
+    "nhạy cảm với điều kiện đầu",
+    "automat tế bào",
+    "cellular automaton",
+    "luật 30",
+    "rule 30",
+    "luật 110",
+    "rule 110",
+    "wolfram",
+    "trò chơi cuộc sống",
+    "game of life",
+    "conway",
+    "tàu lượn",
+    "glider",
+    "hệ phức hợp",
+    "emergence"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "lorenz",
+        "automaton",
+        "life"
+      ],
+      "default": "lorenz",
+      "description": "cảnh"
+    },
+    "twin": {
+      "type": "boolean",
+      "default": false,
+      "description": "lorenz: thêm quỹ đạo thứ hai lệch 10⁻⁵"
+    },
+    "rule": {
+      "type": "integer",
+      "min": 30,
+      "max": 110,
+      "default": 30,
+      "description": "automaton: luật 30, 90 hoặc 110"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "công thức và chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "lorenz",
+      "name": "Hấp dẫn lạ Lorenz",
+      "props": {
+        "mode": "lorenz"
+      }
+    },
+    {
+      "id": "butterfly",
+      "name": "Hiệu ứng cánh bướm: hai quỹ đạo tách xa",
+      "props": {
+        "mode": "lorenz",
+        "twin": true
+      }
+    },
+    {
+      "id": "rule30",
+      "name": "Automat tế bào luật 30",
+      "props": {
+        "mode": "automaton",
+        "rule": 30
+      }
+    },
+    {
+      "id": "rule90",
+      "name": "Luật 90 tạo tam giác Sierpinski",
+      "props": {
+        "mode": "automaton",
+        "rule": 90
+      }
+    },
+    {
+      "id": "life",
+      "name": "Trò chơi cuộc sống của Conway",
+      "props": {
+        "mode": "life"
+      }
+    }
+  ],
+  "cues": "công thức và chú thích theo mốc",
+  "accuracy": "Hệ Lorenz chuẩn tích phân RK4 (bước 0,005); automat tế bào sơ cấp theo mã luật Wolfram; trò chơi cuộc sống B3/S23 trên lưới tuần hoàn.",
+  "limitations": "Quỹ đạo Lorenz hiển thị một khoảng thời gian hữu hạn; lưới automat/Life có kích thước hữu hạn (biên tuần hoàn).",
+  "example_usage": "{\"component\":\"chaos\",\"props\":{\"mode\":\"lorenz\",\"twin\":true}}",
+  "combines_with": [
+    "fractal",
+    "pendulum"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

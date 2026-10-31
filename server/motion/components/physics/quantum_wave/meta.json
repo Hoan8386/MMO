@@ -1,0 +1,46 @@
+{
+  "id": "quantum_wave",
+  "name": "Hàm sóng lượng tử: xuyên hầm, dao động tử, giếng thế, phép đo",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "quantum",
+  "subtopic": "Wave Function · Probability Density · Quantum Tunneling · Potential Barrier · Quantum Harmonic Oscillator · Superposition · Measurement · Wave Packet",
+  "styles": ["scientific", "futuristic", "educational"],
+  "dimension": "2d",
+  "palette": "quantum",
+  "description": "Một hạt lượng tử một chiều: phương trình Schrödinger phụ thuộc thời gian được giải số bằng phương pháp Crank–Nicolson (bảo toàn xác suất). tunneling: gói sóng Gauss có năng lượng thấp hơn hàng rào thế va vào nó — một phần phản xạ, một phần xuyên qua; xác suất T và R tích phân từ ψ cập nhật trực tiếp, bên dưới một hạt cổ điển cùng năng lượng luôn bật lại. harmonic: trạng thái kết hợp trong giếng parabol dao động qua lại mà không loe ra. well: chồng chập hai trạng thái thấp nhất của hộp thế dao động từ bên này sang bên kia. measurement: gói sóng tự do loe dần; phép đo vị trí làm hàm sóng sụp đổ thành một đỉnh hẹp tại vị trí rút ngẫu nhiên theo |ψ|², rồi lại loe ra. Hiển thị thế năng V(x), |ψ|² (vùng phát sáng) và phần thực Re ψ.",
+  "tags": ["vật lý", "physics", "lượng tử", "quantum", "cơ học lượng tử", "quantum mechanics", "hàm sóng", "wave function"],
+  "keywords": [
+    "hiệu ứng đường hầm", "xuyên hầm lượng tử", "quantum tunneling", "hàng rào thế", "potential barrier", "hàm sóng", "wave function", "mật độ xác suất", "probability density",
+    "phương trình schrödinger", "schrodinger equation", "gói sóng", "wave packet", "dao động tử điều hoà lượng tử", "quantum harmonic oscillator",
+    "giếng thế vô hạn", "hạt trong hộp", "particle in a box", "chồng chập", "superposition", "phép đo", "measurement", "sụp đổ hàm sóng", "wave function collapse",
+    "nguyên lý bất định", "uncertainty principle", "lưỡng tính sóng hạt"
+  ],
+  "duration": { "default": 12, "min": 6, "max": 40 },
+  "common": "all",
+  "inputs": {
+    "title": { "type": "string", "maxLength": 48, "default": "", "description": "tiêu đề góc trên" },
+    "mode": { "type": "string", "enum": ["tunneling", "harmonic", "well", "measurement"], "default": "tunneling", "description": "cảnh" },
+    "barrierWidth": { "type": "number", "min": 1, "max": 8, "default": 3, "description": "tunneling: bề rộng hàng rào (đơn vị ħ = m = 1); hẹp hơn → xuyên qua nhiều hơn" },
+    "barrierHeight": { "type": "number", "min": 0.3, "max": 1.2, "default": 0.6, "description": "tunneling: chiều cao hàng rào V₀ (năng lượng hạt ≈ 0,5)" },
+    "showReal": { "type": "boolean", "default": true, "description": "vẽ thêm phần thực Re ψ" },
+    "classical": { "type": "boolean", "default": true, "description": "tunneling: hạt cổ điển để so sánh" },
+    "labels": { "type": "boolean", "default": true, "description": "chú thích và số đo" }
+  },
+  "variants": [
+    { "id": "tunneling", "name": "Hiệu ứng đường hầm lượng tử", "props": { "mode": "tunneling" } },
+    { "id": "thin_barrier", "name": "Hàng rào mỏng — xuyên qua nhiều", "props": { "mode": "tunneling", "barrierWidth": 1.5, "classical": false } },
+    { "id": "harmonic", "name": "Dao động tử điều hoà lượng tử", "props": { "mode": "harmonic" } },
+    { "id": "well", "name": "Hạt trong hộp: chồng chập trạng thái", "props": { "mode": "well" } },
+    { "id": "measurement", "name": "Phép đo làm sụp đổ hàm sóng", "props": { "mode": "measurement" } }
+  ],
+  "cues": "các chú thích theo mốc; measurement: phép đo xảy ra ở mốc đầu",
+  "accuracy": "Giải số phương trình Schrödinger 1D (Crank–Nicolson, 400–600 điểm lưới, biên hấp thụ) với ħ = m = 1; hệ số truyền T tính từ xác suất đã qua hàng rào; dao động tử dùng trạng thái kết hợp chính xác; giếng dùng hai hàm riêng giải tích sin(nπx/L); vị trí đo được rút ngẫu nhiên (theo seed) từ |ψ|².",
+  "limitations": "Một chiều, hạt tự do không spin; đơn vị tự nhiên (không phải nanomet/electronvolt); phép đo là mô hình sụp đổ lý tưởng tức thời; thời gian được nén để vừa clip.",
+  "example_usage": "{\"component\":\"quantum_wave\",\"props\":{\"mode\":\"tunneling\",\"barrierWidth\":2}}",
+  "combines_with": ["double_slit", "atom_orbital"],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": ["png-sequence", "webm-alpha"],
+  "status": "dev"
+}

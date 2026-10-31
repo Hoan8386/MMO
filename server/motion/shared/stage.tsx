@@ -21,6 +21,7 @@ import {
 } from "@motion-canvas/core";
 import type { AnimContext } from "./context";
 import type { Look } from "./palettes";
+import { Draw } from "./raster";
 
 export const EASINGS: Record<string, TimingFunction> = {
   smooth: easeInOutCubic,
@@ -64,6 +65,20 @@ export function stage(ctx: AnimContext, L: Look): Stage {
       </Node>
     </Rect>,
   );
+  // Surface treatment of the visual style, on an own backdrop only (a transparent clip keeps the video's).
+  if (L.backdrop !== "none") {
+    if (L.visual.vignette)
+      root().add(<Rect width={safe.w} height={safe.h} fill={new Gradient({ type: "radial", from: [0, 0], to: [0, 0], fromRadius: Math.min(safe.w, safe.h) * 0.45, toRadius: Math.hypot(safe.w, safe.h) * 0.55, stops: [{ offset: 0, color: "rgba(0,0,0,0)" }, { offset: 1, color: "rgba(0,0,0,0.55)" }] })} />);
+    if (L.visual.scanlines)
+      root().add(
+        <Draw
+          paint={(g) => {
+            g.fillStyle = "rgba(160, 240, 255, 0.05)";
+            for (let y = -safe.h / 2; y < safe.h / 2; y += 6 * k) g.fillRect(-safe.w / 2, y, safe.w, 2 * k);
+          }}
+        />,
+      );
+  }
   const D = ctx.duration;
   const mode = String(p.camera || "static");
   const camera = function* (): ThreadGenerator {

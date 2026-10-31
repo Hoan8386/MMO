@@ -1,0 +1,145 @@
+{
+  "id": "doppler",
+  "name": "Hiệu ứng Doppler, rào âm thanh và nón Mach",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "waves",
+  "subtopic": "Doppler Effect · Sound Wave · Sound Barrier · Mach Cone · Sonic Boom · Redshift · Blueshift",
+  "styles": [
+    "scientific",
+    "educational",
+    "minimalist"
+  ],
+  "dimension": "2d",
+  "palette": "waves",
+  "description": "Hiệu ứng Doppler từ các mặt sóng: nguồn chuyển động với vận tốc v phát một vòng sóng mỗi chu kỳ, mỗi vòng lan ra với tốc độ sóng c từ chỗ nó được phát — phía trước dồn lại, phía sau giãn ra; người nghe phía trước và phía sau đo được f′ = f·c/(c ∓ v) (kèm dạng sóng nghe thấy). sonic: v = c, các mặt sóng dồn thành bức tường (rào âm thanh); supersonic: v > c, nón Mach với nửa góc sin α = c/v (tiếng nổ siêu thanh). light: một ngôi sao ra xa / lại gần — các vạch hấp thụ trong quang phổ dịch về phía đỏ / xanh theo z = v/c.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "sóng",
+    "waves",
+    "âm thanh",
+    "sound",
+    "doppler"
+  ],
+  "keywords": [
+    "hiệu ứng doppler",
+    "doppler effect",
+    "còi xe cứu thương",
+    "ambulance siren",
+    "tần số thay đổi",
+    "frequency shift",
+    "rào âm thanh",
+    "sound barrier",
+    "vượt tốc độ âm thanh",
+    "siêu thanh",
+    "supersonic",
+    "tiếng nổ siêu thanh",
+    "sonic boom",
+    "nón mach",
+    "mach cone",
+    "số mach",
+    "dịch chuyển đỏ",
+    "redshift",
+    "dịch chuyển xanh",
+    "blueshift",
+    "quang phổ sao",
+    "vũ trụ giãn nở"
+  ],
+  "duration": {
+    "default": 10,
+    "min": 5,
+    "max": 40
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "sound",
+        "sonic",
+        "supersonic",
+        "light"
+      ],
+      "default": "sound",
+      "description": "cảnh"
+    },
+    "speed": {
+      "type": "number",
+      "min": 0.1,
+      "max": 3,
+      "default": 0.5,
+      "description": "sound: v/c (≤ 0,85); supersonic: số Mach (≥ 1,4); light: độ lớn dịch chuyển (tương đối)"
+    },
+    "frequency": {
+      "type": "number",
+      "min": 1,
+      "max": 6,
+      "default": 2.5,
+      "description": "số vòng sóng phát mỗi giây"
+    },
+    "observers": {
+      "type": "boolean",
+      "default": true,
+      "description": "sound: hai người nghe và tần số họ nghe"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích và công thức"
+    }
+  },
+  "variants": [
+    {
+      "id": "sound",
+      "name": "Hiệu ứng Doppler âm thanh",
+      "props": {
+        "mode": "sound"
+      }
+    },
+    {
+      "id": "sonic",
+      "name": "Rào âm thanh (v = c)",
+      "props": {
+        "mode": "sonic"
+      }
+    },
+    {
+      "id": "supersonic",
+      "name": "Nón Mach, tiếng nổ siêu thanh",
+      "props": {
+        "mode": "supersonic",
+        "speed": 2
+      }
+    },
+    {
+      "id": "light",
+      "name": "Dịch chuyển đỏ / xanh của ánh sáng sao",
+      "props": {
+        "mode": "light",
+        "speed": 1
+      }
+    }
+  ],
+  "cues": "người nghe, rồi công thức — mỗi thứ ở một mốc",
+  "accuracy": "Mỗi mặt sóng là đường tròn tâm tại vị trí phát, bán kính c·(t − t_phát) — hình học chính xác; f′ = f·c/(c ∓ v) cho nguồn chuyển động; nón Mach sin α = 1/M; dịch chuyển vạch λ′ = λ(1 + v/c) (gần đúng phi tương đối) với các vạch H-α, H-β, H-γ và Na D.",
+  "limitations": "2D, môi trường đứng yên, không có suy giảm theo khoảng cách; vận tốc ngôi sao bị phóng đại để thấy rõ vạch dịch chuyển.",
+  "example_usage": "{\"component\":\"doppler\",\"props\":{\"mode\":\"supersonic\",\"speed\":2}}",
+  "combines_with": [
+    "wave_propagation",
+    "cosmic_expansion"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

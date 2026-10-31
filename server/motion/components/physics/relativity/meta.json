@@ -1,0 +1,42 @@
+{
+  "id": "relativity",
+  "name": "Thuyết tương đối hẹp: giãn thời gian, co độ dài, anh em sinh đôi, nón ánh sáng",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "relativity",
+  "subtopic": "Time Dilation · Light Clock · Length Contraction · Twin Paradox · Worldline · Minkowski Diagram · Light Cone · Lorentz Factor",
+  "styles": ["scientific", "educational", "futuristic"],
+  "dimension": "2d",
+  "palette": "relativity",
+  "description": "Thuyết tương đối hẹp với hệ số Lorentz chính xác γ = 1/√(1 − v²/c²). time_dilation: hai đồng hồ ánh sáng — một đứng yên, một chạy với vận tốc v; nhìn từ mặt đất photon của đồng hồ chạy đi đường chéo dài hơn nên mỗi nhịp lâu hơn γ lần (bộ đếm nhịp đặt cạnh nhau). length_contraction: con tàu tăng tốc dần, chiều dài đo được L₀/γ co lại theo chiều chuyển động, kèm đồ thị γ(v). twin_paradox: giản đồ Minkowski — đường thế giới của người ở nhà và người du hành đi rồi về, vạch đánh dấu mỗi năm thời gian riêng của từng người, tuổi khi gặp lại. light_cone: nón ánh sáng, đường thế giới của các hạt (luôn ở trong nón), trục của quan sát viên chuyển động khép dần về đường ánh sáng khi v tăng.",
+  "tags": ["vật lý", "physics", "thuyết tương đối", "relativity", "einstein", "không thời gian", "spacetime"],
+  "keywords": [
+    "thuyết tương đối hẹp", "special relativity", "giãn thời gian", "time dilation", "đồng hồ ánh sáng", "light clock", "hệ số lorentz", "lorentz factor", "gamma",
+    "co độ dài", "length contraction", "nghịch lý anh em sinh đôi", "twin paradox", "đường thế giới", "worldline", "giản đồ minkowski", "minkowski diagram",
+    "nón ánh sáng", "light cone", "tốc độ ánh sáng", "speed of light", "không gì nhanh hơn ánh sáng", "biến đổi lorentz", "lorentz transformation", "thời gian riêng", "proper time"
+  ],
+  "duration": { "default": 12, "min": 6, "max": 60 },
+  "common": "all",
+  "inputs": {
+    "title": { "type": "string", "maxLength": 48, "default": "", "description": "tiêu đề góc trên" },
+    "mode": { "type": "string", "enum": ["time_dilation", "length_contraction", "twin_paradox", "light_cone"], "default": "time_dilation", "description": "cảnh" },
+    "beta": { "type": "number", "min": 0.1, "max": 0.99, "default": 0.8, "description": "vận tốc v/c" },
+    "years": { "type": "number", "min": 4, "max": 40, "default": 10, "description": "twin_paradox/light_cone: thời gian của người ở nhà, năm" },
+    "labels": { "type": "boolean", "default": true, "description": "chú thích" }
+  },
+  "variants": [
+    { "id": "time_dilation", "name": "Giãn thời gian: đồng hồ ánh sáng", "props": { "mode": "time_dilation" } },
+    { "id": "length_contraction", "name": "Co độ dài", "props": { "mode": "length_contraction", "beta": 0.95 } },
+    { "id": "twin_paradox", "name": "Nghịch lý anh em sinh đôi", "props": { "mode": "twin_paradox" }, "duration": 12 },
+    { "id": "light_cone", "name": "Nón ánh sáng và biến đổi Lorentz", "props": { "mode": "light_cone", "beta": 0.6 } }
+  ],
+  "cues": "các chú thích theo mốc; chuyển động chạy suốt clip",
+  "accuracy": "γ = 1/√(1 − β²) chính xác; chu kỳ đồng hồ chuyển động γT₀; chiều dài L₀/γ; giản đồ Minkowski với đường ánh sáng 45°, vạch thời gian riêng của người du hành cách nhau γ năm thời gian toạ độ; trục ct′, x′ có độ dốc 1/β và β.",
+  "limitations": "Tốc độ hiển thị trên màn hình không theo tỉ lệ với c; bỏ qua hiệu ứng nhìn thấy (quang sai, Doppler) — các hình là kết quả đo, không phải ảnh mắt thấy; quay đầu tức thời trong nghịch lý sinh đôi.",
+  "example_usage": "{\"component\":\"relativity\",\"props\":{\"mode\":\"twin_paradox\",\"beta\":0.8}}",
+  "combines_with": ["spacetime_curvature", "black_hole", "gravitational_waves"],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": ["png-sequence", "webm-alpha"],
+  "status": "dev"
+}

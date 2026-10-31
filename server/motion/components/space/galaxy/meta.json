@@ -1,0 +1,210 @@
+{
+  "id": "galaxy",
+  "name": "Thiên hà: xoắn ốc, có thanh, elip, vô định hình, va chạm",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "stars_galaxies",
+  "subtopic": "Spiral Galaxy · Barred Spiral · Milky Way · Elliptical Galaxy · Irregular Galaxy · Galaxy Collision · Galaxy Core · Galaxy Arm · Dust Lane",
+  "styles": [
+    "cinematic",
+    "scientific",
+    "3d",
+    "educational"
+  ],
+  "dimension": "2.5d",
+  "palette": "stars_galaxies",
+  "description": "Thiên hà dựng từ hàng nghìn ngôi sao và một lớp khí: xoắn ốc (các nhánh xoắn logarit với sao trẻ xanh, nút hình thành sao màu hồng, dải bụi tối ở mép trong nhánh, phình trung tâm vàng), xoắn ốc có thanh, Ngân Hà (4 nhánh, thanh, vị trí Hệ Mặt Trời), elip (độ sáng theo định luật de Vaucouleurs, sao già đỏ vàng), vô định hình (các đám sao trẻ rời rạc), và va chạm hai thiên hà tính bằng bài toán N vật thu gọn: hai lõi hút nhau, hàng nghìn sao thử chịu lực của cả hai — đuôi thuỷ triều và cầu nối tự hình thành. Góc nghiêng nhìn, hướng xoay, mật độ sao điều chỉnh được; quay chậm (sao trong gần quay nhanh hơn).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "thiên hà",
+    "galaxy",
+    "ngân hà",
+    "milky way"
+  ],
+  "keywords": [
+    "thiên hà xoắn ốc",
+    "spiral galaxy",
+    "thiên hà có thanh",
+    "barred spiral",
+    "thiên hà elip",
+    "elliptical galaxy",
+    "thiên hà vô định hình",
+    "irregular galaxy",
+    "dải ngân hà",
+    "ngân hà",
+    "milky way",
+    "va chạm thiên hà",
+    "galaxy collision",
+    "galaxy merger",
+    "sáp nhập thiên hà",
+    "andromeda",
+    "tiên nữ",
+    "nhánh xoắn",
+    "spiral arm",
+    "dải bụi",
+    "dust lane",
+    "phình trung tâm",
+    "galactic bulge",
+    "đuôi thuỷ triều",
+    "tidal tail",
+    "vị trí hệ mặt trời"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "spiral",
+        "barred",
+        "milky_way",
+        "elliptical",
+        "irregular",
+        "collision"
+      ],
+      "default": "spiral",
+      "description": "loại thiên hà"
+    },
+    "arms": {
+      "type": "integer",
+      "min": 2,
+      "max": 4,
+      "default": 2,
+      "description": "số nhánh xoắn (Ngân Hà luôn 4)"
+    },
+    "inclination": {
+      "type": "number",
+      "min": 0,
+      "max": 80,
+      "default": 50,
+      "description": "góc nghiêng nhìn (0 = nhìn thẳng từ trên)"
+    },
+    "angle": {
+      "type": "number",
+      "min": -90,
+      "max": 90,
+      "default": -20,
+      "description": "hướng xoay trên bầu trời, độ"
+    },
+    "stars": {
+      "type": "integer",
+      "min": 1000,
+      "max": 9000,
+      "default": 5000,
+      "description": "số ngôi sao vẽ"
+    },
+    "gas": {
+      "type": "boolean",
+      "default": true,
+      "description": "lớp khí, vùng hình thành sao và bụi"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích cấu trúc"
+    },
+    "bg": {
+      "type": "boolean",
+      "default": false,
+      "description": "nền sao"
+    }
+  },
+  "variants": [
+    {
+      "id": "spiral",
+      "name": "Thiên hà xoắn ốc",
+      "props": {
+        "kind": "spiral"
+      }
+    },
+    {
+      "id": "face_on",
+      "name": "Thiên hà xoắn ốc nhìn thẳng",
+      "props": {
+        "kind": "spiral",
+        "inclination": 0,
+        "arms": 3,
+        "labels": false
+      }
+    },
+    {
+      "id": "milky_way",
+      "name": "Dải Ngân Hà và vị trí Hệ Mặt Trời",
+      "props": {
+        "kind": "milky_way",
+        "inclination": 20
+      },
+      "keywords": [
+        "ngân hà",
+        "milky way",
+        "vị trí hệ mặt trời"
+      ]
+    },
+    {
+      "id": "barred",
+      "name": "Thiên hà xoắn ốc có thanh",
+      "props": {
+        "kind": "barred",
+        "inclination": 35
+      }
+    },
+    {
+      "id": "elliptical",
+      "name": "Thiên hà elip",
+      "props": {
+        "kind": "elliptical",
+        "inclination": 0,
+        "gas": true
+      }
+    },
+    {
+      "id": "irregular",
+      "name": "Thiên hà vô định hình",
+      "props": {
+        "kind": "irregular",
+        "inclination": 0
+      }
+    },
+    {
+      "id": "collision",
+      "name": "Hai thiên hà va chạm",
+      "props": {
+        "kind": "collision"
+      },
+      "keywords": [
+        "va chạm thiên hà",
+        "galaxy collision",
+        "andromeda va chạm ngân hà"
+      ]
+    }
+  ],
+  "cues": "mỗi chú thích (lõi, nhánh, dải bụi, thanh, vị trí Mặt Trời) hiện ở một mốc",
+  "accuracy": "Nhánh xoắn logarit (góc xoắn 12–14°), sao trẻ tập trung trên nhánh, bụi ở mép trong; độ sáng elip theo định luật de Vaucouleurs r^¼; va chạm là bài toán N vật thu gọn kiểu Toomre (hai lõi khối lượng bằng nhau, sao thử không hút nhau, hấp dẫn làm mềm).",
+  "limitations": "Không mô phỏng sóng mật độ hay quầng vật chất tối; quay được tăng tốc rất nhiều; va chạm là 2D với hai lõi điểm nên không có hợp nhất hoàn toàn như mô phỏng đầy đủ.",
+  "example_usage": "{\"component\":\"galaxy\",\"props\":{\"kind\":\"milky_way\",\"camera\":\"push_in\"}}",
+  "combines_with": [
+    "black_hole",
+    "stellar_lifecycle",
+    "cosmic_expansion",
+    "nebula"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

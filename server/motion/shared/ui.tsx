@@ -39,6 +39,14 @@ export function pill(ctx: AnimContext, text: string, opts: { x?: number; y?: num
   );
 }
 
+// x of a label's anchor moved so its whole text stays inside the safe area. The text extends to the
+// right of x when `right`, else to the left (width estimated from the character count).
+export function fitX(ctx: AnimContext, x: number, text: string, size: number, right: boolean) {
+  const w = text.length * size * ctx.k * 0.56 + 12 * ctx.k;
+  const x0 = ctx.safe.x, x1 = ctx.safe.x + ctx.safe.w;
+  return right ? Math.min(x, x1 - w) : Math.max(x, x0 + w);
+}
+
 // Disclaimer shown on drawings whose sizes or distances are not to scale.
 export function scaleNote(ctx: AnimContext, text: string) {
   return label(ctx, text, { x: ctx.safe.x + ctx.safe.w, y: ctx.safe.y + ctx.safe.h - 14 * ctx.k, size: 22, fill: ctx.theme.muted, align: "right", opacity: 0.9 });

@@ -1,0 +1,164 @@
+{
+  "id": "fourier_series",
+  "name": "Chuỗi Fourier: vòng tròn quay dựng sóng và vẽ hình",
+  "category": "math",
+  "domain": "mathematics",
+  "topic": "calculus",
+  "subtopic": "Fourier Series · Fourier Transform Visualization · Epicycles · Square Wave · Gibbs Phenomenon · Frequency Spectrum",
+  "styles": [
+    "educational",
+    "futuristic",
+    "scientific",
+    "minimalist"
+  ],
+  "dimension": "2d",
+  "palette": "calculus",
+  "description": "Chuỗi Fourier. wave: sóng vuông / răng cưa / tam giác dựng từ các vòng tròn quay nối đuôi — vòng thứ n quay nhanh gấp n lần với bán kính bằng hệ số Fourier (sóng vuông: 4/(nπ) với n lẻ); độ cao đầu chuỗi vẽ ra tổng riêng chạy sang phải cạnh sóng mục tiêu, số hạng được thêm dần nên góc vuông sắc dần (kèm vọt lố Gibbs ở chỗ nhảy), tuỳ chọn phổ biên độ. drawing: biến đổi Fourier rời rạc của một đường cong khép kín (trái tim, ngôi sao, vô cực), các hệ số lớn nhất xếp thành chuỗi vòng tròn quay vẽ lại hình.",
+  "tags": [
+    "toán học",
+    "mathematics",
+    "giải tích",
+    "calculus",
+    "fourier",
+    "sóng",
+    "signal"
+  ],
+  "keywords": [
+    "chuỗi fourier",
+    "fourier series",
+    "biến đổi fourier",
+    "fourier transform",
+    "dft",
+    "vòng tròn quay",
+    "epicycles",
+    "sóng vuông",
+    "square wave",
+    "sóng răng cưa",
+    "sawtooth wave",
+    "sóng tam giác",
+    "triangle wave",
+    "hiện tượng gibbs",
+    "gibbs phenomenon",
+    "phổ tần số",
+    "frequency spectrum",
+    "hài",
+    "harmonics",
+    "phân tích tín hiệu",
+    "signal processing",
+    "vẽ hình bằng fourier"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "wave",
+        "drawing"
+      ],
+      "default": "wave",
+      "description": "dựng sóng hay vẽ hình"
+    },
+    "wave": {
+      "type": "string",
+      "enum": [
+        "square",
+        "sawtooth",
+        "triangle"
+      ],
+      "default": "square",
+      "description": "wave: loại sóng"
+    },
+    "shape": {
+      "type": "string",
+      "enum": [
+        "heart",
+        "star",
+        "infinity"
+      ],
+      "default": "heart",
+      "description": "drawing: hình cần vẽ"
+    },
+    "terms": {
+      "type": "integer",
+      "min": 1,
+      "max": 120,
+      "default": 12,
+      "description": "số số hạng (wave: thêm dần tới số này)"
+    },
+    "spectrum": {
+      "type": "boolean",
+      "default": true,
+      "description": "wave: phổ biên độ"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "công thức"
+    }
+  },
+  "variants": [
+    {
+      "id": "square",
+      "name": "Sóng vuông từ các vòng tròn quay",
+      "props": {
+        "mode": "wave",
+        "wave": "square"
+      }
+    },
+    {
+      "id": "sawtooth",
+      "name": "Sóng răng cưa",
+      "props": {
+        "mode": "wave",
+        "wave": "sawtooth",
+        "terms": 10
+      }
+    },
+    {
+      "id": "heart",
+      "name": "Vẽ trái tim bằng chuỗi Fourier",
+      "props": {
+        "mode": "drawing",
+        "shape": "heart",
+        "terms": 40
+      },
+      "duration": 12
+    },
+    {
+      "id": "infinity",
+      "name": "Vẽ dấu vô cực bằng chuỗi Fourier",
+      "props": {
+        "mode": "drawing",
+        "shape": "infinity",
+        "terms": 30
+      }
+    }
+  ],
+  "cues": "công thức và phổ hiện theo mốc; số hạng thêm dần trong 60 % đầu clip",
+  "accuracy": "Hệ số Fourier giải tích chính xác của ba loại sóng; DFT 256 điểm cho hình vẽ, giữ các hệ số lớn nhất; vọt lố Gibbs xuất hiện tự nhiên.",
+  "limitations": "Số số hạng hiển thị giới hạn (≤ 120); hình ngôi sao là đường cong mượt gần đúng.",
+  "example_usage": "{\"component\":\"fourier_series\",\"props\":{\"mode\":\"drawing\",\"shape\":\"heart\",\"terms\":40}}",
+  "combines_with": [
+    "complex_plane",
+    "wave_propagation",
+    "function_graph"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,218 @@
+{
+  "id": "pendulum",
+  "name": "Con lắc và dao động (đơn, kép hỗn loạn, lò xo)",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "classical_mechanics",
+  "subtopic": "Pendulum · Double Pendulum · Spring-Mass System · Damped Oscillation · Energy Conservation · Phase Space · Chaos",
+  "styles": [
+    "scientific",
+    "educational",
+    "minimalist"
+  ],
+  "dimension": "2d",
+  "palette": "classical_mechanics",
+  "description": "Dao động tính bằng tích phân số RK4 từ phương trình chuyển động đầy đủ (không dùng xấp xỉ góc nhỏ): con lắc đơn θ'' = −(g/L)sinθ − bθ' với vector trọng lực, thành phần kéo về mg·sinθ và lực căng, chu kỳ đo được so với công thức 2π√(L/g) (góc lớn thì chậm hơn); con lắc kép hỗn loạn (tuỳ chọn hai con lắc lệch nhau 0,001 rad tách xa nhau); lò xo – vật nặng x'' = −(k/m)x − bx'. Thanh năng lượng trực tiếp (động năng, thế năng, phần mất do ma sát), đồ thị li độ theo thời gian hoặc quỹ đạo trong không gian pha, vệt chuyển động.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "cơ học",
+    "mechanics",
+    "dao động",
+    "oscillation",
+    "con lắc",
+    "pendulum"
+  ],
+  "keywords": [
+    "con lắc đơn",
+    "simple pendulum",
+    "con lắc kép",
+    "double pendulum",
+    "hỗn loạn",
+    "chaos",
+    "hiệu ứng cánh bướm",
+    "butterfly effect",
+    "con lắc lò xo",
+    "spring mass",
+    "dao động điều hoà",
+    "simple harmonic motion",
+    "dao động tắt dần",
+    "damped oscillation",
+    "chu kỳ",
+    "period",
+    "bảo toàn năng lượng",
+    "conservation of energy",
+    "động năng",
+    "kinetic energy",
+    "thế năng",
+    "potential energy",
+    "không gian pha",
+    "phase space",
+    "định luật hooke",
+    "hooke's law",
+    "lực căng",
+    "tension"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "simple",
+        "double",
+        "spring"
+      ],
+      "default": "simple",
+      "description": "loại dao động"
+    },
+    "angle": {
+      "type": "number",
+      "min": -170,
+      "max": 170,
+      "default": 40,
+      "description": "góc thả ban đầu, độ (lò xo: độ kéo giãn tương ứng)"
+    },
+    "length": {
+      "type": "number",
+      "min": 0.3,
+      "max": 5,
+      "default": 1,
+      "description": "chiều dài dây, m"
+    },
+    "g": {
+      "type": "number",
+      "min": 1,
+      "max": 25,
+      "default": 9.81,
+      "description": "gia tốc trọng trường, m/s² (Mặt Trăng 1,62; Sao Hỏa 3,71)"
+    },
+    "damping": {
+      "type": "number",
+      "min": 0,
+      "max": 1.5,
+      "default": 0,
+      "description": "hệ số cản b (0 = không ma sát)"
+    },
+    "chaos": {
+      "type": "boolean",
+      "default": false,
+      "description": "con lắc kép: thêm con lắc thứ hai lệch 0,001 rad"
+    },
+    "vectors": {
+      "type": "boolean",
+      "default": true,
+      "description": "vector lực (con lắc đơn)"
+    },
+    "energy": {
+      "type": "boolean",
+      "default": true,
+      "description": "thanh năng lượng"
+    },
+    "graph": {
+      "type": "string",
+      "enum": [
+        "none",
+        "time",
+        "phase"
+      ],
+      "default": "time",
+      "description": "đồ thị bên cạnh"
+    },
+    "trail": {
+      "type": "boolean",
+      "default": true,
+      "description": "vệt chuyển động"
+    }
+  },
+  "variants": [
+    {
+      "id": "simple",
+      "name": "Con lắc đơn, vector lực và năng lượng",
+      "props": {
+        "kind": "simple"
+      }
+    },
+    {
+      "id": "large_angle",
+      "name": "Con lắc góc lớn có ma sát, không gian pha",
+      "props": {
+        "kind": "simple",
+        "angle": 150,
+        "damping": 0.25,
+        "graph": "phase",
+        "vectors": false
+      }
+    },
+    {
+      "id": "double",
+      "name": "Con lắc kép",
+      "props": {
+        "kind": "double",
+        "angle": 120,
+        "graph": "phase"
+      }
+    },
+    {
+      "id": "chaos",
+      "name": "Hỗn loạn: hai con lắc kép gần giống nhau",
+      "props": {
+        "kind": "double",
+        "angle": 130,
+        "chaos": true,
+        "energy": false
+      },
+      "keywords": [
+        "hiệu ứng cánh bướm",
+        "butterfly effect",
+        "hỗn loạn"
+      ]
+    },
+    {
+      "id": "spring",
+      "name": "Con lắc lò xo tắt dần",
+      "props": {
+        "kind": "spring",
+        "angle": 60,
+        "damping": 0.35
+      }
+    },
+    {
+      "id": "moon",
+      "name": "Con lắc trên Mặt Trăng",
+      "props": {
+        "kind": "simple",
+        "g": 1.62
+      },
+      "keywords": [
+        "con lắc mặt trăng"
+      ]
+    }
+  ],
+  "cues": "vector lực, rồi bảng năng lượng/đồ thị, rồi công thức chu kỳ — mỗi thứ ở một mốc",
+  "accuracy": "RK4 với 40 bước con mỗi khung hình trên phương trình phi tuyến đầy đủ; con lắc kép khối lượng và chiều dài bằng nhau theo phương trình Lagrange chuẩn; năng lượng tính từ trạng thái (bảo toàn khi b = 0); chu kỳ con lắc đơn đo từ các lần đi qua vị trí cân bằng.",
+  "limitations": "Vật điểm, dây không giãn và không khối lượng; lực cản tuyến tính theo vận tốc góc; con lắc kép ở góc lớn nhạy với bước tích phân (đúng bản chất hỗn loạn).",
+  "example_usage": "{\"component\":\"pendulum\",\"props\":{\"kind\":\"double\",\"chaos\":true}}",
+  "combines_with": [
+    "projectile_motion",
+    "collision_simulation",
+    "wave_propagation"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

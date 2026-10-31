@@ -88,5 +88,10 @@ export function taxonomy() {
     label: d.label,
     palette: PAL.domains[d.id],
     topics: d.topics.map(([id, label]) => ({ id, label, palette: { ...PAL.domains[d.id], ...(PAL.topics[id] || {}) } })),
+    // Named themes of this domain (props.palette = id), for the gallery's colour picker.
+    themes: Object.values(PAL.themes).filter((t) => t.domain === d.id),
   }));
 }
+
+// Visual styles (props.visual): id → { name, glow, … }.
+export const VISUALS = PAL.visuals;

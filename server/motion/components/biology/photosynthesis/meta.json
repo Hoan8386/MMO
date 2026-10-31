@@ -1,0 +1,144 @@
+{
+  "id": "photosynthesis",
+  "name": "Quang hợp và hô hấp tế bào",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "botany",
+  "subtopic": "Photosynthesis · Light Reactions · Thylakoid · Photosystem · ATP Synthase · Calvin Cycle · Cellular Respiration · Glycolysis · Krebs Cycle · Electron Transport Chain · ATP Production",
+  "styles": [
+    "educational",
+    "scientific",
+    "infographic",
+    "organic"
+  ],
+  "dimension": "2d",
+  "palette": "botany",
+  "description": "Năng lượng trong tế bào. overview: chiếc lá nhận ánh sáng, CO₂ qua khí khổng và nước từ rễ, thải O₂ và tạo glucose — dòng phân tử chạy theo phương trình 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂. light: pha sáng trên màng thylakoid — photon kích thích quang hệ II và I, nước bị tách (O₂ thoát ra, H⁺ vào xoang), electron chạy dọc chuỗi chuyền, H⁺ tích tụ rồi chảy ngược qua ATP synthase làm rotor quay tạo ATP, NADP⁺ thành NADPH. calvin: chu trình Calvin — RuBisCO cố định CO₂, khử bằng ATP và NADPH, G3P rời chu trình để tạo đường, RuBP được tái tạo. respiration: đường phân trong tế bào chất, chu trình Krebs trong chất nền ty thể, chuỗi chuyền electron trên màng trong, bộ đếm ATP (~32 mỗi glucose).",
+  "tags": [
+    "sinh học",
+    "biology",
+    "thực vật",
+    "botany",
+    "quang hợp",
+    "photosynthesis",
+    "năng lượng",
+    "energy"
+  ],
+  "keywords": [
+    "quang hợp",
+    "photosynthesis",
+    "diệp lục",
+    "chlorophyll",
+    "lục lạp",
+    "chloroplast",
+    "khí khổng",
+    "stomata",
+    "pha sáng",
+    "light reactions",
+    "pha tối",
+    "light-independent",
+    "thylakoid",
+    "quang hệ",
+    "photosystem",
+    "chuỗi chuyền electron",
+    "electron transport chain",
+    "atp synthase",
+    "atp",
+    "nadph",
+    "tách nước",
+    "giải phóng oxy",
+    "chu trình calvin",
+    "calvin cycle",
+    "rubisco",
+    "cố định co2",
+    "carbon fixation",
+    "g3p",
+    "hô hấp tế bào",
+    "cellular respiration",
+    "đường phân",
+    "glycolysis",
+    "chu trình krebs",
+    "krebs cycle",
+    "citric acid cycle",
+    "ty thể",
+    "mitochondria",
+    "tạo atp"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "overview",
+        "light",
+        "calvin",
+        "respiration"
+      ],
+      "default": "overview",
+      "description": "cảnh"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích và phương trình"
+    }
+  },
+  "variants": [
+    {
+      "id": "overview",
+      "name": "Quang hợp ở lá: đầu vào, đầu ra",
+      "props": {
+        "mode": "overview"
+      }
+    },
+    {
+      "id": "light",
+      "name": "Pha sáng trên màng thylakoid",
+      "props": {
+        "mode": "light"
+      }
+    },
+    {
+      "id": "calvin",
+      "name": "Chu trình Calvin",
+      "props": {
+        "mode": "calvin"
+      }
+    },
+    {
+      "id": "respiration",
+      "name": "Hô hấp tế bào và ATP",
+      "props": {
+        "mode": "respiration"
+      },
+      "duration": 14
+    }
+  ],
+  "cues": "chú thích và các giai đoạn hiện theo mốc",
+  "accuracy": "Phương trình tổng quát quang hợp và hô hấp; thứ tự PSII → cyt b6f → PSI và hướng bơm H⁺ vào xoang thylakoid; ba giai đoạn chu trình Calvin; số ATP theo giai đoạn (2 + 2 + ~28) theo ước tính hiện đại.",
+  "limitations": "Sơ đồ đơn giản: không vẽ từng phân tử trung gian, số lượng phân tử và tỉ lệ kích thước minh hoạ; số ATP từ chuỗi chuyền electron là gần đúng (26–28).",
+  "example_usage": "{\"component\":\"photosynthesis\",\"props\":{\"mode\":\"light\"}}",
+  "combines_with": [
+    "cell",
+    "ecosystem",
+    "cell_membrane_transport"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

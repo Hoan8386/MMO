@@ -2,7 +2,7 @@
 // then check the result. Passing components move from "dev" to "tested" in meta.json
 // ("ready" is set by hand after a human has watched the preview). Writes previews/<id>.png/.webm.
 //
-//   npm --prefix server run anim:test -- [id…] [--no-aspects]
+//   npm --prefix server run anim:test -- [id…] [--no-aspects] [--no-variants]
 //
 // Checks: no runtime/TypeScript error in the page, exact frame count for duration × fps,
 // visible content inside the safe area (nothing cut at the frame edge) in every format,
@@ -13,11 +13,38 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { loadRegistry, listComponents, updateMeta, ROOT, PREVIEWS_DIR } from "../registry/registry.mjs";
-import { renderJob, closeBrowser, encode } from "../renderer/render.mjs";
+import { renderJob as render, closeBrowser, killBrowser, encode } from "../renderer/render.mjs";
+
+// A crashed Chrome ("Target closed", "Connection closed") would fail every later render: start a fresh
+// browser and try the same render once more.
+async function renderJob(job, out) {
+  try {
+    return await render(job, out);
+  } catch (e) {
+    if (!/Target closed|Connection closed|Session closed|Protocol error/i.test(String(e?.message))) throw e;
+    await killBrowser();
+    return await render(job, out);
+  }
+}
+
+// Previews are served to the web gallery while tests run: encode to a temporary file, then swap it in,
+// so a viewer never requests a half-written (0-byte) video.
+async function encodeAtomic(dir, file) {
+  const tmp = file.replace(/.webm$/, ".tmp.webm");
+  await encode(dir, 30, tmp);
+  try {
+    await fsp.rename(tmp, file);
+  } catch {
+    // The old file is open in a browser (Windows): copy over it instead.
+    await fsp.copyFile(tmp, file);
+    await fsp.rm(tmp, { force: true });
+  }
+}
 
 const args = process.argv.slice(2);
 const ids = args.filter((a) => !a.startsWith("--"));
 const FORMATS = args.includes("--no-aspects") ? [[1920, 1080]] : [[1920, 1080], [1080, 1920], [1080, 1080]];
+const NO_VARIANTS = args.includes("--no-variants");
 const SAFE = { top: 60, right: 80, bottom: 60, left: 80 };
 
 // TypeScript first: a type error fails every component.
@@ -59,9 +86,30 @@ for (const c of list) {
       await renderJob({ component: c.id, props: c.example.props, duration: c.example.duration, cues: c.example.cues, width, height, fps: 30, safe: SAFE, background: "#0B1730" }, pv);
       const files = fs.readdirSync(pv).filter((f) => f.startsWith("frame-")).sort();
       await fsp.copyFile(path.join(pv, files[Math.floor(files.length * 0.85)]), path.join(PREVIEWS_DIR, `${c.id}.png`));
-      await encode(pv, 30, path.join(PREVIEWS_DIR, `${c.id}.webm`));
+      await encodeAtomic(pv, path.join(PREVIEWS_DIR, `${c.id}.webm`));
     }
     console.log(`  ${c.id} ${at}: ${m.frames} khung, ${(m.renderMs / 1000).toFixed(1)}s`);
+  }
+  // Variants: each rendered once at 16:9 on the preview background (runtime errors, frame count, a
+  // preview of its own for the gallery). Layout in every format is covered by the example above.
+  for (const v of NO_VARIANTS ? [] : c.variants || []) {
+    const pv = path.join(ROOT, ".cache", "tests", c.id, `variant-${v.id}`);
+    const duration = v.duration ?? Math.max(c.duration.min, Math.min(c.example.duration, 8));
+    let m;
+    try {
+      m = await renderJob({ component: c.id, props: v.props, duration, width: 1920, height: 1080, fps: 30, safe: SAFE, background: "#0B1730" }, pv);
+    } catch (e) {
+      errors.push(`variant ${v.id}: ${e.message}`);
+      continue;
+    }
+    if (!m.ok) errors.push(`variant ${v.id}: ${m.errors.join(" | ")}`);
+    if (m.frames !== m.expectedFrames) errors.push(`variant ${v.id}: ${m.frames} khung, cần ${m.expectedFrames}`);
+    const files = fs.readdirSync(pv).filter((f) => f.startsWith("frame-")).sort();
+    if (files.length) {
+      await fsp.copyFile(path.join(pv, files[Math.floor(files.length * 0.8)]), path.join(PREVIEWS_DIR, `${c.id}--${v.id}.png`));
+      await encodeAtomic(pv, path.join(PREVIEWS_DIR, `${c.id}--${v.id}.webm`));
+    }
+    console.log(`  ${c.id} · ${v.id}: ${m.frames} khung, ${(m.renderMs / 1000).toFixed(1)}s`);
   }
   if (errors.length) {
     failed++;

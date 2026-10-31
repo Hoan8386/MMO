@@ -1,0 +1,552 @@
+{
+  "id": "planet",
+  "name": "Hành tinh và vệ tinh (quả cầu 3D tự quay)",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Earth · Moon · Mercury · Venus · Mars · Jupiter · Saturn · Uranus · Neptune · Pluto · Charon · Io · Europa · Ganymede · Callisto · Titan · Enceladus",
+  "styles": [
+    "cinematic",
+    "3d",
+    "scientific",
+    "educational"
+  ],
+  "dimension": "3d",
+  "palette": "solar_system",
+  "description": "Quả cầu hành tinh/vệ tinh tô từng điểm ảnh, tự quay quanh trục nghiêng thật dưới ánh sáng Mặt Trời cố định: bề mặt riêng của từng thiên thể (Trái Đất có lục địa thật, Sao Hỏa có núi Olympus, hẻm Valles Marineris và chỏm băng, Sao Mộc có các dải mây quay lệch nhau và Vết Đỏ Lớn, Sao Thổ có lục giác cực Bắc, Pluto có \"trái tim\" Tombaugh…), địa hình nổi khối, mây chuyển động riêng, đèn thành phố bên đêm, quầng khí quyển ở rìa, vành đai nhiều lớp có bóng hành tinh đổ lên vành và bóng vành đổ lên hành tinh, các vệ tinh chạy trên quỹ đạo theo tỉ lệ chu kỳ thật (vd. cộng hưởng 1:2:4 của Io–Europa–Ganymede), nhãn địa danh bám theo bề mặt khi quay, bảng số liệu, và chế độ cắt một phần tư để thấy các lớp bên trong (lõi, manti, vỏ, đại dương ngầm).",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "hành tinh",
+    "planet",
+    "hệ mặt trời",
+    "solar system",
+    "vệ tinh",
+    "moon"
+  ],
+  "keywords": [
+    "trái đất",
+    "earth",
+    "mặt trăng",
+    "the moon",
+    "sao thủy",
+    "mercury",
+    "sao kim",
+    "venus",
+    "sao hỏa",
+    "mars",
+    "hành tinh đỏ",
+    "sao mộc",
+    "jupiter",
+    "vết đỏ lớn",
+    "great red spot",
+    "sao thổ",
+    "saturn",
+    "vành đai sao thổ",
+    "saturn's rings",
+    "khe cassini",
+    "sao thiên vương",
+    "uranus",
+    "sao hải vương",
+    "neptune",
+    "sao diêm vương",
+    "pluto",
+    "hành tinh lùn",
+    "dwarf planet",
+    "charon",
+    "io",
+    "europa",
+    "ganymede",
+    "callisto",
+    "titan",
+    "enceladus",
+    "vệ tinh galileo",
+    "galilean moons",
+    "cấu tạo bên trong",
+    "lõi trái đất",
+    "manti",
+    "vỏ trái đất",
+    "earth's core",
+    "mantle",
+    "crust",
+    "đại dương ngầm",
+    "subsurface ocean",
+    "bão bụi",
+    "dust storm",
+    "chỏm băng",
+    "polar ice cap",
+    "núi olympus",
+    "olympus mons",
+    "valles marineris",
+    "khí quyển",
+    "atmosphere",
+    "hiệu ứng nhà kính",
+    "đèn thành phố ban đêm",
+    "city lights",
+    "ngày và đêm",
+    "tự quay"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên (để trống nếu video đã có)"
+    },
+    "body": {
+      "type": "string",
+      "enum": [
+        "earth",
+        "moon",
+        "mercury",
+        "venus",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune",
+        "pluto",
+        "charon",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "titan",
+        "enceladus"
+      ],
+      "default": "earth",
+      "description": "thiên thể"
+    },
+    "view": {
+      "type": "string",
+      "enum": [
+        "globe",
+        "cross_section"
+      ],
+      "default": "globe",
+      "description": "globe = quả cầu và nhãn địa danh; cross_section = cắt một phần tư, hiện từng lớp bên trong"
+    },
+    "clouds": {
+      "type": "boolean",
+      "default": true,
+      "description": "lớp mây/sương (Sao Kim, Titan: tắt để thấy bề mặt bên dưới)"
+    },
+    "atmosphere": {
+      "type": "boolean",
+      "default": true,
+      "description": "quầng khí quyển ở rìa"
+    },
+    "nightLights": {
+      "type": "boolean",
+      "default": true,
+      "description": "đèn thành phố (Trái Đất) / dung nham (Io) bên đêm"
+    },
+    "rings": {
+      "type": "boolean",
+      "default": true,
+      "description": "vành đai (Sao Thổ, Sao Thiên Vương, Sao Hải Vương, Sao Mộc)"
+    },
+    "moons": {
+      "type": "boolean",
+      "default": false,
+      "description": "các vệ tinh lớn chạy trên quỹ đạo quanh hành tinh"
+    },
+    "dustStorm": {
+      "type": "boolean",
+      "default": false,
+      "description": "Sao Hỏa: bão bụi lan dần phủ hành tinh"
+    },
+    "plumes": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enceladus: mạch phun hơi nước ở cực Nam"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "nhãn địa danh bám theo bề mặt (hiện lần lượt theo mốc lời thoại)"
+    },
+    "facts": {
+      "type": "boolean",
+      "default": false,
+      "description": "bảng số liệu (bán kính, ngày, năm, trọng lực, nhiệt độ, vệ tinh)"
+    },
+    "markers": {
+      "type": "array",
+      "maxItems": 4,
+      "default": [],
+      "description": "điểm tự đặt thay cho địa danh mặc định (vd. Hà Nội 21, 105.8)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "min": -90,
+            "max": 90,
+            "required": true,
+            "description": "vĩ độ"
+          },
+          "lon": {
+            "type": "number",
+            "min": -180,
+            "max": 180,
+            "required": true,
+            "description": "kinh độ (Đông dương)"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 32,
+            "required": true,
+            "description": "tên"
+          }
+        }
+      }
+    },
+    "sunAngle": {
+      "type": "number",
+      "min": -160,
+      "max": 160,
+      "default": 55,
+      "description": "góc Mặt Trời so với người xem, độ: 0 = chiếu thẳng (tròn sáng), 90 = từ bên trái (nửa sáng), 150 = lưỡi liềm; âm = từ bên phải"
+    },
+    "spin": {
+      "type": "number",
+      "min": 0,
+      "max": 4,
+      "default": 1,
+      "description": "tốc độ tự quay (0 = đứng yên); chiều quay theo thực tế"
+    },
+    "viewLat": {
+      "type": "number",
+      "min": -60,
+      "max": 60,
+      "default": 12,
+      "description": "nhìn từ vĩ độ bao nhiêu (dương = từ phía Bắc, thấy vành đai mở rộng hơn)"
+    },
+    "realTilt": {
+      "type": "boolean",
+      "default": true,
+      "description": "nghiêng trục theo số liệu thật (Sao Thiên Vương gần nằm ngang)"
+    },
+    "stars": {
+      "type": "boolean",
+      "default": false,
+      "description": "nền sao (luôn có khi backdrop khác none)"
+    }
+  },
+  "variants": [
+    {
+      "id": "earth",
+      "name": "Trái Đất ban ngày",
+      "props": {
+        "body": "earth"
+      },
+      "keywords": [
+        "trái đất từ không gian",
+        "hành tinh xanh",
+        "blue marble"
+      ]
+    },
+    {
+      "id": "earth_night",
+      "name": "Trái Đất lúc chạng vạng, đèn thành phố",
+      "props": {
+        "body": "earth",
+        "sunAngle": 125,
+        "labels": false
+      },
+      "keywords": [
+        "đèn thành phố",
+        "trái đất ban đêm",
+        "city lights",
+        "earth at night"
+      ]
+    },
+    {
+      "id": "earth_layers",
+      "name": "Cấu tạo bên trong Trái Đất",
+      "props": {
+        "body": "earth",
+        "view": "cross_section",
+        "spin": 0.4
+      },
+      "keywords": [
+        "lõi trái đất",
+        "cấu tạo trái đất",
+        "earth layers",
+        "earth's core",
+        "manti"
+      ]
+    },
+    {
+      "id": "earth_moon",
+      "name": "Trái Đất và Mặt Trăng",
+      "props": {
+        "body": "earth",
+        "moons": true,
+        "labels": false
+      },
+      "keywords": [
+        "hệ trái đất mặt trăng",
+        "earth moon system"
+      ]
+    },
+    {
+      "id": "moon",
+      "name": "Mặt Trăng",
+      "props": {
+        "body": "moon",
+        "sunAngle": 70
+      },
+      "keywords": [
+        "bề mặt mặt trăng",
+        "hố va chạm",
+        "lunar surface",
+        "craters",
+        "biển mặt trăng"
+      ]
+    },
+    {
+      "id": "mercury",
+      "name": "Sao Thủy",
+      "props": {
+        "body": "mercury",
+        "sunAngle": 80,
+        "facts": true,
+        "labels": false
+      }
+    },
+    {
+      "id": "venus",
+      "name": "Sao Kim — tầng mây",
+      "props": {
+        "body": "venus",
+        "facts": true,
+        "labels": false
+      },
+      "keywords": [
+        "mây sao kim",
+        "hiệu ứng nhà kính sao kim"
+      ]
+    },
+    {
+      "id": "venus_surface",
+      "name": "Bề mặt Sao Kim dưới mây",
+      "props": {
+        "body": "venus",
+        "clouds": false,
+        "atmosphere": false
+      },
+      "keywords": [
+        "bề mặt sao kim",
+        "núi lửa sao kim",
+        "venus surface"
+      ]
+    },
+    {
+      "id": "mars",
+      "name": "Sao Hỏa",
+      "props": {
+        "body": "mars"
+      },
+      "keywords": [
+        "bề mặt sao hỏa",
+        "hành tinh đỏ"
+      ]
+    },
+    {
+      "id": "mars_dust_storm",
+      "name": "Bão bụi toàn cầu trên Sao Hỏa",
+      "props": {
+        "body": "mars",
+        "dustStorm": true,
+        "labels": false
+      },
+      "keywords": [
+        "bão bụi",
+        "sao hỏa",
+        "bão bụi sao hỏa",
+        "mars dust storm"
+      ]
+    },
+    {
+      "id": "mars_layers",
+      "name": "Cấu tạo Sao Hỏa",
+      "props": {
+        "body": "mars",
+        "view": "cross_section"
+      }
+    },
+    {
+      "id": "jupiter_moons",
+      "name": "Sao Mộc và 4 vệ tinh Galileo",
+      "props": {
+        "body": "jupiter",
+        "moons": true,
+        "labels": false,
+        "viewLat": 8
+      },
+      "keywords": [
+        "vệ tinh galileo",
+        "io europa ganymede callisto",
+        "galilean moons"
+      ]
+    },
+    {
+      "id": "jupiter_layers",
+      "name": "Bên trong Sao Mộc",
+      "props": {
+        "body": "jupiter",
+        "view": "cross_section"
+      },
+      "keywords": [
+        "hydro kim loại",
+        "metallic hydrogen"
+      ]
+    },
+    {
+      "id": "saturn_rings",
+      "name": "Sao Thổ và vành đai",
+      "props": {
+        "body": "saturn",
+        "viewLat": 24,
+        "sunAngle": 40,
+        "labels": false,
+        "facts": true
+      },
+      "keywords": [
+        "vành đai sao thổ",
+        "khe cassini",
+        "saturn rings"
+      ]
+    },
+    {
+      "id": "uranus",
+      "name": "Sao Thiên Vương nằm nghiêng",
+      "props": {
+        "body": "uranus",
+        "viewLat": 10,
+        "facts": true,
+        "labels": false
+      },
+      "keywords": [
+        "trục nghiêng sao thiên vương",
+        "uranus tilt"
+      ]
+    },
+    {
+      "id": "neptune",
+      "name": "Sao Hải Vương và Vết Tối Lớn",
+      "props": {
+        "body": "neptune"
+      },
+      "keywords": [
+        "vết tối lớn",
+        "great dark spot",
+        "gió sao hải vương"
+      ]
+    },
+    {
+      "id": "pluto_charon",
+      "name": "Pluto và Charon",
+      "props": {
+        "body": "pluto",
+        "moons": true,
+        "sunAngle": 45
+      },
+      "keywords": [
+        "trái tim pluto",
+        "tombaugh regio",
+        "pluto charon"
+      ]
+    },
+    {
+      "id": "io",
+      "name": "Io — núi lửa",
+      "props": {
+        "body": "io",
+        "sunAngle": 100,
+        "labels": false
+      },
+      "keywords": [
+        "núi lửa io",
+        "io volcanoes"
+      ]
+    },
+    {
+      "id": "europa_ocean",
+      "name": "Europa và đại dương ngầm",
+      "props": {
+        "body": "europa",
+        "view": "cross_section"
+      },
+      "keywords": [
+        "đại dương dưới băng",
+        "europa ocean"
+      ]
+    },
+    {
+      "id": "ganymede",
+      "name": "Ganymede",
+      "props": {
+        "body": "ganymede",
+        "facts": true,
+        "labels": false
+      }
+    },
+    {
+      "id": "titan",
+      "name": "Titan — sương mù cam",
+      "props": {
+        "body": "titan",
+        "facts": true,
+        "labels": false
+      },
+      "keywords": [
+        "khí quyển titan",
+        "hồ metan",
+        "titan haze"
+      ]
+    },
+    {
+      "id": "enceladus_plumes",
+      "name": "Enceladus phun hơi nước",
+      "props": {
+        "body": "enceladus",
+        "sunAngle": 120,
+        "viewLat": -25,
+        "labels": false
+      },
+      "keywords": [
+        "mạch phun enceladus",
+        "enceladus plumes",
+        "geyser"
+      ]
+    }
+  ],
+  "cues": "mỗi nhãn địa danh (hoặc: mở mặt cắt, rồi từng lớp) hiện ở một mốc; bảng số liệu ở mốc cuối; địa danh đầu tiên quay ra trước mặt đúng lúc nó hiện",
+  "accuracy": "Số liệu NASA (bán kính, chu kỳ tự quay và chiều quay, độ nghiêng trục); cấu trúc bên trong theo các mô hình đã công bố (tỉ lệ bán kính lõi/manti); lục địa Trái Đất từ Natural Earth 1:50m; vị trí địa danh, núi lửa, vết bão gần đúng; vành đai Sao Thổ theo bán kính thật các vành D, C, B, khe Cassini, A, F; bóng đổ vành ↔ hành tinh tính bằng hình học tia. Chu kỳ quỹ đạo vệ tinh giữ đúng tỉ lệ với nhau.",
+  "limitations": "Bề mặt là texture thủ tục (không phải ảnh chụp) dựng quanh các đặc điểm thật; tốc độ quay được chiếu nhanh, khoảng cách và kích thước vệ tinh không theo tỉ lệ; mặt cắt là hình quạt 2D; đèn thành phố mang tính minh hoạ; lớp vỏ mỏng được phóng to.",
+  "example_usage": "{\"component\":\"planet\",\"props\":{\"body\":\"mars\",\"dustStorm\":true,\"camera\":\"push_in\"}}",
+  "combines_with": [
+    "solar_orbit",
+    "planet_rotation",
+    "moon_phases",
+    "space_mission",
+    "sun_activity"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

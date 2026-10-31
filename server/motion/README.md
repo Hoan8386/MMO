@@ -36,7 +36,26 @@ Ngoài `category` (thư mục), mỗi component khoa học ghi **lĩnh vực** v
 | `shared/fx.tsx` | hiệu ứng dùng chung: `glow`, `starfield`, `burst` (nổ hạt), `ripple` (vòng lan / xung năng lượng), `pathAt` + `trail` (vệt sáng chạy theo đường), `typeOn` (hiện công thức), `kinetic` (chữ chuyển động), `callout` (chú thích có đường dẫn), `legend` |
 | `shared/raster.tsx` | `Raster`: điểm ảnh tính bằng hàm (giao thoa, điện thế, fractal); `Draw`: vẽ trực tiếp bằng canvas 2D (hàng nghìn hạt, đĩa bồi tụ, cộng sáng) |
 | `shared/expr.ts` | bộ đọc công thức an toàn (không eval) cho component toán: `compile("x^2 - 2x")` |
-| `registry/common.mjs` | tham số dùng chung: `palette`, `mode`, `backdrop`, `speed`, `scale`, `easing`, `camera` |
+| `shared/sphere.tsx` | `Sphere`: quả cầu tô từng điểm ảnh với bản đồ bề mặt (màu, độ cao → đổ bóng nổi, phản quang, đèn đêm), lớp mây quay riêng, khí quyển ở rìa, quay vi sai theo vĩ độ, bóng đổ tuỳ ý; `bodyFrame(tilt, pitch)` cho vành đai và quỹ đạo vệ tinh; `project(lat, lon)` để nhãn bám bề mặt |
+| `shared/noise.ts` | nhiễu 3D có seed (`n3`, `fbm`, `ridge`) cho bề mặt hành tinh, khí tinh vân, mô |
+| `shared/earth_land.ts` | mặt nạ lục địa Trái Đất 720×360 từ Natural Earth 1:50m (public domain, qua world-atlas 2.0.2, ISC) |
+| `shared/ui.tsx` | `label`, `pill`, `arrow`, `fitX` (giữ trọn nhãn trong vùng an toàn) |
+| `registry/common.mjs` | tham số dùng chung: `palette` (lĩnh vực hoặc theme có tên), `visual`, `quality`, `seed`, `mode`, `backdrop`, `speed`, `scale`, `easing`, `camera`; `"common": "all"` trong meta = cả bộ |
+
+**Theme có tên** (`palettes.json` → `themes`, chọn bằng `palette`): Vũ trụ `deep_space`, `nebula_purple`, `cosmic_cyan`,
+`stellar_gold`, `planetary_red`, `aurora_green` · Vật lý `electric_blue`, `plasma_purple`, `energy_orange`,
+`quantum_magenta`, `field_green`, `physics_dark` · Sinh học `cell_green`, `dna_cyan`, `protein_violet`, `organic_coral`,
+`molecular_gold`, `microscopy_dark` · Toán `geometry_blue`, `function_orange`, `equation_violet`, `coordinate_green`,
+`highlight_pink`, `mathematics_dark` — đúng mã màu của đặc tả. **Phong cách** (`visual`): `standard`, `cinematic`
+(vignette), `neon` (phát sáng mạnh), `holographic` (scanline), `realistic`, `clean`, `blackboard` (phấn trên bảng đen),
+`infographic` — đổi độ phát sáng (`L.glow`), độ dày nét (`L.lw`), độ đặc của mặt. **Chất lượng** (`quality`
+low/medium/high → `L.q`) giảm số hạt và độ phân giải raster để render nhanh; **seed** (`L.seed`) quyết định mọi bố cục
+ngẫu nhiên.
+
+**Biến thể** (`variants` trong meta): các cấu hình có sẵn `{id, name, props, duration?, keywords?}` — mỗi biến thể được
+kiểm thử riêng (`tests/run.mjs` render 16:9 trên nền xem trước, ghi `previews/<id>--<variant>.webm/png`), hiện thành
+chip trong trang web, và được liệt kê cho AI làm điểm xuất phát (tên/keywords biến thể cũng là cụm từ tìm kiếm; kết quả
+tìm có `variant` gợi ý). Tham số dùng chung được mô tả một lần mỗi prompt, không lặp ở từng component.
 
 Trường metadata thêm (không bắt buộc, dùng để duyệt và cho AI tìm): `domain`, `topic`, `subtopic` (cụm cách nhau bằng
 "·", cũng được dùng làm từ khoá tìm kiếm), `styles` (cinematic, scientific, 3d, educational, infographic, minimalist,
@@ -93,7 +112,17 @@ Chỉ `tested` và `ready` được đưa cho AI dùng trong video.
 
 TypeScript không lỗi · không lỗi runtime trong trang render · đúng số khung = thời lượng × fps + 1 ·
 nội dung nằm trong vùng an toàn ở 16:9, 9:16 và 1:1 (bộ render đo hộp bao phần không trong suốt của mọi khung) ·
-clip không trống.
+clip không trống · mỗi biến thể render được (16:9) và đúng số khung. `--no-variants` bỏ qua biến thể, `--no-aspects`
+chỉ thử 16:9.
+
+### Danh mục theo lĩnh vực
+
+| lĩnh vực | component (biến thể chính) |
+|---|---|
+| Vũ trụ | `planet` (17 thiên thể: Trái Đất có lục địa thật, mây, đèn đêm; Sao Hỏa bão bụi; Sao Mộc + 4 vệ tinh Galileo; Sao Thổ vành đai có bóng đổ hai chiều; mặt cắt lõi–manti–vỏ; Enceladus phun hơi nước…), `sun_activity` (vết đen, tai lửa, flare, CME, gió Mặt Trời, cấu trúc trong), `galaxy` (xoắn ốc, có thanh, Ngân Hà, elip, vô định hình, va chạm N vật), `nebula` (phát xạ, phản xạ, tối, hành tinh, tàn dư siêu tân tinh, cột hình thành sao), `space_mission` (phóng tên lửa, Hohmann, quỹ đạo vệ tinh, gravity assist, hạ cánh Sao Hỏa), `gravitational_waves`, `scale_comparison`, `eclipse`, `black_hole`, `cosmic_expansion`, `transit_method`, `stellar_lifecycle`, `solar_orbit`, `planet_rotation`, `gravity_orbit`, `moon_phases` |
+| Vật lý | `pendulum` (đơn RK4, kép hỗn loạn, lò xo), `circuit` (nối tiếp, song song, Ohm, RC), `magnetism` (nam châm, dây dẫn, ống dây, Lorentz, cảm ứng), `optics` (phản xạ, Snell + Fresnel, phản xạ toàn phần, lăng kính BK7, thấu kính, sợi quang), `thermo` (khí Maxwell–Boltzmann, dẫn nhiệt, đối lưu, chuyển thể, Carnot), `quantum_wave` (Schrödinger Crank–Nicolson: xuyên hầm, dao động tử, giếng, phép đo), `atom_orbital` (đám mây |ψ|² hydro, lát cắt, mức năng lượng + quang phổ Balmer), `relativity` (giãn thời gian, co độ dài, sinh đôi, nón ánh sáng), `nuclear_particle` (phân rã, α/β/γ, nhiệt hạch D–T, máy gia tốc), `doppler`, `double_slit`, `em_field`, `spacetime_curvature`, `nuclear_fission`, `projectile_motion`, `collision_simulation`, `wave_propagation` |
+| Sinh học | `cell` (động vật/thực vật, bào quan, túi tiết, phóng to bào quan), `virus` (capsid 20 mặt, corona, thể thực khuẩn, chu trình nhân lên), `bacterium` (cấu tạo, phân đôi, khuẩn lạc 2^(t/g), hình dạng), `protein_synthesis` (phiên mã + dịch mã theo bảng mã di truyền), `photosynthesis` (tổng quan, pha sáng, Calvin, hô hấp tế bào), `heart` (chu kỳ tim + ECG, tuần hoàn kép), `immune` (tế bào máu, đông máu, kháng thể, thực bào), `ecosystem` (Lotka–Volterra, tháp năng lượng, lưới thức ăn), `natural_selection` (Wright–Fisher, dòng thời gian), `dna_helix`, `mitosis`, `neuron_signal`, `cell_membrane_transport` |
+| Toán | `solid_3d` (10 khối, mặt cắt, khai triển), `geometry_proof` (Pythagoras, dựng hình, góc nội tiếp, đường thẳng Euler, phép biến hình), `complex_plane` (đường tròn lượng giác, Euler, nhân số phức, căn của đơn vị), `fractal` (Mandelbrot zoom, Julia, Sierpinski, Koch, cây), `fourier_series` (sóng từ vòng tròn quay, vẽ hình bằng DFT), `statistics` (Galton, chuẩn, hồi quy, luật số lớn, Bayes), `chaos` (Lorenz, automat tế bào, Game of Life), `vector_ops` (cộng, tích vô hướng, tích có hướng, trường vector), `calculus_lab` (Taylor, trường hướng, giới hạn, khối tròn xoay), `function_graph`, `matrix_transform`, `monte_carlo_pi`, `fibonacci_spiral` |
 
 ## Viết component
 

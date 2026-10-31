@@ -1,0 +1,48 @@
+{
+  "id": "thermo",
+  "name": "Nhiệt học: khí lý tưởng, dẫn nhiệt, đối lưu, chuyển thể, chu trình Carnot",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "thermodynamics",
+  "subtopic": "Ideal Gas · Gas Particles · Pressure · Temperature · Maxwell-Boltzmann · Heat Conduction · Convection · Phase Transition · Melting · Boiling · Heating Curve · Carnot Cycle · Heat Engine",
+  "styles": ["scientific", "educational", "infographic"],
+  "dimension": "2d",
+  "palette": "thermodynamics",
+  "description": "Nhiệt và chất khí. gas: các hạt trong xi lanh có tốc độ rút theo phân bố Maxwell–Boltzmann, va vào thành; đun nóng đẳng tích (áp suất tăng), đẳng áp (piston được đẩy lên) hoặc nén đẳng nhiệt — đồng hồ T, P, V theo PV = NkT, histogram tốc độ trực tiếp nằm trên đường cong lý thuyết. conduction: thanh kim loại đun một đầu, phương trình truyền nhiệt giải số — màu và độ rung của nguyên tử cho thấy nhiệt độ dọc thanh, kèm đồ thị phân bố nhiệt. convection: nồi đun từ dưới, chất lỏng nóng nổi lên thành các cuộn đối lưu. phase: nước đá được đun tới khi thành hơi — đường cong đun có các đoạn nằm ngang (nhiệt nóng chảy 334 kJ/kg, nhiệt hoá hơi 2 257 kJ/kg) trong khi các hạt chuyển từ mạng tinh thể dao động sang lỏng rồi khí. carnot: chu trình Carnot trên giản đồ P–V cùng piston, bốn quá trình và hiệu suất 1 − T₂/T₁.",
+  "tags": ["vật lý", "physics", "nhiệt học", "thermodynamics", "nhiệt độ", "temperature", "chất khí", "gas"],
+  "keywords": [
+    "khí lý tưởng", "ideal gas", "phương trình trạng thái", "pv = nrt", "áp suất khí", "gas pressure", "chuyển động nhiệt", "thermal motion", "phân bố maxwell", "maxwell boltzmann",
+    "đẳng tích", "isochoric", "đẳng áp", "isobaric", "đẳng nhiệt", "isothermal", "định luật boyle", "định luật charles", "piston", "xi lanh",
+    "dẫn nhiệt", "heat conduction", "truyền nhiệt", "heat transfer", "đối lưu", "convection", "bức xạ nhiệt",
+    "nóng chảy", "melting", "sôi", "boiling", "bay hơi", "evaporation", "chuyển thể", "phase change", "nhiệt nóng chảy", "latent heat", "đường cong đun nóng", "heating curve",
+    "chu trình carnot", "carnot cycle", "động cơ nhiệt", "heat engine", "hiệu suất", "efficiency"
+  ],
+  "duration": { "default": 12, "min": 6, "max": 60 },
+  "common": "all",
+  "inputs": {
+    "title": { "type": "string", "maxLength": 48, "default": "", "description": "tiêu đề góc trên" },
+    "mode": { "type": "string", "enum": ["gas", "conduction", "convection", "phase", "carnot"], "default": "gas", "description": "cảnh" },
+    "process": { "type": "string", "enum": ["isochoric", "isobaric", "isothermal"], "default": "isochoric", "description": "gas: quá trình" },
+    "particles": { "type": "integer", "min": 60, "max": 600, "default": 260, "description": "gas: số hạt" },
+    "histogram": { "type": "boolean", "default": true, "description": "gas: histogram tốc độ + đường Maxwell–Boltzmann" },
+    "labels": { "type": "boolean", "default": true, "description": "chú thích và số đo" }
+  },
+  "variants": [
+    { "id": "isochoric", "name": "Đun nóng khí đẳng tích", "props": { "mode": "gas", "process": "isochoric" } },
+    { "id": "isobaric", "name": "Khí nở ra đẳng áp, piston dâng lên", "props": { "mode": "gas", "process": "isobaric" } },
+    { "id": "isothermal", "name": "Nén khí đẳng nhiệt (định luật Boyle)", "props": { "mode": "gas", "process": "isothermal", "histogram": false } },
+    { "id": "conduction", "name": "Dẫn nhiệt trong thanh kim loại", "props": { "mode": "conduction" } },
+    { "id": "convection", "name": "Dòng đối lưu", "props": { "mode": "convection" } },
+    { "id": "phase", "name": "Nước đá → nước → hơi: đường cong đun nóng", "props": { "mode": "phase" }, "duration": 14 },
+    { "id": "carnot", "name": "Chu trình Carnot", "props": { "mode": "carnot" }, "duration": 14 }
+  ],
+  "cues": "quá trình chạy giữa giây 1,2 và cuối clip; số đo / chú thích ở các mốc",
+  "accuracy": "Tốc độ ban đầu theo phân bố Maxwell–Boltzmann 2D, độ lớn tăng theo √T; áp suất và thể tích theo PV = NkT; dẫn nhiệt giải phương trình khuếch tán bằng sơ đồ hiện FTCS ổn định; nhiệt nóng chảy/hoá hơi và nhiệt dung của nước thật (trục nhiệt lượng nén căn bậc hai để thấy mọi đoạn); chu trình Carnot với đường đoạn nhiệt PV^γ (γ = 1,4).",
+  "limitations": "Hạt khí không va chạm nhau (khí lý tưởng); thành xi lanh di chuyển được xử lý gần đúng; đối lưu là trường dòng cuộn lý tưởng (không giải Navier–Stokes); số hạt nhỏ nên histogram dao động.",
+  "example_usage": "{\"component\":\"thermo\",\"props\":{\"mode\":\"gas\",\"process\":\"isobaric\"}}",
+  "combines_with": ["cell_membrane_transport", "wave_propagation"],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": ["png-sequence", "webm-alpha"],
+  "status": "dev"
+}

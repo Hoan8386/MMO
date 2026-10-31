@@ -1,0 +1,150 @@
+{
+  "id": "natural_selection",
+  "name": "Chọn lọc tự nhiên (bướm sâu đo) và dòng thời gian tiến hoá",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "evolution",
+  "subtopic": "Natural Selection · Industrial Melanism · Allele Frequency · Genetic Drift · Adaptation · Evolution Timeline",
+  "styles": [
+    "educational",
+    "scientific",
+    "infographic"
+  ],
+  "dimension": "2d",
+  "palette": "evolution",
+  "description": "Tiến hoá. selection: bướm sâu đo trên vỏ cây sẫm dần vì muội than (hiện tượng hoá đen công nghiệp); mỗi thế hệ chim bắt những con dễ thấy, con sống sót sinh sản; tần số dạng sẫm màu theo mô hình Wright–Fisher có chọn lọc (lấy mẫu ngẫu nhiên theo seed N cá thể mỗi thế hệ) nên đường cong tăng dần kèm dao động trôi dạt di truyền thật; đồ thị tần số theo thế hệ. timeline: lịch sử sự sống trên dải thời gian (thang căn bậc hai) từ tế bào đầu tiên 3,8 tỉ năm trước tới loài người.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "tiến hoá",
+    "evolution",
+    "chọn lọc tự nhiên",
+    "natural selection",
+    "darwin"
+  ],
+  "keywords": [
+    "chọn lọc tự nhiên",
+    "natural selection",
+    "tiến hoá",
+    "evolution",
+    "darwin",
+    "bướm sâu đo",
+    "peppered moth",
+    "hoá đen công nghiệp",
+    "industrial melanism",
+    "thích nghi",
+    "adaptation",
+    "biến dị",
+    "variation",
+    "tần số alen",
+    "allele frequency",
+    "trôi dạt di truyền",
+    "genetic drift",
+    "kẻ thù tự nhiên",
+    "ngụy trang",
+    "camouflage",
+    "lịch sử sự sống",
+    "history of life",
+    "dòng thời gian tiến hoá",
+    "evolution timeline",
+    "kỷ cambri",
+    "khủng long tuyệt chủng",
+    "nguồn gốc loài người"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "selection",
+        "timeline"
+      ],
+      "default": "selection",
+      "description": "cảnh"
+    },
+    "population": {
+      "type": "integer",
+      "min": 20,
+      "max": 120,
+      "default": 60,
+      "description": "selection: số bướm mỗi thế hệ"
+    },
+    "generations": {
+      "type": "integer",
+      "min": 4,
+      "max": 20,
+      "default": 10,
+      "description": "selection: số thế hệ trong clip"
+    },
+    "selection": {
+      "type": "number",
+      "min": 0.1,
+      "max": 0.9,
+      "default": 0.5,
+      "description": "selection: xác suất chim bắt được bướm sáng màu trên vỏ sẫm"
+    },
+    "startDark": {
+      "type": "number",
+      "min": 0.01,
+      "max": 0.5,
+      "default": 0.1,
+      "description": "selection: tỉ lệ bướm sẫm màu ban đầu"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "selection",
+      "name": "Chọn lọc tự nhiên ở bướm sâu đo",
+      "props": {
+        "mode": "selection"
+      }
+    },
+    {
+      "id": "strong",
+      "name": "Chọn lọc mạnh, quần thể nhỏ (trôi dạt)",
+      "props": {
+        "mode": "selection",
+        "population": 30,
+        "selection": 0.8
+      }
+    },
+    {
+      "id": "timeline",
+      "name": "Dòng thời gian lịch sử sự sống",
+      "props": {
+        "mode": "timeline"
+      }
+    }
+  ],
+  "cues": "các thế hệ chia đều thời lượng; chú thích theo mốc",
+  "accuracy": "Mô hình Wright–Fisher đơn bội có chọn lọc: kẻ săn loại bỏ theo kiểu hình, cá thể sống sót sinh ra thế hệ sau bằng lấy mẫu ngẫu nhiên (có trôi dạt) và đột biến lặp lại 1 %/thế hệ; mốc thời gian lịch sử sự sống theo ước tính phổ biến hiện nay.",
+  "limitations": "Di truyền đơn giản hoá (một gen, không có trội–lặn, không di cư); số cá thể nhỏ; tốc độ hoá đen thực tế mất hàng chục năm; thang thời gian là căn bậc hai, không tuyến tính.",
+  "example_usage": "{\"component\":\"natural_selection\",\"props\":{\"mode\":\"selection\",\"selection\":0.6}}",
+  "combines_with": [
+    "ecosystem",
+    "dna_helix"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

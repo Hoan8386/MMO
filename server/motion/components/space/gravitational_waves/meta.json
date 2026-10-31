@@ -1,0 +1,132 @@
+{
+  "id": "gravitational_waves",
+  "name": "Hai hố đen hợp nhất và sóng hấp dẫn",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "black_holes",
+  "subtopic": "Black Hole Binary · Black Hole Merger · Gravitational Wave · Chirp · Ringdown · LIGO",
+  "styles": [
+    "cinematic",
+    "scientific",
+    "3d"
+  ],
+  "dimension": "2.5d",
+  "palette": "black_holes",
+  "description": "Hai hố đen quay quanh nhau trên lưới không–thời gian phối cảnh, quỹ đạo co lại và quay nhanh dần theo đúng dạng \"chirp\" (khoảng cách ∝ τ^¼, pha quỹ đạo ∝ τ^⅝ với τ là thời gian còn lại), rồi loé sáng hợp nhất và rung tắt dần (ringdown). Hai giếng thế di chuyển theo hai hố đen; sóng hấp dẫn toả ra thành xoắn ốc hai nhánh (dạng tứ cực, biên độ giảm theo 1/r, tính ở thời điểm trễ t − r/c). Bên dưới, biến dạng h(t) được vẽ trực tiếp; giao thoa kế chữ L (LIGO) có một tay dãn ra và tay kia co lại khi sóng đi qua.",
+  "tags": [
+    "vũ trụ",
+    "space",
+    "astronomy",
+    "hố đen",
+    "black hole",
+    "sóng hấp dẫn",
+    "gravitational waves",
+    "thuyết tương đối",
+    "relativity"
+  ],
+  "keywords": [
+    "sóng hấp dẫn",
+    "gravitational wave",
+    "hai hố đen va chạm",
+    "black hole merger",
+    "binary black hole",
+    "hệ đôi hố đen",
+    "hợp nhất hố đen",
+    "ligo",
+    "giao thoa kế",
+    "interferometer",
+    "gw150914",
+    "chirp",
+    "ringdown",
+    "gợn sóng không thời gian",
+    "ripples in spacetime",
+    "einstein dự đoán"
+  ],
+  "duration": {
+    "default": 14,
+    "min": 6,
+    "max": 40
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mergeAt": {
+      "type": "number",
+      "min": 0.3,
+      "max": 0.9,
+      "default": 0.68,
+      "description": "thời điểm hợp nhất, tỉ lệ trong clip"
+    },
+    "massRatio": {
+      "type": "number",
+      "min": 0.3,
+      "max": 1,
+      "default": 0.8,
+      "description": "khối lượng hố đen nhỏ / lớn (GW150914 ≈ 0,8)"
+    },
+    "grid": {
+      "type": "boolean",
+      "default": true,
+      "description": "lưới không–thời gian"
+    },
+    "waveform": {
+      "type": "boolean",
+      "default": true,
+      "description": "dải vẽ tín hiệu h(t)"
+    },
+    "detector": {
+      "type": "boolean",
+      "default": true,
+      "description": "giao thoa kế LIGO (khung ngang)"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "merger",
+      "name": "Hợp nhất hố đen và sóng hấp dẫn",
+      "props": {}
+    },
+    {
+      "id": "grid_only",
+      "name": "Gợn sóng không–thời gian (không chú thích)",
+      "props": {
+        "waveform": false,
+        "labels": false,
+        "backdrop": "full"
+      }
+    },
+    {
+      "id": "unequal",
+      "name": "Hai hố đen chênh lệch khối lượng",
+      "props": {
+        "massRatio": 0.4,
+        "detector": false
+      }
+    }
+  ],
+  "cues": "hai chú thích đầu theo mốc; chú thích hợp nhất đúng lúc hợp nhất (mergeAt)",
+  "accuracy": "Dạng chirp bậc thấp nhất của thuyết tương đối rộng (Newton + phát xạ tứ cực): a ∝ τ^¼, ω ∝ τ^−⅜, h ∝ ω^⅔·cos 2θ; mẫu xoắn hai nhánh cos 2(φ − θ) lan với vận tốc hữu hạn; ringdown là dao động tắt dần theo hàm mũ. Số liệu khối lượng theo GW150914.",
+  "limitations": "Tần số được giới hạn để hiển thị ở 30 khung/giây (thật: tới ~250 Hz); không có pha hợp nhất tính bằng thuyết tương đối số; biên độ sóng và biến dạng của máy dò được phóng đại cực lớn; lưới là hình ảnh trực quan của độ cong.",
+  "example_usage": "{\"component\":\"gravitational_waves\",\"props\":{\"backdrop\":\"full\",\"camera\":\"push_in\"}}",
+  "combines_with": [
+    "black_hole",
+    "spacetime_curvature"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

@@ -1,0 +1,140 @@
+{
+  "id": "bacterium",
+  "name": "Vi khuẩn: cấu tạo, phân đôi, khuẩn lạc, hình dạng",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "microbiology",
+  "subtopic": "Bacterium · E. coli · Bacterial Flagellum · Pili · Plasmid · Nucleoid · Bacterial Division · Binary Fission · Microorganism Colony · Exponential Growth",
+  "styles": [
+    "organic",
+    "educational",
+    "scientific"
+  ],
+  "dimension": "2d",
+  "palette": "microbiology",
+  "description": "Vi khuẩn. anatomy: vi khuẩn hình que (kiểu E. coli) — thành tế bào và màng, vùng nhân với ADN vòng, plasmid, ribosome, lông nhung (pili), và roi xoắn có sóng chạy về phía sau khi quay đẩy tế bào đi tới. fission: phân đôi — ADN nhân đôi, hai bản tách về hai đầu, tế bào dài ra và vách ngăn thắt lại thành hai tế bào con. colony: một tế bào sinh sôi, gấp đôi mỗi thế hệ N = 2^(t/g), khuẩn lạc lan rộng cùng đường cong hàm mũ trực tiếp. shapes: cầu khuẩn (chuỗi và chùm), trực khuẩn, xoắn khuẩn.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "vi sinh vật",
+    "microbiology",
+    "vi khuẩn",
+    "bacteria"
+  ],
+  "keywords": [
+    "vi khuẩn",
+    "bacteria",
+    "bacterium",
+    "e. coli",
+    "cấu tạo vi khuẩn",
+    "tế bào nhân sơ",
+    "prokaryote",
+    "roi vi khuẩn",
+    "flagellum",
+    "lông nhung",
+    "pili",
+    "plasmid",
+    "vùng nhân",
+    "nucleoid",
+    "phân đôi",
+    "binary fission",
+    "sinh sản vi khuẩn",
+    "khuẩn lạc",
+    "colony",
+    "tăng trưởng hàm mũ",
+    "exponential growth",
+    "thời gian thế hệ",
+    "generation time",
+    "cầu khuẩn",
+    "coccus",
+    "trực khuẩn",
+    "bacillus",
+    "xoắn khuẩn",
+    "spirillum",
+    "tụ cầu",
+    "liên cầu"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "anatomy",
+        "fission",
+        "colony",
+        "shapes"
+      ],
+      "default": "anatomy",
+      "description": "cảnh"
+    },
+    "generation": {
+      "type": "integer",
+      "min": 3,
+      "max": 9,
+      "default": 8,
+      "description": "colony: số thế hệ trong clip (8 → 256 tế bào)"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "chú thích"
+    }
+  },
+  "variants": [
+    {
+      "id": "anatomy",
+      "name": "Cấu tạo vi khuẩn",
+      "props": {
+        "mode": "anatomy"
+      }
+    },
+    {
+      "id": "fission",
+      "name": "Phân đôi",
+      "props": {
+        "mode": "fission"
+      }
+    },
+    {
+      "id": "colony",
+      "name": "Khuẩn lạc tăng trưởng hàm mũ",
+      "props": {
+        "mode": "colony"
+      }
+    },
+    {
+      "id": "shapes",
+      "name": "Các hình dạng vi khuẩn",
+      "props": {
+        "mode": "shapes"
+      }
+    }
+  ],
+  "cues": "chú thích theo mốc; phân đôi và tăng trưởng chạy suốt clip",
+  "accuracy": "Cấu tạo tế bào nhân sơ theo giáo trình; tăng trưởng N = 2^(t/g) chính xác theo số thế hệ; roi xoắn có sóng truyền về phía sau (cơ chế đẩy của roi vi khuẩn); các bước phân đôi đúng trình tự.",
+  "limitations": "Sơ đồ 2D; số ribosome, chiều dài roi và tỉ lệ được đơn giản hoá; khuẩn lạc là bố cục minh hoạ (không mô phỏng cơ học chen lấn).",
+  "example_usage": "{\"component\":\"bacterium\",\"props\":{\"mode\":\"colony\"}}",
+  "combines_with": [
+    "virus",
+    "cell",
+    "immune"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

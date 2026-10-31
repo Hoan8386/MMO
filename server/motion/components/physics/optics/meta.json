@@ -1,0 +1,210 @@
+{
+  "id": "optics",
+  "name": "Quang học tia: phản xạ, khúc xạ, phản xạ toàn phần, lăng kính, thấu kính, sợi quang",
+  "category": "physics",
+  "domain": "physics",
+  "topic": "waves",
+  "subtopic": "Reflection · Refraction · Snell's Law · Total Internal Reflection · Prism · Dispersion · Spectrum · Convex Lens · Image Formation · Focal Point · Fiber Optics",
+  "styles": [
+    "scientific",
+    "educational",
+    "futuristic"
+  ],
+  "dimension": "2d",
+  "palette": "waves",
+  "description": "Quang học tia với góc tính thật. reflection: tia trên gương phẳng, góc tới bằng góc phản xạ; refraction: tia đi vào thuỷ tinh/nước bị bẻ theo định luật Snell n₁sinθ₁ = n₂sinθ₂, độ mạnh của tia phản xạ một phần theo công thức Fresnel; tir: từ thuỷ tinh ra không khí, góc tới tăng dần qua góc tới hạn và tia khúc xạ biến mất (phản xạ toàn phần); prism: ánh sáng trắng bị lăng kính BK7 tán sắc thành dải màu (chiết suất Cauchy n(λ), mỗi màu được dò qua hai mặt); lens: thấu kính hội tụ tạo ảnh của mũi tên từ ba tia đặc biệt và công thức 1/f = 1/d + 1/d′, vật tiến dần từ ngoài 2F vào trong F (ảnh thật ngược chiều → ảnh ảo cùng chiều); fiber: ánh sáng bị giữ trong sợi quang bằng phản xạ toàn phần liên tiếp. Số đo cập nhật trực tiếp.",
+  "tags": [
+    "vật lý",
+    "physics",
+    "quang học",
+    "optics",
+    "ánh sáng",
+    "light"
+  ],
+  "keywords": [
+    "phản xạ ánh sáng",
+    "reflection of light",
+    "gương phẳng",
+    "plane mirror",
+    "góc tới",
+    "góc phản xạ",
+    "angle of incidence",
+    "khúc xạ ánh sáng",
+    "refraction",
+    "định luật snell",
+    "snell's law",
+    "chiết suất",
+    "refractive index",
+    "chiếc đũa gãy trong nước",
+    "phản xạ toàn phần",
+    "total internal reflection",
+    "góc tới hạn",
+    "critical angle",
+    "lăng kính",
+    "prism",
+    "tán sắc",
+    "dispersion",
+    "cầu vồng",
+    "rainbow",
+    "quang phổ",
+    "spectrum",
+    "thấu kính hội tụ",
+    "converging lens",
+    "convex lens",
+    "tiêu điểm",
+    "focal point",
+    "tiêu cự",
+    "focal length",
+    "ảnh thật",
+    "ảnh ảo",
+    "real image",
+    "virtual image",
+    "kính lúp",
+    "magnifying glass",
+    "sợi quang",
+    "optical fiber",
+    "cáp quang",
+    "fiber optics"
+  ],
+  "duration": {
+    "default": 12,
+    "min": 5,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "reflection",
+        "refraction",
+        "tir",
+        "prism",
+        "lens",
+        "fiber"
+      ],
+      "default": "refraction",
+      "description": "cảnh"
+    },
+    "n1": {
+      "type": "number",
+      "min": 1,
+      "max": 2.5,
+      "default": 1,
+      "description": "chiết suất môi trường tới (không khí 1, nước 1,33, thuỷ tinh 1,5, kim cương 2,42)"
+    },
+    "n2": {
+      "type": "number",
+      "min": 1,
+      "max": 2.5,
+      "default": 1.5,
+      "description": "chiết suất môi trường sau"
+    },
+    "angle": {
+      "type": "number",
+      "min": 5,
+      "max": 80,
+      "default": 45,
+      "description": "góc tới, độ (fiber: góc với trục)"
+    },
+    "focal": {
+      "type": "number",
+      "min": 0.6,
+      "max": 1.4,
+      "default": 1,
+      "description": "lens: tiêu cự (tương đối)"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "số đo và công thức"
+    },
+    "beams": {
+      "type": "integer",
+      "min": 1,
+      "max": 3,
+      "default": 1,
+      "description": "số tia (dự phòng)"
+    }
+  },
+  "variants": [
+    {
+      "id": "reflection",
+      "name": "Phản xạ trên gương phẳng",
+      "props": {
+        "mode": "reflection",
+        "angle": 40
+      }
+    },
+    {
+      "id": "refraction",
+      "name": "Khúc xạ không khí → thuỷ tinh",
+      "props": {
+        "mode": "refraction"
+      }
+    },
+    {
+      "id": "water",
+      "name": "Khúc xạ không khí → nước",
+      "props": {
+        "mode": "refraction",
+        "n2": 1.33,
+        "angle": 55
+      }
+    },
+    {
+      "id": "tir",
+      "name": "Phản xạ toàn phần (góc tới hạn)",
+      "props": {
+        "mode": "tir",
+        "n1": 1.5,
+        "n2": 1
+      },
+      "duration": 12
+    },
+    {
+      "id": "prism",
+      "name": "Lăng kính tán sắc ánh sáng trắng",
+      "props": {
+        "mode": "prism"
+      }
+    },
+    {
+      "id": "lens",
+      "name": "Thấu kính hội tụ tạo ảnh",
+      "props": {
+        "mode": "lens"
+      },
+      "duration": 12
+    },
+    {
+      "id": "fiber",
+      "name": "Sợi quang",
+      "props": {
+        "mode": "fiber",
+        "angle": 18
+      }
+    }
+  ],
+  "cues": "tia vẽ ra ở đầu clip; số đo và công thức ở mốc sau",
+  "accuracy": "Định luật Snell và phản xạ chính xác; độ phản xạ Fresnel trung bình hai phân cực; góc tới hạn arcsin(n₂/n₁); lăng kính đều với chiết suất BK7 theo Cauchy (A = 1,5046, B = 0,0042 µm²), tia của 8 bước sóng được dò qua hai mặt bằng định luật Snell dạng vector; thấu kính mỏng theo 1/f = 1/d + 1/d′ và độ phóng đại −d′/d.",
+  "limitations": "Quang học tia (không có nhiễu xạ/giao thoa); thấu kính mỏng lý tưởng không quang sai; màu bước sóng là xấp xỉ sRGB; độ tán sắc của lăng kính hiển thị đúng tỉ lệ nên dải màu hẹp như thật.",
+  "example_usage": "{\"component\":\"optics\",\"props\":{\"mode\":\"prism\"}}",
+  "combines_with": [
+    "double_slit",
+    "wave_propagation"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

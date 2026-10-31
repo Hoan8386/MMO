@@ -1,0 +1,136 @@
+{
+  "id": "protein_synthesis",
+  "name": "Tổng hợp protein: phiên mã và dịch mã (mã di truyền thật)",
+  "category": "biology",
+  "domain": "biology",
+  "topic": "genetics",
+  "subtopic": "Transcription · Translation · Protein Synthesis · Messenger RNA · Transfer RNA · Ribosome · Codon · Anticodon · Gene Expression",
+  "styles": [
+    "scientific",
+    "educational",
+    "infographic"
+  ],
+  "dimension": "2d",
+  "palette": "genetics",
+  "description": "Biểu hiện gen theo đúng bảng mã di truyền. Phiên mã: ARN polymerase mở chuỗi xoắn kép ADN (hai mạch với các cặp base), đọc mạch mã gốc và lắp các nucleotide bổ sung thành mRNA (A→U, T→A, G→C, C→G). Dịch mã: ribosome trượt dọc mRNA từng codon; với mỗi codon một tRNA có anticodon bổ sung mang amino acid tới, liên kết peptide nối nó vào chuỗi đang dài ra, tới mã kết thúc thì protein rời đi và gấp nếp. Trình tự là tham số gene (mạch bổ sung 5'→3'), dịch bằng bảng 64 codon chuẩn; dòng chữ dưới cùng đọc codon hiện tại và amino acid tương ứng.",
+  "tags": [
+    "sinh học",
+    "biology",
+    "di truyền",
+    "genetics",
+    "protein",
+    "adn",
+    "dna",
+    "arn",
+    "rna"
+  ],
+  "keywords": [
+    "tổng hợp protein",
+    "protein synthesis",
+    "phiên mã",
+    "transcription",
+    "dịch mã",
+    "translation",
+    "biểu hiện gen",
+    "gene expression",
+    "arn thông tin",
+    "mrna",
+    "messenger rna",
+    "arn vận chuyển",
+    "trna",
+    "transfer rna",
+    "ribosome",
+    "codon",
+    "bộ ba mã hoá",
+    "anticodon",
+    "bộ ba đối mã",
+    "mã di truyền",
+    "genetic code",
+    "axit amin",
+    "amino acid",
+    "chuỗi polypeptide",
+    "liên kết peptide",
+    "arn polymerase",
+    "rna polymerase",
+    "mã mở đầu aug",
+    "mã kết thúc",
+    "stop codon"
+  ],
+  "duration": {
+    "default": 16,
+    "min": 8,
+    "max": 60
+  },
+  "common": "all",
+  "inputs": {
+    "title": {
+      "type": "string",
+      "maxLength": 48,
+      "default": "",
+      "description": "tiêu đề góc trên"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "both",
+        "transcription",
+        "translation"
+      ],
+      "default": "both",
+      "description": "giai đoạn hiển thị"
+    },
+    "gene": {
+      "type": "string",
+      "maxLength": 30,
+      "default": "ATGGCCTTTGGAAAATAA",
+      "description": "trình tự gen (mạch bổ sung, A/C/G/T, bắt đầu ATG, bội số của 3, tối đa 30)"
+    },
+    "labels": {
+      "type": "boolean",
+      "default": true,
+      "description": "tiêu đề giai đoạn"
+    }
+  },
+  "variants": [
+    {
+      "id": "both",
+      "name": "Phiên mã rồi dịch mã",
+      "props": {
+        "stage": "both"
+      }
+    },
+    {
+      "id": "transcription",
+      "name": "Phiên mã: ADN → mRNA",
+      "props": {
+        "stage": "transcription"
+      },
+      "duration": 10
+    },
+    {
+      "id": "translation",
+      "name": "Dịch mã: mRNA → protein",
+      "props": {
+        "stage": "translation",
+        "gene": "ATGTGGCATGAGTTTTAA"
+      },
+      "duration": 12
+    }
+  ],
+  "cues": "phiên mã chiếm 45 % đầu clip, dịch mã phần còn lại (mỗi codon một khoảng bằng nhau)",
+  "accuracy": "Bảng mã di truyền chuẩn 64 codon; nguyên tắc bổ sung khi phiên mã (A–U, T–A, G–C) và giữa codon–anticodon; mRNA cùng trình tự mạch bổ sung (T → U); dừng ở mã kết thúc đầu tiên trong khung đọc.",
+  "limitations": "Sơ đồ phẳng: không vẽ xoắn kép 3D, không có intron/cắt nối, mũ 5' và đuôi poly-A; tRNA vẽ đơn giản; gấp nếp protein chỉ minh hoạ.",
+  "example_usage": "{\"component\":\"protein_synthesis\",\"props\":{\"gene\":\"ATGTGGCATGAGTTTTAA\"}}",
+  "combines_with": [
+    "dna_helix",
+    "cell",
+    "mitosis"
+  ],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": [
+    "png-sequence",
+    "webm-alpha"
+  ],
+  "status": "tested"
+}

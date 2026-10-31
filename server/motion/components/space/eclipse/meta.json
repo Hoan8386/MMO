@@ -1,0 +1,38 @@
+{
+  "id": "eclipse",
+  "name": "Nhật thực và nguyệt thực: vùng tối, vùng nửa tối",
+  "category": "space",
+  "domain": "astronomy",
+  "topic": "solar_system",
+  "subtopic": "Solar Eclipse · Lunar Eclipse · Umbra · Penumbra · Blood Moon · Totality · Corona",
+  "styles": ["educational", "scientific", "cinematic"],
+  "dimension": "2d",
+  "palette": "solar_system",
+  "description": "Nhật thực và nguyệt thực. Sơ đồ nhìn ngang (không theo tỉ lệ): Mặt Trời, Mặt Trăng trên quỹ đạo và Trái Đất, nón vùng tối (umbra) và vùng nửa tối (penumbra) dựng từ các tiếp tuyến thật của vật che. solar: Mặt Trăng đi giữa Mặt Trời và Trái Đất, vùng tối chạm Trái Đất; khung nhỏ là bầu trời nhìn từ trong vùng tối — đĩa Mặt Trăng che dần Mặt Trời (phần trăm che tính từ diện tích giao), trời tối lại, vành nhật hoa hiện ra lúc toàn phần. lunar: bóng Trái Đất phủ lên Mặt Trăng; khung nhỏ là Mặt Trăng đi vào vùng nửa tối rồi vùng tối và đỏ lên (ánh sáng khúc xạ qua khí quyển Trái Đất).",
+  "tags": ["vũ trụ", "space", "astronomy", "nhật thực", "solar eclipse", "nguyệt thực", "lunar eclipse"],
+  "keywords": [
+    "nhật thực", "solar eclipse", "nhật thực toàn phần", "total solar eclipse", "nhật thực một phần", "nguyệt thực", "lunar eclipse", "trăng máu", "blood moon",
+    "vùng tối", "umbra", "vùng nửa tối", "penumbra", "vành nhật hoa", "corona", "bóng trái đất", "mặt trăng che mặt trời"
+  ],
+  "duration": { "default": 12, "min": 6, "max": 40 },
+  "common": "all",
+  "inputs": {
+    "title": { "type": "string", "maxLength": 48, "default": "", "description": "tiêu đề góc trên" },
+    "kind": { "type": "string", "enum": ["solar", "lunar"], "default": "solar", "description": "nhật thực hay nguyệt thực" },
+    "inset": { "type": "boolean", "default": true, "description": "khung nhìn từ Trái Đất" },
+    "labels": { "type": "boolean", "default": true, "description": "chú thích" }
+  },
+  "variants": [
+    { "id": "solar", "name": "Nhật thực toàn phần", "props": { "kind": "solar" } },
+    { "id": "lunar", "name": "Nguyệt thực, trăng máu", "props": { "kind": "lunar" } }
+  ],
+  "cues": "chú thích ở mốc đầu; sự kiện chạy suốt clip",
+  "accuracy": "Nón umbra/penumbra dựng từ tiếp tuyến ngoài/trong giữa Mặt Trời và vật che; phần trăm che trong khung nhỏ là diện tích giao của hai đĩa (đĩa Mặt Trăng lớn hơn 3 % để có toàn phần).",
+  "limitations": "Sơ đồ không theo tỉ lệ khoảng cách và kích thước; quỹ đạo Mặt Trăng vẽ trong mặt phẳng hoàng đạo (không có độ nghiêng 5°).",
+  "example_usage": "{\"component\":\"eclipse\",\"props\":{\"kind\":\"lunar\"}}",
+  "combines_with": ["moon_phases", "planet", "sun_activity"],
+  "version": "1.0.0",
+  "renderer": "motion-canvas",
+  "output": ["png-sequence", "webm-alpha"],
+  "status": "dev"
+}
