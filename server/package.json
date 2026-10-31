@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/index.js",
+    "dev": "node --watch-path=src src/index.js",
     "start": "node src/index.js",
     "setup:tts": "python -m venv .venv && .venv\\Scripts\\python -m pip install edge-tts",
     "assets:cutouts": "node scripts/download-assets.js --only cutouts",

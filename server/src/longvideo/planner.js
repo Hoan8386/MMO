@@ -3,13 +3,15 @@
 // library (numbers, lists, comparisons…), a Motion Canvas animation (accurate simulations of a
 // concept), or a drawing it makes itself (SVG plus motion attributes, aiscene.js). Only the frames and
 // animations that fit the video are listed (library.js), with a minimum number of each so the video
-// mixes them. Choices are checked; the scenes that fail get one repair call, then fall back to a drawing.
-// Voice, layers and rendering run locally. continuePlan() exists only for an answer cut off by max_tokens.
+// mixes them. A frame or animation scene also gets the AI's drawing, played over it as annotations
+// (build.js) and used alone if the choice cannot be fixed. Strictly ONE call: choices are checked and
+// fixed locally (repairScene), what still fails becomes its own drawing, and an answer cut short keeps
+// its complete scenes. Voice, layers and rendering run locally.
 import { callModel } from "../video/planner.js";
 import { activePreset } from "../settings.js";
 import { config } from "../config.js";
 import { MOTION_GUIDE } from "./aiscene.js";
-import { longLibrary, sceneProblems, mixOf } from "./library.js";
+import { longLibrary, sceneProblems, repairScene, mixOf } from "./library.js";
 
 // Spoken Vietnamese words (syllables) per minute at the default rate, measured on rendered videos:
 // ElevenLabs reads much faster than edge-tts, so a script for the same length needs more words.
@@ -36,9 +38,12 @@ Rules:
 
 Three kinds of scene — choose for each scene what explains it best, and follow the scene mix asked in the request:
 - DRAW: you draw "g" yourself (motion guide below). Best for metaphors, maps, abstract ideas, anything the libraries do not cover. Scene 1 is always DRAW.
-- FRAME: a HyperFrames template from "Library frames": "f" = frame id, "fi" = its inputs as a JSON object written as a string (only the inputs listed for that frame, within their limits), "g" = "". The frame shows its own title, so its title input carries the heading. Best for numbers, statistics, comparisons, lists, definitions, steps, quotes, timelines. "b" = the frame's keywords: exact phrases from "v" following its Keywords rule.
-- ANIM: a Motion Canvas animation from "Library animations": "a" = component id, "ap" = its props as a JSON object string (only listed props, within their limits), "g" = "". Physically accurate: use it whenever the narration explains a mechanism or motion it simulates (orbits, waves, collisions, membranes…), with props that match the facts (real values). "b" = one exact phrase from "v" per cue of the component. Its title prop is replaced by "h".
+- FRAME: a HyperFrames template from "Library frames": "f" = frame id, "fi" = its inputs as a JSON object written as a string (only the inputs listed for that frame, within their limits — follow its Example), "g" = the overlay drawing (below). The frame shows its own title, so its title input carries the heading. Best for numbers, statistics, comparisons, lists, definitions, steps, quotes, timelines. "b" = the frame's keywords: exact phrases from "v" following its Keywords rule.
+- ANIM: a Motion Canvas animation from "Library animations": "a" = component id, "ap" = its props as a JSON object string (only listed props, within their limits), "g" = the overlay drawing (below). Physically accurate: use it whenever the narration explains a mechanism or motion it simulates (orbits, waves, collisions, membranes…), with props that match the facts (real values). "b" = one exact phrase from "v" per cue of the component. Its title prop is replaced by "h".
 Never invent frame ids, component ids, inputs or props; when nothing in the lists fits, DRAW.
+
+COMBINE the three: a FRAME or ANIM scene ALSO gets "g" — an OVERLAY drawing played on top of the frame or animation, with the same motion attributes and beats: labels naming the parts, arrows and callouts pointing at what the narration talks about, highlight rings, a counter, a moving icon that adds the human-scale analogy, a small inset diagram. It keeps clear of the frame's text and the animation's main subject: use the margins (left/right thirds, corners, the band under the heading), 3–10 elements, transparent background (never a full-screen rect). The overlay must also stand on its own: if the frame or animation cannot be used, the overlay alone (with the heading) is shown instead, so it should still say the scene's idea.
+There is no token budget: make every scene as rich, precise and alive as the idea deserves — detailed drawings, several beats, continuous motion — in this one answer.
 
 ${MOTION_GUIDE}
 
@@ -73,8 +78,8 @@ const SCHEMA = {
   required: ["title", "scenes"],
 };
 
-// Room for every scene's drawing in the single answer (about 700 tokens per scene).
-const maxTokensFor = (preset) => Math.min(128000, Math.max(preset.max_tokens, 96000));
+// Room for every scene's drawing and overlay in the single answer: the most the API allows.
+const maxTokensFor = () => 128000;
 
 const sceneCount = (minutes) => Math.round((minutes * WORDS_PER_MIN) / 45);
 
@@ -128,58 +133,27 @@ export function expandScenes(list, from = 0) {
     }));
 }
 
-const presetFor = () => {
-  const preset = activePreset();
-  // Writing a script and its drawings needs no long deliberation; low effort keeps the call quick.
-  return { ...preset, effort: "low", max_tokens: maxTokensFor(preset) };
-};
+// The active preset's model and effort (no forced low effort: quality first), with the largest answer.
+const presetFor = () => ({ ...activePreset(), max_tokens: maxTokensFor() });
 
-// The fix for frame/animation scenes whose ids, inputs or props failed the checks.
-const REPAIR_SCHEMA = {
-  type: "object",
-  properties: { scenes: { type: "array", items: { type: "object", properties: { i: { type: "integer" }, f: { type: "string" }, fi: { type: "string" }, a: { type: "string" }, ap: { type: "string" } }, required: ["i"] } } },
-  required: ["scenes"],
-};
-
-// Checks the frame/animation scenes; the failing ones get ONE repair call (only those scenes and
-// their errors are sent), and whatever still fails becomes a drawn scene (fallback drawing).
+// Checks the frame/animation scenes and fixes them locally — never another AI call. What still fails
+// becomes a drawn scene showing the AI's own overlay drawing (or the fallback drawing if it has none).
 // Returns { scenes, usages }.
 async function checkScenes(scenes, lib, { onLog, offset = 0 }) {
   const opts = { frameIds: lib.frameIds, animIds: lib.animIds };
-  const bad = () => scenes.map((sc, i) => ({ i, sc, problems: sceneProblems(sc, opts) })).filter((x) => x.problems.length);
-  const usages = [];
-  let failing = bad();
-  if (failing.length && config.ai.mode !== "mock") {
-    onLog(`${failing.length} cảnh frame/animation chưa hợp lệ — AI sửa (1 lượt gọi)`);
-    const content = `Some scenes of a long video use a library frame or animation with invalid ids, inputs or props. Fix each one: keep the same kind when possible, use only the ids, inputs and props listed below, respect their limits. Return { "scenes": [{ "i", "f"+"fi" for a frame or "a"+"ap" for an animation }] }; inputs and props are JSON object strings.
-
-Library frames:
-${lib.prompt.frames || "(none)"}
-
-Library animations:
-${lib.prompt.anims || "(none)"}
-
-Scenes to fix:
-${failing.map(({ i, sc, problems }) => JSON.stringify({ i, heading: sc.heading, voice: sc.voice_text, ...(sc.kind === "frame" ? { f: sc.frame_id, fi: sc.inputs } : { a: sc.component, ap: sc.props }), errors: problems })).join("\n")}`;
-    try {
-      const { json, usage } = await callModel([{ role: "user", content }], REPAIR_SCHEMA, "You fix JSON choices of library frames and animations. Answer with JSON only.", { ...activePreset(), effort: "low" }, onLog);
-      usages.push(usage);
-      for (const fix of json?.scenes || []) {
-        const sc = scenes[fix.i];
-        if (!sc || !["frame", "anim"].includes(sc.kind)) continue;
-        if (fix.f) Object.assign(sc, { kind: "frame", frame_id: fix.f, inputs: parseObj(fix.fi), component: undefined, props: undefined });
-        else if (fix.a) Object.assign(sc, { kind: "anim", component: fix.a, props: parseObj(fix.ap), frame_id: undefined, inputs: undefined });
-      }
-    } catch (e) {
-      onLog(`Sửa cảnh thất bại: ${e.message}`);
+  for (const [i, sc] of scenes.entries()) {
+    if (!sceneProblems(sc, opts).length) continue;
+    const notes = repairScene(sc);
+    const problems = sceneProblems(sc, opts);
+    const name = sc.kind === "frame" ? sc.frame_id : sc.component;
+    if (!problems.length) {
+      onLog(`Cảnh ${offset + i + 1} (${name}): tự sửa — ${notes.join(", ")}`);
+      continue;
     }
-    failing = bad();
-  }
-  for (const { sc, problems } of failing) {
-    onLog(`Cảnh ${offset + scenes.indexOf(sc) + 1} (${sc.kind === "frame" ? sc.frame_id : sc.component}) vẫn lỗi → chuyển thành cảnh tự vẽ: ${problems.slice(0, 2).join("; ")}`);
+    onLog(`Cảnh ${offset + i + 1} (${name}) không dùng được → dùng hình AI vẽ cho cảnh này: ${problems.slice(0, 2).join("; ")}`);
     Object.assign(sc, { kind: "ai", frame_id: undefined, inputs: undefined, component: undefined, props: undefined });
   }
-  return { scenes, usages };
+  return { scenes, usages: [] };
 }
 
 const mixLog = (scenes, targets) => {
@@ -191,40 +165,33 @@ const mixLog = (scenes, targets) => {
 const sumUsage = (list) => list.filter(Boolean).reduce((a, u) => ({ ...a, ...u, input_tokens: (a.input_tokens || 0) + (u.input_tokens || 0), output_tokens: (a.output_tokens || 0) + (u.output_tokens || 0) }), {});
 
 // topic: the topic object chosen for the video (or null: matched like a general science explainer).
-export async function planLong({ title, material, minutes, brand, topic = null, onLog = () => {} }) {
+// Characters an answer takes per scene (narration, drawing, overlay, JSON), to estimate the AI's progress.
+const CHARS_PER_SCENE = 3200;
+
+// onStage(key, info): progress for the page — "library", "ai" (with chars written and an estimated
+// percent), "check".
+export async function planLong({ title, material, minutes, brand, topic = null, onLog = () => {}, onStage = () => {} }) {
+  onStage("library");
   const lib = longLibrary({ topic, title, material, scenes: sceneCount(minutes) });
   const library = { topic: topic?.topic_id || null, frameIds: lib.frameIds, animIds: lib.animIds, targets: lib.targets };
   if (config.ai.mode === "mock") return { plan: { ...mockPlan(title, brand), library }, usage: null, raw: "" };
   onLog(`Thư viện cho video: ${lib.frameIds.length} frame HyperFrames, ${lib.animIds.length} animation Motion Canvas${lib.animIds.length ? ` (${lib.animIds.join(", ")})` : ""}`);
   onLog(`AI viết kịch bản, chọn frame/animation và vẽ các cảnh còn lại (1 lượt gọi, ~${minutes} phút)`);
-  const { json, text, usage } = await callModel([{ role: "user", content: userPrompt({ title, material, minutes, brand, lib }) }], SCHEMA, SYSTEM, presetFor(), onLog);
+  const expected = sceneCount(minutes) * CHARS_PER_SCENE;
+  onStage("ai", { detail: "đang chờ AI bắt đầu trả lời", percent: 0 });
+  const onStream = ({ chars, thinking }) =>
+    onStage("ai", {
+      percent: Math.min(97, Math.round((chars / expected) * 100)),
+      detail: chars ? `đã viết ${chars.toLocaleString("vi-VN")} ký tự (~${Math.min(sceneCount(minutes), Math.round(chars / CHARS_PER_SCENE))}/${sceneCount(minutes)} cảnh, ước tính)` : `AI đang suy nghĩ${thinking ? ` (${thinking.toLocaleString("vi-VN")} ký tự)` : ""}`,
+    });
+  const { json, text, usage } = await callModel([{ role: "user", content: userPrompt({ title, material, minutes, brand, lib }) }], SCHEMA, SYSTEM, presetFor(), onLog, onStream);
   if (!json?.scenes?.length) throw Object.assign(new Error(`AI trả về kế hoạch không đọc được. Đoạn đầu: ${text.slice(0, 300)}`), { raw: text });
+  onStage("check", { detail: `${json.scenes.length} cảnh` });
   const { scenes, usages } = await checkScenes(expandScenes(json.scenes), lib, { onLog });
   const blank = scenes.filter((sc) => sc.kind === "ai" && !sc.svg.trim()).length;
   onLog(`Nhận ${scenes.length} cảnh, ${usage.output_tokens} token ra${blank ? ` — ${blank} cảnh thiếu hình, dùng hình dự phòng` : ""}`);
   onLog(mixLog(scenes, lib.targets));
   return { plan: { title: json.title || title, description: json.description || "", scenes, library }, usage: sumUsage([usage, ...usages]), raw: text };
-}
-
-// One more call for the scenes after the last one (when the first answer was cut short).
-export async function continuePlan({ title, material, minutes, brand, plan, topic = null, onLog = () => {} }) {
-  const done = plan.scenes;
-  const lib = longLibrary({ topic, title, material, scenes: sceneCount(minutes) });
-  const tail = done.slice(-3).map((s) => `- ${s.heading}: ${s.voice_text}`).join("\n");
-  const said = done.map((s) => s.heading).join(" | ");
-  onLog(`AI viết tiếp từ cảnh ${done.length + 1} (1 lượt gọi)`);
-  const content = `${userPrompt({ title, material, minutes, brand, lib })}
-
-The first ${done.length} scenes are already written (headings: ${said}). The last ones were:
-${tail}
-
-Continue the SAME script from scene ${done.length + 1} to the end (do not repeat anything, no new title scene). Return { "title", "scenes": [only the new scenes] }.`;
-  const { json, text, usage } = await callModel([{ role: "user", content }], SCHEMA, SYSTEM, presetFor(), onLog);
-  if (!json?.scenes?.length) throw Object.assign(new Error(`AI trả về phần tiếp không đọc được. Đoạn đầu: ${text.slice(0, 300)}`), { raw: text });
-  const { scenes, usages } = await checkScenes(expandScenes(json.scenes, done.length), lib, { onLog, offset: done.length });
-  onLog(`Thêm ${scenes.length} cảnh, ${usage.output_tokens} token ra`);
-  onLog(mixLog([...done, ...scenes], lib.targets));
-  return { plan: { ...plan, scenes: [...done, ...scenes] }, usage: sumUsage([usage, ...usages]), raw: text };
 }
 
 // A short sample without AI (AI_MODE=mock), so the tab can be tried end to end.

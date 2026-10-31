@@ -100,7 +100,7 @@ async function synthesize({ text, voiceId, speed, tone, previous, next }) {
         method: "POST",
         headers: { "content-type": "application/json", "xi-api-key": config.tts.elevenKey },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(180_000),
+        signal: AbortSignal.timeout(600_000),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -155,15 +155,18 @@ export async function elevenVoice(job) {
   await fs.writeFile(job.words, JSON.stringify(wordTimings(alignment)));
 }
 
-// Voices many lines, two at a time (the free plan allows few concurrent requests); every line that can
-// be voiced is, before the first error is thrown.
-export async function elevenVoiceAll(jobs) {
+// Voices many lines, config.tts.elevenConcurrency at a time (ELEVENLABS_CONCURRENCY, default 5; a
+// plan with fewer slots answers 429 and the line is retried); every line that can be voiced is, before
+// the first error is thrown.
+// onDone(job) after each line that was voiced.
+export async function elevenVoiceAll(jobs, onDone = () => {}) {
   const queue = [...jobs];
   const errors = [];
   const worker = async () => {
     for (let job; (job = queue.shift()); ) {
       try {
         await elevenVoice(job);
+        onDone(job);
       } catch (err) {
         errors.push(new Error(`${path.basename(job.mp3, ".mp3")}: ${err.message}`));
         // Nothing more can be voiced once the quota is gone or the key is refused.
@@ -171,6 +174,6 @@ export async function elevenVoiceAll(jobs) {
       }
     }
   };
-  await Promise.all([worker(), worker()]);
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(jobs.length, config.tts.elevenConcurrency)) }, worker));
   if (errors.length) throw errors[0];
 }

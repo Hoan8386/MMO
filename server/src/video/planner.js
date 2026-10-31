@@ -233,14 +233,18 @@ export function planRequest({ material, title, channel, topic, allowed, images =
   // talks about first (metadata, never code); with none, the clip frame is dropped instead of
   // tempting the AI to invent one.
   const anim = allowed.some((f) => f.engine === ANIM_ENGINE) ? animCatalog(`${title || ""}
-${material}`, topic) : null;
+${material}`, topic, { k: motion ? 24 : 8 }) : null;
   if (anim) {
     allowed = anim.ids.length
       ? allowed.map((f) => (f.engine === ANIM_ENGINE ? { ...f, inputs: { ...f.inputs, component: { ...f.inputs.component, enum: anim.ids } } } : f))
       : allowed.filter((f) => f.engine !== ANIM_ENGINE);
     if (anim.ids.length)
       extra += `
-Animation components for frame anim-clip (pre-rendered Motion Canvas animations). Use only these ids and only the props listed for each; write props as a JSON object string, e.g. "{\"v0\":20}". Give the scene one keyword per cue of the component. Use a clip where the narration explains motion or a mechanism, at most one clip in every three scenes:
+Animation components for frame anim-clip (pre-rendered Motion Canvas animations). Use only these ids and only the props listed for each; write props as a JSON object string, e.g. "{\"v0\":20}". Give the scene one keyword per cue of the component. ${
+        motion
+          ? "Use a clip wherever the narration explains motion or a mechanism one of them simulates (no fixed limit, but never two clips in a row); its scene illustration then annotates the clip (labels, arrows, the human-scale analogy) rather than repeating it:"
+          : "Use a clip where the narration explains motion or a mechanism, at most one clip in every three scenes:"
+      }
 ${anim.prompt}`;
   }
   const uses = (...types) => allowed.some((f) => Object.values(f.inputs).some((i) => types.includes(i.type)));
@@ -295,7 +299,8 @@ ${material.trim()}
 // onLog gets a timer every 30s: time since the request, and whether the answer has started.
 // A call that fails is not asked again at a lower effort (that would be a second paid call); only a
 // stream the gateway closed before sending anything is retried, since nothing was generated.
-export async function callModel(messages, schema, system = SYSTEM, preset = activePreset(), onLog = () => {}) {
+// onStream({ elapsed, chars, thinking }) about once a second while the answer is being written.
+export async function callModel(messages, schema, system = SYSTEM, preset = activePreset(), onLog = () => {}, onStream = () => {}) {
   anthropic();
   const started = Date.now();
   const effort = preset.effort;
@@ -312,7 +317,7 @@ ${schemaInPrompt(schema)}`,
       output_config: config.ai.structured ? { effort, format: { type: "json_schema", schema } } : { effort },
     };
     try {
-      response = await streamOnce(body, onLog);
+      response = await streamOnce(body, onLog, onStream);
       break;
     } catch (err) {
       // The gateway sometimes opens the stream and closes it without a single event; nothing was
@@ -440,7 +445,7 @@ const schemaInPrompt = (schema) =>
 ${JSON.stringify(schema)}`;
 
 // One streamed request; returns the final message. Errors carry the elapsed time and progress.
-async function streamOnce(body, onLog) {
+async function streamOnce(body, onLog, onStream = () => {}) {
   const stream = getSettings().fallbacks
     ? client.messages.stream({ ...body, fallbacks: "default" }, { headers: { "anthropic-beta": "server-side-fallback-2026-07-01" } })
     : client.messages.stream(body);
@@ -451,6 +456,7 @@ async function streamOnce(body, onLog) {
   let lastEvent = 0;
   let chars = 0;
   let thinking = 0;
+  let lastReport = 0;
   let text = ""; // the answer so far, kept for when the connection is cut mid-way
   stream.on("connect", () => {
     firstByte = lastEvent = Date.now();
@@ -459,6 +465,11 @@ async function streamOnce(body, onLog) {
   stream.on("streamEvent", (e) => {
     lastEvent = Date.now();
     if (e.type === "content_block_delta" && e.delta.type === "thinking_delta") thinking += e.delta.thinking.length;
+    // Live progress for the page, at most once a second.
+    if (Date.now() - lastReport >= 1000) {
+      lastReport = Date.now();
+      onStream({ elapsed: Math.round((Date.now() - started) / 1000), chars, thinking });
+    }
   });
   stream.on("text", (t) => {
     chars += t.length;

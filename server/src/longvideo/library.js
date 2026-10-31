@@ -33,7 +33,8 @@ const ASSET_TYPES = ["image", "icon", "icons", "logo", "cutout", "character", "c
 // picture, no special engine), with their picture inputs removed.
 export function longFrames(topic) {
   const all = loadFrames();
-  const picked = selectFrames(all, { topic: topic || AUTO_TOPIC, aspectRatio: "16:9", images: [], perType: 2, maxContent: 16 }).filter(
+  // Every fitting frame (no token budget): the more templates the AI sees, the better it matches each idea.
+  const picked = selectFrames(all, { topic: topic || AUTO_TOPIC, aspectRatio: "16:9", images: [], perType: 99, maxContent: 99 }).filter(
     (f) =>
       !f.engine &&
       !["intro", "outro"].includes(f.scene_type) &&
@@ -46,14 +47,17 @@ export function longFrames(topic) {
 // Everything the planner needs: the lists, their prompt text and how many scenes of each kind to ask for.
 export function longLibrary({ topic, title, material, scenes }) {
   const frames = longFrames(topic);
-  const anims = animCatalog(`${title}\n${material}`, topic || null, { k: 10 });
+  const anims = animCatalog(`${title}\n${material}`, topic || null, { k: 24 });
   const want = (share) => Math.max(1, Math.round(scenes * share));
   return {
     frames,
     frameIds: frames.map((f) => f.frame_id),
     animIds: anims.ids,
-    prompt: { frames: frames.length ? describeFrames(frames) : "", anims: anims.prompt },
-    targets: { frame: frames.length ? want(0.25) : 0, anim: anims.ids.length ? want(0.25) : 0, draw: want(0.3) },
+    // Frames come with their example scene, so their inputs are filled the way they are meant to be.
+    prompt: { frames: frames.length ? describeFrames(frames, { samples: true }) : "", anims: anims.prompt },
+    // A component may come back with other props, but not more than twice: with few fitting
+    // animations the video asks for fewer animation scenes rather than repeating one.
+    targets: { frame: frames.length ? want(0.25) : 0, anim: Math.min(anims.ids.length * 2, anims.ids.length ? want(0.25) : 0), draw: want(0.3) },
   };
 }
 
@@ -73,6 +77,50 @@ export function sceneProblems(sc, { frameIds = null, animIds = null } = {}) {
     return parseAnimInputs({ component: sc.component, props: JSON.stringify(sc.props || {}) }).errors;
   }
   return [];
+}
+
+// Fixes what needs no AI, so a plan stays one call: frame inputs that are not the frame's are dropped,
+// texts and lists cut to their limits; animation props named in an error are dropped (the component's
+// default value takes over). Returns notes of what changed; the caller re-checks the scene.
+export function repairScene(sc) {
+  const notes = [];
+  const cut = (v, n) => (v.length <= n ? v : v.slice(0, n - 1).replace(/\s+\S*$/, "") + "…");
+  if (sc.kind === "frame" && sc.inputs) {
+    const frame = loadFrames().get(sc.frame_id);
+    if (!frame) return notes;
+    for (const [k, v] of Object.entries(sc.inputs)) {
+      const spec = frame.inputs[k];
+      if (!spec || ASSET_TYPES.includes(spec.type)) {
+        delete sc.inputs[k];
+        notes.push(`bỏ "${k}"`);
+      } else if (spec.type === "string" && !spec.enum && typeof v === "string" && spec.maxLength && v.length > spec.maxLength) {
+        sc.inputs[k] = cut(v, spec.maxLength);
+        notes.push(`rút gọn "${k}"`);
+      } else if (spec.type === "list" && Array.isArray(v)) {
+        const list = (spec.maxItems ? v.slice(0, spec.maxItems) : v).map((x) => (typeof x === "string" && spec.itemMaxLength && !spec.enum ? cut(x, spec.itemMaxLength) : x));
+        if (JSON.stringify(list) !== JSON.stringify(v)) {
+          for (const [a, b] of frame.same_length || []) {
+            const other = a === k ? b : b === k ? a : null;
+            if (other && Array.isArray(sc.inputs[other])) sc.inputs[other] = sc.inputs[other].slice(0, list.length);
+          }
+          sc.inputs[k] = list;
+          notes.push(`rút gọn danh sách "${k}"`);
+        }
+      }
+    }
+  }
+  if (sc.kind === "anim" && sc.props) {
+    for (let round = 0; round < 3; round++) {
+      const errors = sceneProblems(sc);
+      if (!errors.length) break;
+      // An error names its prop first ("v0: phải là số"); the rest may list the valid ones, which stay.
+      const named = Object.keys(sc.props).filter((k) => errors.some((e) => e.split(":")[0].trim() === k));
+      if (!named.length) break;
+      for (const k of named) delete sc.props[k];
+      notes.push(`bỏ prop ${named.join(", ")} (dùng mặc định)`);
+    }
+  }
+  return notes;
 }
 
 export const mixOf = (scenes) => ({

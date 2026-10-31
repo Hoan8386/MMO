@@ -8,6 +8,7 @@ const lanes = { ai: Promise.resolve(), media: Promise.resolve() };
 const running = new Set();
 
 export const isBusy = (projectId) => running.has(Number(projectId));
+export const runningJobs = () => running.size;
 
 export async function loadProject(id) {
   const p = await one("SELECT * FROM projects WHERE id=?", [id]);

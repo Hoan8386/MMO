@@ -286,11 +286,15 @@ ${titles.script}
 }
 
 // limit: only the first N scenes (a quick test render of a long video).
-export async function buildLong(dir, state, { limit = 0, render = true, onLog = () => {}, onProgress = () => {} } = {}) {
+// onStage(key, info): progress for the page — "voice", "anim" (or skipped), "compose", "render" with
+// counts or a percent. onProgress(p): the render's percent (kept for callers that only want that).
+export async function buildLong(dir, state, { limit = 0, render = true, onLog = () => {}, onProgress = () => {}, onStage = () => {} } = {}) {
   const plan = state.plan;
   const scenes = limit > 0 ? plan.scenes.slice(0, limit) : plan.scenes;
   onLog(`Tạo giọng đọc cho ${scenes.length} cảnh`);
-  const vo = await voiceScenes(dir, scenes, { voice: state.voice || DEFAULT_VOICE, rate: state.rate || "+0%" });
+  const voiced = (done, total) => onStage("voice", { done, total, percent: Math.round((done / total) * 100), detail: `${done}/${total} cảnh` });
+  voiced(0, scenes.length);
+  const vo = await voiceScenes(dir, scenes, { voice: state.voice || DEFAULT_VOICE, rate: state.rate || "+0%" }, undefined, { onProgress: voiced });
   const fresh = Object.values(vo).filter((v) => !v.cached).length;
   onLog(`Giọng đọc xong (${fresh} cảnh mới, ${scenes.length - fresh} dùng lại)`);
 
@@ -305,8 +309,18 @@ export async function buildLong(dir, state, { limit = 0, render = true, onLog = 
   const jobs = animJobs(timeline.scenes);
   if (jobs.length) {
     onLog(`Render ${jobs.length} animation Motion Canvas (dùng lại bản đã render nếu không đổi)`);
-    await renderAnimClips(dir, jobs, { onLog });
-  }
+    // current: the clip being rendered right now, with its frames so far (counted into the percent).
+    const clips = (done, total, current) =>
+      onStage("anim", {
+        done,
+        total,
+        percent: Math.round(((done + (current ? current.frames / current.expected : 0)) / total) * 100),
+        detail: `${done}/${total} clip${current ? ` · đang render ${current.id}: ${current.frames}/${current.expected} khung` : ""}`,
+      });
+    clips(0, jobs.length);
+    await renderAnimClips(dir, jobs, { onLog, onProgress: clips });
+  } else onStage("anim", { skipped: true, detail: "không có cảnh animation" });
+  onStage("compose", { detail: `${timeline.scenes.length} cảnh` });
   for (const sc of timeline.scenes) {
     await fs.writeFile(path.join(dir, "compositions", `${sc.id}.html`), sceneHtml(sc));
     if (hasOverlay(sc)) await fs.writeFile(path.join(dir, "compositions", `${sc.id}-ov.html`), drawnSceneHtml(overlayOf(sc)));
@@ -319,7 +333,23 @@ export async function buildLong(dir, state, { limit = 0, render = true, onLog = 
   if (!render) return { total: timeline.total };
 
   onLog("Render MP4 bằng HyperFrames…");
-  const file = await renderProject(dir, { onProgress });
+  onStage("render", { percent: 0, detail: "đang khởi động trình render" });
+  // The bar follows the frames captured (counted every few seconds; capture is ~95% of the work), and
+  // HyperFrames' own percent once it is ahead (joining and encoding at the end).
+  let shown = 0;
+  const show = (percent, detail) => {
+    if (percent < shown) return;
+    shown = percent;
+    onStage("render", { percent, detail });
+  };
+  const file = await renderProject(dir, {
+    totalFrames: Math.round(timeline.total * 30),
+    onFrames: (done, total) => show(Math.min(95, Math.floor((done / total) * 95)), `${done.toLocaleString("vi-VN")}/${total.toLocaleString("vi-VN")} khung hình`),
+    onProgress: (p) => {
+      show(p, `${p}%`);
+      onProgress(p);
+    },
+  });
   onLog(`Xong: ${path.basename(file)}`);
   return { total: timeline.total, file };
 }

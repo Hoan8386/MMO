@@ -95,10 +95,15 @@ export const jobHash = (job) =>
   crypto.createHash("sha1").update(JSON.stringify([buildId(), job.component, job.version, job.props, job.duration, job.fps, job.width, job.height, job.safe, job.theme, job.cues, job.speech, job.background])).digest("hex").slice(0, 16);
 
 let browserPromise = null;
+// A whole clip renders inside ONE page.evaluate call (window.__render), which on an ordinary machine
+// takes minutes for a long scene: puppeteer's default 180 s per protocol call cut a 12 s clip off
+// ("Runtime.callFunctionOn timed out"). One hour leaves room for the longest scenes.
+const PROTOCOL_TIMEOUT_MS = 60 * 60 * 1000;
 const browser = () =>
   (browserPromise ??= puppeteer.launch({
     executablePath: CHROMES.find((p) => fs.existsSync(p)),
     headless: true,
+    protocolTimeout: PROTOCOL_TIMEOUT_MS,
     args: ["--no-sandbox", "--force-color-profile=srgb", "--disable-gpu-vsync"],
   }));
 export const closeBrowser = async () => {
@@ -106,8 +111,22 @@ export const closeBrowser = async () => {
   browserPromise = null;
 };
 
+// Kills the browser outright (a hung Chrome may not answer close()); the next render starts a new one.
+export const killBrowser = async () => {
+  const b = await browserPromise?.catch(() => null);
+  browserPromise = null;
+  try {
+    b?.process()?.kill("SIGKILL");
+  } catch {
+    /* already gone */
+  }
+};
+
 // Renders a prepared job into outDir. Returns the manifest.
-export async function renderJob(input, outDir, { webm = false, poster = false, lenient = false } = {}) {
+// onFrame(done, expected) after each frame. stallMs: with no new frame for that long the render is
+// given up as hung (error.stalled) — a clip normally delivers a frame every few tens of milliseconds,
+// so a frozen Chrome is caught in a minute instead of at the protocol timeout.
+export async function renderJob(input, outDir, { webm = false, poster = false, lenient = false, onFrame = () => {}, stallMs = 60_000 } = {}) {
   const job = prepareJob(input, { lenient });
   await ensureBuild();
   await fsp.rm(outDir, { recursive: true, force: true });
@@ -120,7 +139,13 @@ export async function renderJob(input, outDir, { webm = false, poster = false, l
   let union = null;
   const boxes = [];
   const writes = [];
+  const expected = Math.round(job.duration * job.fps) + 1;
+  let frames = 0;
+  let lastFrame = Date.now();
   await page.exposeFunction("__frame", (frame, png, box) => {
+    frames++;
+    lastFrame = Date.now();
+    onFrame(frames, expected);
     writes.push(fsp.writeFile(path.join(outDir, `frame-${String(frame).padStart(5, "0")}.png`), Buffer.from(png.slice(png.indexOf(",") + 1), "base64")));
     if (box) {
       boxes.push(box);
@@ -132,7 +157,21 @@ export async function renderJob(input, outDir, { webm = false, poster = false, l
     await page.setViewport({ width: 800, height: 600 });
     await page.goto(`http://127.0.0.1:${server.address().port}/index.html`, { waitUntil: "load" });
     await page.waitForFunction(() => typeof window.__render === "function", { timeout: 30000 });
-    const r = await page.evaluate((j) => window.__render(j), job);
+    // The render runs as one evaluate call; a watchdog gives it up when the frames stop coming.
+    lastFrame = Date.now();
+    let watch;
+    const stalled = new Promise((_, reject) => {
+      watch = setInterval(() => {
+        if (Date.now() - lastFrame > stallMs)
+          reject(Object.assign(new Error(`Chrome không trả khung hình mới trong ${stallMs / 1000}s (đã có ${frames}/${expected}) — coi như bị treo`), { stalled: true }));
+      }, 2000);
+    });
+    let r;
+    try {
+      r = await Promise.race([page.evaluate((j) => window.__render(j), job), stalled]);
+    } finally {
+      clearInterval(watch);
+    }
     await Promise.all(writes);
     const files = (await fsp.readdir(outDir)).filter((f) => f.startsWith("frame-")).sort();
     const manifest = {
@@ -156,7 +195,8 @@ export async function renderJob(input, outDir, { webm = false, poster = false, l
     if (poster && files.length) await fsp.copyFile(path.join(outDir, files[Math.floor(files.length * 0.8)]), path.join(outDir, "poster.png"));
     return manifest;
   } finally {
-    await page.close();
+    // A hung page may not answer close(); do not wait on it for long.
+    await Promise.race([page.close().catch(() => {}), new Promise((resolve) => setTimeout(resolve, 5000))]);
     server.close();
   }
 }

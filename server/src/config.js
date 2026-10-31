@@ -1,3 +1,4 @@
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
@@ -29,7 +30,7 @@ export const config = {
   ai: {
     mode: env.AI_MODE || (env.ANTHROPIC_API_KEY || env.ANTHROPIC_AUTH_TOKEN ? "claude" : "mock"),
     // Model for the video planner; planning is a small JSON task.
-    planModel:"req/claude-opus-5-5" || env.PLAN_MODEL || "claude-sonnet-5-5",
+    planModel:"req/claude-opus-5-5" || env.PLAN_MODEL || "req/claude-opus-5-5",
     planEffort: env.PLAN_EFFORT || "low",
     // Server-side refusal fallback is an Anthropic API beta; third-party gateways may reject it.
     fallbacks: (env.AI_FALLBACKS || "on") !== "off",
@@ -43,8 +44,18 @@ export const config = {
   tts: {
     engine: env.TTS_ENGINE?.trim() || (env.ELEVENLABS_API_KEY?.trim() ? "elevenlabs" : "edge"),
     elevenKey: env.ELEVENLABS_API_KEY?.trim() || "",
-    elevenModel: env.ELEVENLABS_MODEL?.trim() || "eleven_flash_v2_5",
+    // eleven_v4 reads Vietnamese far better than eleven_flash_v2_5 (cheaper, but misreads words).
+    elevenModel: env.ELEVENLABS_MODEL?.trim() || "eleven_v4",
+    // Lines voiced at the same time. Above what the plan allows ElevenLabs answers 429 and the line is
+    // retried after a pause, so a high value only costs some waiting.
+    elevenConcurrency: Number(env.ELEVENLABS_CONCURRENCY) || 5,
   },
   pythonBin: path.resolve(SERVER_DIR, env.PYTHON_BIN || ".venv\\Scripts\\python.exe"),
   hyperframesVersion: env.HYPERFRAMES_VERSION || "0.8.181",
+  // Render MP4 (video/render.js). Frame capture is CPU-bound: half the threads keeps the machine usable.
+  render: {
+    workers: env.HF_WORKERS?.trim() || String(Math.max(2, Math.min(8, Math.floor(os.cpus().length / 2)))),
+    quality: env.HF_QUALITY?.trim() || "looks",
+    browserGpu: env.HF_BROWSER_GPU?.trim() || "auto",
+  },
 };

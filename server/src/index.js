@@ -12,7 +12,8 @@ import { loadSettings, activePreset } from "./settings.js";
 import settingsRouter from "./routes/settings.js";
 import newsRouter from "./routes/news.js";
 import musicRouter from "./routes/music.js";
-import longRouter from "./routes/long.js";
+import longRouter, { runningLong } from "./routes/long.js";
+import { runningJobs } from "./video/jobs.js";
 import motionRouter from "./routes/motion.js";
 import { MOTION_DIR } from "./video/anim.js";
 
@@ -32,7 +33,8 @@ app.use("/motion-previews", express.static(path.join(MOTION_DIR, "previews")));
 
 app.get("/api/health", (_req, res) => {
   const p = activePreset();
-  res.json({ ok: true, ai: config.ai.mode, model: p.model, billing: p.billing, preset: p.label });
+  // busy: tasks running now (scripts/dev.mjs waits for 0 before restarting the API on a code change).
+  res.json({ ok: true, ai: config.ai.mode, model: p.model, billing: p.billing, preset: p.label, busy: runningJobs() + runningLong() });
 });
 app.use("/api/settings", settingsRouter);
 app.use("/api/projects", projectsRouter);

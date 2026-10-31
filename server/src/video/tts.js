@@ -22,13 +22,16 @@ export const DEFAULT_VOICE = VOICES[0].id;
 
 // Identifies a voiced line; audio is reused whenever text, voice, rate, pitch and the ElevenLabs tone
 // are unchanged. (Without a pitch or tone the hash is the same as before they existed, so old audio
-// stays valid.)
-export const voiceHash = (text, voice, rate, pitch, tone) =>
-  crypto
+// stays valid.) An ElevenLabs voice always counts the model and tone (the default tone when none is
+// given, as synthesize does), so changing ELEVENLABS_MODEL voices every line again.
+export const voiceHash = (text, voice, rate, pitch, tone) => {
+  const t = tone || (String(voice).startsWith("eleven:") ? "documentary" : "");
+  return crypto
     .createHash("sha1")
-    .update(`${text}\n${voice}\n${rate}${pitch && pitch !== "+0Hz" ? `\n${pitch}` : ""}${tone ? `\n${config.tts.elevenModel}\n${tone}` : ""}`)
+    .update(`${text}\n${voice}\n${rate}${pitch && pitch !== "+0Hz" ? `\n${pitch}` : ""}${t ? `\n${config.tts.elevenModel}\n${t}` : ""}`)
     .digest("hex")
     .slice(0, 16);
+};
 
 // The voice of one scene: in an animation, a character's line uses that character's voice style
 // (plan.cast); narration and every other video use the project voice.
@@ -49,7 +52,8 @@ export function voiceFor(scene, project, plan) {
 // Voices every scene into assets/vo/<id>.mp3 with word timings, skipping scenes whose
 // text/voice/rate did not change since the last run. Returns { [sceneId]: {duration, words, cached} }.
 // `voiceOf(scene)` gives each scene its { voice, rate, pitch }; by default the project voice.
-export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => ({ voice, rate })) {
+// onProgress(done, total): scenes voiced so far (reused ones count as done at once).
+export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => ({ voice, rate }), { onProgress = () => {} } = {}) {
   const voDir = path.join(dir, "assets", "vo");
   await fs.mkdir(voDir, { recursive: true });
 
@@ -98,14 +102,23 @@ export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => 
   }
 
   if (jobs.length) {
-    // The words file is written last, so its presence marks a finished scene.
-    for (const j of jobs) await fs.rm(j.words, { force: true });
+    // The words file is written last, so its presence marks a finished scene. The meta file goes too:
+    // it is written again per finished line (keep), so a run cut off midway only redoes the rest.
+    for (const j of jobs) await Promise.all([fs.rm(j.words, { force: true }), fs.rm(j.metaFile, { force: true })]);
+    const keep = async (j) => {
+      const duration = await probeDuration(j.mp3).catch(() => 0);
+      if (duration > 0) await fs.writeFile(j.metaFile, JSON.stringify({ hash: j.hash, duration }));
+    };
     let failure = null;
-    if (ELEVEN) failure = await elevenVoiceAll(jobs).then(() => null, (err) => err);
+    let done = scenes.length - jobs.length;
+    const tick = () => onProgress(++done, scenes.length);
+    onProgress(done, scenes.length);
+    if (ELEVEN) failure = await elevenVoiceAll(jobs, (j) => keep(j).catch(() => {}).then(tick)).then(() => null, (err) => err);
     else {
       const jobsFile = path.join(voDir, "_jobs.json");
       await fs.writeFile(jobsFile, JSON.stringify(jobs));
-      failure = await run(config.pythonBin, [SCRIPT, jobsFile]).then(() => null, (err) => err);
+      // The edge-tts script prints "ok <file>" per finished line.
+      failure = await run(config.pythonBin, [SCRIPT, jobsFile], { onLine: (l) => l.startsWith("ok ") && tick() }).then(() => null, (err) => err);
       await fs.rm(jobsFile, { force: true });
     }
     // Keep every scene that did finish, so a retry only redoes the ones that failed.
@@ -127,6 +140,7 @@ export async function voiceScenes(dir, scenes, { voice, rate }, voiceOf = () => 
       throw new Error(`Không tạo được giọng đọc cho cảnh ${failed.join(", ")}: ${reason}. Các cảnh khác đã được lưu — bấm dựng lại để thử tiếp.`);
     }
   }
+  onProgress(scenes.length, scenes.length);
   return result;
 }
 

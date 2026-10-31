@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api.js";
 import { ErrorNote } from "../components.jsx";
@@ -157,7 +157,7 @@ export function LongVideoDetail() {
   const busy = v?.busy;
   useEffect(() => {
     if (!busy) return;
-    const t = setInterval(load, 2500);
+    const t = setInterval(load, 1500);
     return () => clearInterval(t);
   }, [busy, load]);
   // A finished job brings a new plan: drop stale edits.
@@ -208,11 +208,12 @@ export function LongVideoDetail() {
         </div>
         <div className="actions">
           <button className="btn" disabled={busy} onClick={() => run("plan")}>{v.plan ? "AI viết lại" : "AI viết kịch bản"}</button>
-          {v.plan && <button className="btn" disabled={busy} onClick={() => run("continue")} title="Chỉ dùng khi câu trả lời AI bị cắt giữa chừng (chạm max_tokens): thêm 1 lượt gọi cho các cảnh còn thiếu">AI viết tiếp</button>}
           <button className="btn" onClick={remove} disabled={busy}>Xoá</button>
         </div>
       </header>
       <ErrorNote error={error} />
+
+      {v.progress && <ProgressPanel slug={slug} p={v.progress} running={busy} />}
 
       {v.plan && (
         <div className="card status-card">
@@ -258,6 +259,160 @@ export function LongVideoDetail() {
 
 // Editable JSON of a frame's inputs or an animation's props; the parsed object reaches the scene
 // only while the text is valid JSON.
+const STAGE_ICON = { pending: "○", running: "◐", done: "✓", skipped: "–", failed: "✕" };
+const dur = (ms) => (ms > 0 ? mmss(ms / 1000) : "0:00");
+
+// The running (or last) task step by step: overall percent from each step's share, elapsed time and
+// an estimate of what is left, then each step with its counts, its own bar and how long it took.
+function ProgressPanel({ slug, p, running }) {
+  const [now, setNow] = useState(Date.now());
+  const [detail, setDetail] = useState(false);
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [running]);
+  const end = p.endedAt || (running ? now : p.startedAt);
+  const share = (s) => (s.status === "done" || s.status === "skipped" ? 1 : s.status === "running" ? (s.percent ?? 0) / 100 : 0);
+  const weights = p.stages.filter((s) => s.status !== "skipped");
+  const total = weights.reduce((n, s) => n + s.weight, 0) || 1;
+  const percent = p.endedAt && !p.error ? 100 : Math.round((weights.reduce((n, s) => n + s.weight * share(s), 0) / total) * 100);
+  const elapsed = end - p.startedAt;
+  // Time left from the pace so far (only once there is enough progress to judge it).
+  const left = running && percent >= 5 && percent < 100 ? (elapsed * (100 - percent)) / percent : 0;
+  return (
+    <section className={`card progress-card ${p.error ? "failed" : ""}`}>
+      <div className="card-head">
+        <h2>Tiến trình — {p.label}</h2>
+        <span className="muted small">
+          {p.error ? "Lỗi" : p.endedAt ? "Hoàn thành" : running ? "Đang chạy" : "Đã dừng"} · {dur(elapsed)}
+          {left > 0 && ` · còn khoảng ${dur(left)}`}
+          {p.task === "build" && (
+            <button className="btn small" onClick={() => setDetail((d) => !d)}>{detail ? "Ẩn chi tiết" : "Chi tiết render"}</button>
+          )}
+        </span>
+      </div>
+      <div className="progress-total">
+        <div className="progress-bar"><span style={{ width: `${percent}%` }} /></div>
+        <strong>{percent}%</strong>
+      </div>
+      <ol className="progress-stages">
+        {p.stages.map((s) => (
+          <li key={s.key} className={`stage ${s.status}`}>
+            <span className="stage-icon">{STAGE_ICON[s.status] || "○"}</span>
+            <div className="stage-body">
+              <div className="stage-head">
+                <span>{s.label}</span>
+                <span className="muted small">
+                  {s.detail}
+                  {s.startedAt && s.status !== "skipped" && ` · ${dur((s.endedAt || (running ? now : s.startedAt)) - s.startedAt)}`}
+                </span>
+              </div>
+              {s.status === "running" && s.percent != null && (
+                <div className="progress-bar thin"><span style={{ width: `${s.percent}%` }} /></div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+      {p.error && <div className="note error">{p.error}</div>}
+      {detail && <RenderDetail slug={slug} />}
+    </section>
+  );
+}
+
+const SEGMENT = { done: "Xong", rendering: "Đang chụp", stopped: "Bị ngắt (render lại)", pending: "Chờ" };
+
+// Inside the HyperFrames render: the video is cut into segments captured side by side (one Chrome +
+// ffmpeg each); the frames of every segment (counted in its file), the speed and time left measured
+// between two looks, HyperFrames' own output, and HyperFrames Studio to watch the video being made.
+function RenderDetail({ slug }) {
+  const [d, setD] = useState(null);
+  const [error, setError] = useState("");
+  const [opening, setOpening] = useState(false);
+  const pace = useRef([]); // [{ t, frames }] of the last minute
+  const load = useCallback(
+    () =>
+      api.get(`/long/${slug}/render`).then((r) => {
+        const frames = r.segments.reduce((n, s) => n + (s.status === "stopped" ? 0 : s.done), 0);
+        pace.current = [...pace.current.filter((x) => Date.now() - x.t < 60_000 && x.frames <= frames), { t: Date.now(), frames }];
+        setD({ ...r, frames });
+      }).catch((e) => setError(e.message)),
+    [slug],
+  );
+  useEffect(() => {
+    load();
+    const t = setInterval(load, 3000);
+    return () => clearInterval(t);
+  }, [load]);
+
+  async function studio(open) {
+    setOpening(true);
+    setError("");
+    try {
+      if (open) {
+        const s = await api.post(`/long/${slug}/studio`);
+        window.open(s.url, "_blank");
+      } else await api.del(`/long/${slug}/studio`);
+      await load();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setOpening(false);
+    }
+  }
+
+  if (!d) return <div className="render-detail"><ErrorNote error={error} /><span className="muted small">Đang đọc…</span></div>;
+  const first = pace.current[0];
+  const last = pace.current[pace.current.length - 1];
+  const fps = first && last.t - first.t > 5000 ? ((last.frames - first.frames) * 1000) / (last.t - first.t) : 0;
+  const left = fps > 0 && d.totalFrames ? (d.totalFrames - d.frames) / fps : 0;
+  const pct = (n, of) => (of ? Math.min(100, (n / of) * 100) : 0);
+  return (
+    <div className="render-detail">
+      <ErrorNote error={error} />
+      <div className="render-detail-head">
+        <strong>{d.frames.toLocaleString("vi-VN")} / {d.totalFrames ? d.totalFrames.toLocaleString("vi-VN") : "?"} khung hình</strong>
+        <span className="muted small">
+          {d.segments.length} đoạn × {d.segmentFrames ? d.segmentFrames.toLocaleString("vi-VN") : "?"} khung
+          {fps > 0 && ` · ${fps.toFixed(1)} khung/giây`}
+          {left > 0 && ` · chụp xong sau khoảng ${dur(left * 1000)}`}
+        </span>
+        <span className="render-detail-actions">
+          {d.studio ? (
+            <>
+              <a className="btn small" href={d.studio.url} target="_blank" rel="noreferrer">Mở Studio ↗</a>
+              <button className="btn small" disabled={opening} onClick={() => studio(false)}>Tắt Studio</button>
+            </>
+          ) : (
+            <button className="btn small" disabled={opening} onClick={() => studio(true)}>{opening ? "Đang mở…" : "Xem trong HyperFrames Studio"}</button>
+          )}
+        </span>
+      </div>
+      {d.segments.length === 0 ? (
+        <p className="muted small">Chưa có đoạn nào — HyperFrames đang chuẩn bị (mở trang, đo thời lượng, chia đoạn).</p>
+      ) : (
+        <ol className="render-segments">
+          {d.segments.map((s) => (
+            <li key={s.index} className={`segment ${s.status}`}>
+              <span className="segment-name">Đoạn {s.index + 1}</span>
+              <span className="muted small">{mmss(s.start / 30)}–{mmss((s.start + s.frames) / 30)}</span>
+              <div className="progress-bar thin"><span style={{ width: `${pct(s.done, s.frames)}%` }} /></div>
+              <span className="small">{s.done.toLocaleString("vi-VN")}/{s.frames.toLocaleString("vi-VN")}</span>
+              <span className={`pill ${s.status === "done" ? "done" : s.status === "rendering" ? "info" : s.status === "stopped" ? "warn" : "muted"}`}>{SEGMENT[s.status]}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+      {d.studio && <p className="muted small">Studio cho xem và tua video đã dựng. Sửa trong Studio sẽ bị ghi đè ở lần “Render” sau. Mở Studio khi đang render sẽ làm render chậm hơn một chút.</p>}
+      <details>
+        <summary className="small">Nhật ký HyperFrames ({d.log.length} dòng cuối)</summary>
+        <pre className="render-log">{d.log.join("\n") || "(chưa có)"}</pre>
+      </details>
+    </div>
+  );
+}
+
 function JsonField({ value, onChange, disabled }) {
   const [text, setText] = useState(() => JSON.stringify(value ?? {}, null, 2));
   const [bad, setBad] = useState("");

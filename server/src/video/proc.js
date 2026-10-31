@@ -1,9 +1,10 @@
 import { spawn } from "node:child_process";
 
 // Runs a command, streaming stdout lines to onLine, and resolves with the full output.
-export function run(cmd, args, { cwd, onLine, shell = false } = {}) {
+// env: variables added to the server's own.
+export function run(cmd, args, { cwd, onLine, shell = false, env } = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, { cwd, shell, windowsHide: true });
+    const child = spawn(cmd, args, { cwd, shell, windowsHide: true, ...(env ? { env: { ...process.env, ...env } } : {}) });
     let out = "";
     const take = (chunk) => {
       const text = chunk.toString();

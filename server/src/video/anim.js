@@ -147,23 +147,43 @@ export function renderAnimScenes(dir, scenes, { width, height, theme, onLog = ()
 // Renders clips into <dir>/assets/anim/<id>.webm, each lasting exactly its scene (cached by the hash
 // of everything that changes its frames). jobs: [{ id, component, props, duration, width, height,
 // safe, theme, cues, speech }]. Used by explainer videos (anim-clip) and long videos.
-export function renderAnimClips(dir, jobs, { onLog = () => {} } = {}) {
+// onProgress(done, total, current?) after each clip (cached ones included), and while a clip renders
+// with current = { id, frames, expected }. A clip whose Chrome hangs (no frame for a minute) is retried
+// once in a fresh browser.
+export function renderAnimClips(dir, jobs, { onLog = () => {}, onProgress = () => {} } = {}) {
   if (!jobs.length) return Promise.resolve();
   return exclusive(async () => {
-    const { renderJob, jobHash, prepareJob, encode, closeBrowser, ensureBuild } = await lib.render();
+    const { renderJob, jobHash, prepareJob, encode, closeBrowser, killBrowser, ensureBuild } = await lib.render();
     await ensureBuild();
     await fsp.mkdir(path.join(dir, "assets", "anim"), { recursive: true });
     await fsp.mkdir(CACHE, { recursive: true });
     try {
-      for (const { id, ...rest } of jobs) {
+      for (const [n, { id, ...rest }] of jobs.entries()) {
         const job = { ...rest, fps: 30, duration: Math.round(rest.duration * 1000) / 1000 };
         const key = jobHash(prepareJob(job, { lenient: true }));
         const cached = path.join(CACHE, `${key}.webm`);
         if (!fs.existsSync(cached)) {
           onLog(`Render animation ${id}: ${job.component} (${job.duration}s)`);
           const tmp = path.join(CACHE, `${key}.frames`);
+          let last = 0;
+          const onFrame = (frames, expected) => {
+            if (Date.now() - last < 1000 && frames < expected) return;
+            last = Date.now();
+            onProgress(n, jobs.length, { id, frames, expected });
+          };
           try {
-            const m = await renderJob(job, tmp, { lenient: true });
+            let m;
+            for (let attempt = 1; ; attempt++) {
+              try {
+                m = await renderJob(job, tmp, { lenient: true, onFrame });
+                break;
+              } catch (err) {
+                const hung = err.stalled || /timed out|Target closed|Protocol error|Session closed/i.test(err.message);
+                if (!hung || attempt === 2) throw err;
+                onLog(`Animation ${id}: Chrome bị treo (${err.message.slice(0, 120)}) — mở lại Chrome và render lại`);
+                await killBrowser();
+              }
+            }
             if (!m.ok) throw new Error(`${id} (${job.component}): ${m.errors.join(" | ")}`);
             await encode(tmp, job.fps, cached);
           } finally {
@@ -171,6 +191,7 @@ export function renderAnimClips(dir, jobs, { onLog = () => {} } = {}) {
           }
         }
         await fsp.copyFile(cached, path.join(dir, "assets", "anim", `${id}.webm`));
+        onProgress(n + 1, jobs.length);
       }
     } finally {
       await closeBrowser();
